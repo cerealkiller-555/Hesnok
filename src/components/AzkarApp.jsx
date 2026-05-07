@@ -109,7 +109,8 @@ const AzkarApp = () => {
             morning: azkar.morning,
             evening: azkar.evening,
             sleeping: azkar.sleeping,
-            prayer_azkar: azkar.prayerAzkar
+            prayer_azkar: azkar.prayerAzkar,
+            jawami: azkar.jawami
         };
         return map[activeTab] || [];
     }, [activeTab]);
@@ -541,6 +542,7 @@ const AzkarApp = () => {
                     {activeTab === "evening"       && renderAzkarList(azkar.evening, "evening")}
                     {activeTab === "sleeping"      && renderAzkarList(azkar.sleeping, "sleeping")}
                     {activeTab === "prayer_azkar"  && renderAzkarList(azkar.prayerAzkar, "prayer_azkar")}
+                    {activeTab === "jawami"        && renderAzkarList(azkar.jawami, "jawami")}
 
                     {activeTab === "prayer" && (
                         <div className="animate-slide-up space-y-8">

@@ -10,7 +10,7 @@ export const { azkar, defaultCustomDuas, tabs: tabConfig } = AZKAR_DATA;
 export const ICONS = { Clock, Moon, Sun, BookOpen, Heart, Settings };
 
 // Tabs that show daily progress (azkar lists)
-export const DAILY_TAB_IDS = ["morning", "evening", "sleeping", "prayer_azkar"];
+export const DAILY_TAB_IDS = ["morning", "evening", "sleeping", "prayer_azkar", "jawami"];
 
 // Fallback prayer times when offline
 export const OFFLINE_PRAYER_TIMES = {
