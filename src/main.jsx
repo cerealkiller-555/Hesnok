@@ -76,7 +76,8 @@ class AppErrorBoundary extends React.Component {
 const rootElement = document.getElementById('root');
 
 if (rootElement) {
-    const root = ReactDOM.createRoot(rootElement);
+    const root = window.__AZKAR_ROOT__ || ReactDOM.createRoot(rootElement);
+    window.__AZKAR_ROOT__ = root;
     root.render(
         <React.StrictMode>
             <AppErrorBoundary>

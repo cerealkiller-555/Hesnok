@@ -3,26 +3,26 @@ import { Plus, Heart, Trash2 } from 'lucide-react';
 
 const CustomDuasSection = ({ customDuas, newDua, setNewDua, addCustomDua, deleteCustomDua, t }) => (
     <div className="animate-slide-up space-y-6">
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-[#CC6243] to-[#B45FA0] text-white shadow-xl">
-            <h2 className="text-2xl font-black mb-1 flex items-center gap-3">
-                <Heart className="w-7 h-7 text-white/70" />
+        <div className="p-5 rounded-lg bg-[var(--bg-surface)] border border-[var(--glass-border)] text-[var(--text-primary)] shadow-sm">
+            <h2 className="text-xl font-black mb-1 flex items-center gap-3">
+                <Heart className="w-6 h-6 text-[var(--primary)]" />
                 {t.customTitle}
             </h2>
-            <p className="opacity-70 text-sm font-medium">{t.customSubtitle}</p>
+            <p className="text-[var(--text-secondary)] text-sm font-medium leading-6">{t.customSubtitle}</p>
         </div>
 
-        <div className="flex gap-2 bg-white dark:bg-slate-800/90 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700/50 p-1.5">
+        <div className="flex gap-2 bg-[var(--bg-surface)] rounded-lg shadow-sm border border-[var(--glass-border)] p-1.5">
             <input
                 type="text"
                 value={newDua}
                 onChange={(e) => setNewDua(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addCustomDua()}
                 placeholder={t.customPlaceholder}
-                className="flex-1 px-5 py-3 bg-transparent text-slate-800 dark:text-white text-base focus:outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                className="flex-1 px-4 py-3 bg-transparent text-[var(--text-primary)] text-base focus:outline-none placeholder:text-[var(--text-tertiary)]"
             />
             <button
                 onClick={addCustomDua}
-                className="px-6 py-3 bg-[#CC6243] text-white font-black text-sm rounded-xl hover:bg-[#B45FA0] shadow-md transition-all active:scale-95"
+                className="px-5 py-3 bg-[var(--primary)] text-white font-black text-sm rounded-lg hover:bg-[var(--primary-dark)] transition-all active:scale-95"
                 aria-label={t.addDua}
             >
                 <Plus className="w-5 h-5" />
@@ -32,19 +32,19 @@ const CustomDuasSection = ({ customDuas, newDua, setNewDua, addCustomDua, delete
         <div className="space-y-3">
             {!customDuas.length && (
                 <div className="py-12 text-center">
-                    <Heart className="w-12 h-12 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
-                    <p className="text-slate-600 dark:text-slate-400 font-bold">{t.noDuas}</p>
-                    <p className="text-sm text-slate-500">{t.noDuasHint}</p>
+                    <Heart className="w-10 h-10 text-[var(--text-tertiary)] mx-auto mb-4" />
+                    <p className="text-[var(--text-secondary)] font-bold">{t.noDuas}</p>
+                    <p className="text-sm text-[var(--text-tertiary)]">{t.noDuasHint}</p>
                 </div>
             )}
 
             {customDuas.map((dua, index) => (
-                <div key={dua.id || index} className="group p-5 bg-white dark:bg-slate-800/90 rounded-2xl shadow-md border border-slate-100 dark:border-slate-700/50 hover:shadow-lg transition-all">
+                <div key={dua.id || index} className="group p-5 bg-[var(--bg-surface)] rounded-lg shadow-sm border border-[var(--glass-border)] hover:shadow-md transition-all">
                     <div className="flex items-start justify-between gap-4">
-                        <p className="text-lg md:text-xl font-amiri text-[#0f172a] dark:text-[#f8fafc] leading-relaxed flex-1">{dua.text}</p>
+                        <p className="text-lg font-amiri text-[var(--text-primary)] leading-relaxed flex-1">{dua.text}</p>
                         <button
-                            onClick={() => deleteCustomDua(index)}
-                            className="p-2 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 opacity-0 group-hover:opacity-100 transition-all hover:scale-105 active:scale-95 flex-shrink-0"
+                            onClick={() => deleteCustomDua(dua.id)}
+                            className="p-2 rounded-lg bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-300 md:opacity-0 md:group-hover:opacity-100 transition-all hover:scale-105 active:scale-95 flex-shrink-0"
                             aria-label={t.deleteDua}
                         >
                             <Trash2 className="w-4 h-4" />

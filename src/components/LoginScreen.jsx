@@ -27,17 +27,17 @@ const LoginScreen = ({ onLogin, t, language }) => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 bg-main pattern-bg" dir={language === "ar" ? "rtl" : "ltr"}>
-            <div className="max-w-md w-full animate-scale-in">
-                <div className="glass-panel p-10 space-y-8 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-main pattern-bg" dir={language === "ar" ? "rtl" : "ltr"}>
+            <div className="w-full max-w-sm animate-scale-in">
+                <div className="glass-panel p-6 md:p-8 space-y-6 relative overflow-hidden">
                     {/* Logo */}
-                    <div className="text-center space-y-4">
-                        <div className="w-24 h-24 mx-auto bg-white dark:bg-slate-800 rounded-3xl shadow-2xl flex items-center justify-center border border-accent/20 transform hover:rotate-6 transition-transform">
-                            <img src="hesnok_logo.png" alt="Hesnok logo" className="w-20 h-20 rounded-2xl" />
+                    <div className="text-center space-y-3">
+                        <div className="w-20 h-20 mx-auto bg-white dark:bg-[var(--bg-subtle)] rounded-xl shadow-sm flex items-center justify-center border border-[var(--glass-border)]">
+                            <img src="hesnok_logo.png" alt="Hesnok logo" className="w-16 h-16 rounded-lg" />
                         </div>
                         <div className="space-y-1">
-                            <h1 className="text-3xl font-outfit font-black text-primary dark:text-accent tracking-tighter">{title}</h1>
-                            <p className="text-sm text-text-secondary font-bold">{subtitle}</p>
+                            <h1 className="text-2xl font-black text-[var(--text-primary)] leading-tight">{title}</h1>
+                            <p className="text-sm text-text-secondary font-bold leading-6">{subtitle}</p>
                         </div>
                     </div>
 
@@ -46,15 +46,15 @@ const LoginScreen = ({ onLogin, t, language }) => {
                         <div className="space-y-4">
                             {/* Name */}
                             <div>
-                                <label className={`block text-[10px] font-black uppercase tracking-widest mb-1.5 ${errors.name ? 'text-error' : 'text-text-tertiary'}`}>
+                                <label className={`block text-[10px] font-black uppercase tracking-wide mb-1.5 ${errors.name ? 'text-error' : 'text-text-secondary'}`}>
                                     {t.nameLabel}
                                 </label>
                                 <div className="relative group">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-tertiary group-focus-within:text-accent transition-colors" />
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary group-focus-within:text-[var(--primary)] transition-colors" />
                                     <input
                                         id="login-name"
                                         type="text"
-                                        className={`w-full bg-bg-subtle dark:bg-slate-900/50 border-2 py-4 pl-12 pr-6 rounded-2xl focus:outline-none focus:border-accent transition-all font-bold ${errors.name ? 'border-error/50' : 'border-glass-border'}`}
+                                        className={`w-full bg-bg-subtle border py-3.5 pl-12 pr-6 rounded-lg focus:outline-none focus:border-[var(--primary)] text-text-primary transition-all font-bold ${errors.name ? 'border-error/50' : 'border-glass-border'}`}
                                         placeholder={language === "en" ? "Your name" : "الاسم الكامل"}
                                         value={form.name}
                                         onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -65,15 +65,15 @@ const LoginScreen = ({ onLogin, t, language }) => {
 
                             {/* Email */}
                             <div>
-                                <label className={`block text-[10px] font-black uppercase tracking-widest mb-1.5 ${errors.email ? 'text-error' : 'text-text-tertiary'}`}>
+                                <label className={`block text-[10px] font-black uppercase tracking-wide mb-1.5 ${errors.email ? 'text-error' : 'text-text-secondary'}`}>
                                     {t.emailLabel}
                                 </label>
                                 <div className="relative group">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-tertiary group-focus-within:text-accent transition-colors" />
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary group-focus-within:text-[var(--primary)] transition-colors" />
                                     <input
                                         id="login-email"
                                         type="email"
-                                        className={`w-full bg-bg-subtle dark:bg-slate-900/50 border-2 py-4 pl-12 pr-6 rounded-2xl focus:outline-none focus:border-accent transition-all font-bold ${errors.email ? 'border-error/50' : 'border-glass-border'}`}
+                                        className={`w-full bg-bg-subtle border py-3.5 pl-12 pr-6 rounded-lg focus:outline-none focus:border-[var(--primary)] text-text-primary transition-all font-bold ${errors.email ? 'border-error/50' : 'border-glass-border'}`}
                                         placeholder="email@example.com"
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -87,7 +87,7 @@ const LoginScreen = ({ onLogin, t, language }) => {
                         <button
                             id="login-submit"
                             onClick={handleSubmit}
-                            className="w-full bg-primary hover:bg-primary-dark text-accent font-black py-4 rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transform active:scale-95 transition-all group"
+                            className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white font-black py-3.5 rounded-lg flex items-center justify-center gap-2 transform active:scale-95 transition-all group"
                         >
                             <span>{actionLabel}</span>
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -96,15 +96,15 @@ const LoginScreen = ({ onLogin, t, language }) => {
                         {/* Toggle mode */}
                         <button
                             onClick={() => setMode(isCreateMode ? "signin" : "create")}
-                            className="w-full text-sm font-black text-primary dark:text-accent opacity-80 hover:opacity-100 transition-opacity underline-offset-4 hover:underline"
+                            className="w-full text-sm font-black text-[var(--primary)] opacity-90 hover:opacity-100 transition-opacity underline-offset-4 hover:underline"
                         >
                             {isCreateMode ? t.signInInstead : t.createAccountLink}
                         </button>
                     </div>
 
                     {/* Trust banner */}
-                    <div className="bg-accent/5 border border-accent/10 p-4 rounded-2xl flex items-start gap-3">
-                        <ShieldCheck className="w-5 h-5 text-accent shrink-0" />
+                    <div className="bg-[var(--bg-subtle)] border border-[var(--glass-border)] p-4 rounded-lg flex items-start gap-3">
+                        <ShieldCheck className="w-5 h-5 text-[var(--primary)] shrink-0" />
                         <p className="text-[11px] text-text-primary font-bold leading-relaxed">{t.settingsHint}</p>
                     </div>
                 </div>

@@ -54,40 +54,40 @@ const ZikrCard = ({
             {/* Celebration overlay */}
             {showCelebration && (
                 <div className="absolute inset-0 z-20 pointer-events-none">
-                    <div className="absolute inset-0 bg-emerald-500/10 animate-pulse rounded-[32px]" />
+                    <div className="absolute inset-0 bg-emerald-500/10 animate-pulse rounded-lg" />
                 </div>
             )}
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-5">
                 {/* Header */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-black transition-all duration-500 ${
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className={`flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-sm font-black transition-all duration-500 ${
                             isCompleted
-                                ? "bg-gradient-to-br from-[#10B981] to-[#059669] text-white rotate-[360deg] shadow-lg shadow-emerald-500/20"
-                                : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                                ? "bg-emerald-600 text-white"
+                                : "bg-[var(--bg-subtle)] text-[var(--text-secondary)]"
                         }`}>
-                            {isCompleted ? <CheckCircle className="w-6 h-6" /> : index + 1}
+                            {isCompleted ? <CheckCircle className="w-5 h-5" /> : index + 1}
                         </div>
                         {title && (
-                            <h3 className="text-xl font-outfit font-black text-slate-900 dark:text-[#D4A76A] tracking-tight">{title}</h3>
+                            <h3 className="text-base md:text-lg font-black text-[var(--text-primary)] leading-snug truncate">{title}</h3>
                         )}
                     </div>
 
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleShare}
-                            className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-slate-400 hover:text-[#D4A76A] transition-all hover:bg-[#D4A76A]/10 active:scale-95"
+                            className="p-2.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--primary)] transition-all active:scale-95"
                             aria-label={t.shareLabel}
                         >
                             <Share2 className="w-5 h-5" />
                         </button>
                         <button
                             onClick={onToggleComplete}
-                            className={`p-3 rounded-2xl transition-all active:scale-95 ${
+                            className={`p-2.5 rounded-lg transition-all active:scale-95 ${
                                 isCompleted
-                                    ? "bg-[#10B981] text-white shadow-lg shadow-emerald-500/30"
-                                    : "bg-slate-50 dark:bg-slate-800/50 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                                    ? "bg-emerald-600 text-white"
+                                    : "bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--primary)]"
                             }`}
                             aria-label={t.markComplete}
                         >
@@ -98,50 +98,50 @@ const ZikrCard = ({
 
                 {/* Arabic text */}
                 <div className="relative py-2">
-                    <p className={`text-arabic font-amiri text-3xl md:text-5xl leading-[1.8] transition-all duration-700 ${
+                    <p className={`text-arabic font-amiri transition-all duration-500 ${
                         isCompleted
-                            ? "text-slate-400 dark:text-slate-500 opacity-60 scale-95"
-                            : "text-premium dark:text-white"
+                            ? "text-[var(--text-tertiary)] opacity-80"
+                            : "text-[var(--text-primary)]"
                     }`}>
                         {zikr.text}
                     </p>
                 </div>
 
                 {/* Counter button */}
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4">
                     <button
                         ref={buttonRef}
                         onClick={(e) => onProgress(e, buttonRef)}
                         disabled={isCompleted}
-                        className={`counter-btn relative group h-20 rounded-[28px] overflow-hidden shadow-xl transition-all active:scale-[0.97] ${
+                        className={`counter-btn relative group overflow-hidden transition-all active:scale-[0.98] ${
                             isCompleted
-                                ? "bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-700/50 cursor-default shadow-none"
-                                : "bg-gradient-to-r from-[#423E87] to-[#2E2A5E] hover:shadow-2xl hover:shadow-[#423E87]/20"
+                                ? "bg-[var(--bg-subtle)] border border-[var(--glass-border)] cursor-default shadow-none"
+                                : "bg-[var(--primary)] hover:bg-[var(--primary-dark)]"
                         }`}
                     >
                         {/* Progress fill */}
                         {!isCompleted && (
                             <div
                                 className="progress-fill z-0"
-                                style={{ width: `${progressPct}%`, background: 'rgba(212, 167, 106, 0.4)' }}
+                                style={{ width: `${progressPct}%`, background: 'rgba(255, 255, 255, 0.18)' }}
                             />
                         )}
 
-                        <div className="relative z-10 flex items-center justify-center gap-6">
+                        <div className="relative z-10 flex items-center justify-center gap-4">
                             {isCompleted ? (
-                                <div className="flex items-center gap-3 text-emerald-600 dark:text-emerald-400 font-black italic">
-                                    <CheckCircle className="w-7 h-7" />
-                                    <span className="text-xl uppercase tracking-widest">{t.doneLabel}</span>
+                                <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-black">
+                                    <CheckCircle className="w-5 h-5" />
+                                    <span className="text-sm uppercase tracking-wide">{t.doneLabel}</span>
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-6 text-white">
-                                    <span className={`text-5xl font-black tabular-nums transition-transform duration-300 ${isAnimating ? "scale-125" : ""}`}>
+                                <div className="flex items-center gap-4 text-white">
+                                    <span className={`text-3xl font-black tabular-nums transition-transform duration-300 ${isAnimating ? "scale-110" : ""}`}>
                                         {progress}
                                     </span>
-                                    <div className="h-10 w-[2px] bg-white/10 rounded-full" />
+                                    <div className="h-8 w-px bg-white/25 rounded-full" />
                                     <div className="flex flex-col items-start leading-none opacity-80">
-                                        <span className="text-[10px] font-black uppercase tracking-wider mb-1">{t.requiredLabel}</span>
-                                        <span className="text-xl font-black">{zikr.count}</span>
+                                        <span className="text-[10px] font-black uppercase tracking-wide mb-1">{t.requiredLabel}</span>
+                                        <span className="text-base font-black">{zikr.count}</span>
                                     </div>
                                 </div>
                             )}
@@ -153,7 +153,7 @@ const ZikrCard = ({
                         <div className="pt-2">
                             <button
                                 onClick={onToggleBenefit}
-                                className="flex items-center justify-between w-full py-3 px-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-[#423E87] dark:hover:text-[#D4A76A] transition-colors"
+                                className="flex items-center justify-between w-full py-3 px-1 text-[11px] font-black uppercase tracking-wide text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
                             >
                                 <div className="flex items-center gap-2">
                                     <Info className="w-4 h-4" />
@@ -163,21 +163,21 @@ const ZikrCard = ({
                             </button>
 
                             {isExpanded && (
-                                <div className="mt-4 space-y-4 animate-slide-up origin-top">
+                                <div className="mt-3 space-y-3 animate-slide-up origin-top">
                                     {meaning && (
-                                        <div className="p-6 rounded-[24px] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
-                                            <div className="absolute top-0 right-0 w-1.5 h-full bg-[#D4A76A]/40 group-hover:bg-[#D4A76A] transition-colors" />
-                                            <span className="block text-[10px] font-black uppercase tracking-widest text-[#D4A76A] mb-3">{t.meaningTitle}</span>
-                                            <p className="text-[15px] text-slate-800 dark:text-slate-200 leading-[1.8] font-medium">{meaning}</p>
+                                        <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--glass-border)] relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-1 h-full bg-[var(--primary)] opacity-60 transition-colors" />
+                                            <span className="block text-[10px] font-black uppercase tracking-wide text-[var(--primary)] mb-2">{t.meaningTitle}</span>
+                                            <p className="text-sm text-[var(--text-primary)] leading-7 font-medium">{meaning}</p>
                                         </div>
                                     )}
                                     {benefit && (
-                                        <div className="p-6 rounded-[24px] bg-indigo-50/30 dark:bg-indigo-900/10 border border-indigo-100/50 dark:border-indigo-900/20">
-                                            <p className="text-[15px] text-slate-900 dark:text-slate-50 leading-[1.8] font-medium">{benefit}</p>
+                                        <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--glass-border)]">
+                                            <p className="text-sm text-[var(--text-primary)] leading-7 font-medium">{benefit}</p>
                                         </div>
                                     )}
                                     {source && (
-                                        <div className="flex items-center gap-3 px-2 text-[11px] text-slate-400 font-bold italic">
+                                        <div className="flex items-center gap-2 px-1 text-[11px] text-[var(--text-secondary)] font-bold">
                                             <BookOpen className="w-4 h-4" />
                                             <span>{source}</span>
                                         </div>

@@ -20,6 +20,26 @@ import PrayerChecklist     from './PrayerChecklist';
 import LoginScreen         from './LoginScreen';
 import ZikrCard            from './ZikrCard';
 
+const createId = () => {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+    return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+};
+
+const normalizeCustomDuas = (duas) => {
+    if (!Array.isArray(duas)) return [];
+    return duas
+        .map((dua, index) => {
+            if (typeof dua === "string") {
+                return { id: `seed_${index}_${dua.slice(0, 12)}`, text: dua };
+            }
+            if (dua && typeof dua === "object" && typeof dua.text === "string") {
+                return { id: dua.id ?? `dua_${index}`, text: dua.text };
+            }
+            return null;
+        })
+        .filter((dua) => dua && dua.text.trim());
+};
+
 // ═══════════════════════════════════════════════════════
 // AzkarApp — Root Component
 //
@@ -42,6 +62,7 @@ const AzkarApp = () => {
         const saved = readJson("azkar_user", null);
         return Boolean(saved && (saved.name || saved.email));
     });
+    const [storageReady, setStorageReady] = useState(false);
 
     const [prayerTimes, setPrayerTimes]   = useState(null);
     const [location, setLocation]         = useState(() => readJson("azkar_location", { city: "Cairo", country: "EG" }));
@@ -51,7 +72,7 @@ const AzkarApp = () => {
     const [azkarProgress, setAzkarProgress]       = useState({});
     const [prayerChecklist, setPrayerChecklist]    = useState({});
     const [streak, setStreak]                     = useState({ count: 0, lastDate: null });
-    const [customDuas, setCustomDuas]             = useState(() => readJson("azkar_customDuas", defaultCustomDuas));
+    const [customDuas, setCustomDuas]             = useState(() => normalizeCustomDuas(readJson("azkar_customDuas", defaultCustomDuas)));
     const [newDua, setNewDua]                     = useState("");
 
     const [expandedBenefits, setExpandedBenefits] = useState({});
@@ -61,6 +82,7 @@ const AzkarApp = () => {
 
     // Refs
     const completedAzkarRef = useRef(completedAzkar);
+    const azkarProgressRef  = useRef(azkarProgress);
     const toastShownRef     = useRef(new Set());
 
     // ───────────────────────────────────────
@@ -90,7 +112,8 @@ const AzkarApp = () => {
             const key = `${activeTab}_${z.id}`;
             return s + Math.min(azkarProgress[key] || 0, z.count);
         }, 0);
-        return Math.round((currentCounts / totalCounts) * 100);
+        if (currentCounts === 0) return 0;
+        return Math.max(1, Math.round((currentCounts / totalCounts) * 100));
     }, [activeTab, azkarProgress, currentAzkarList]);
 
     const completedCount = useMemo(
@@ -150,23 +173,22 @@ const AzkarApp = () => {
                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 setTimeout(() => setHighlightedZikr(null), 2000);
             }, 600);
-        } else {
-            // Check if ALL items in the list are now complete
-            const allDone = list.every((z) => {
-                const key = `${type}_${z.id}`;
-                return completedAzkarRef.current[key] || key === currentId;
-            });
-            if (allDone) {
-                showToast(t.allComplete, "success");
-            }
         }
-    }, [t]);
+    }, []);
+
+    const showOncePerAction = useCallback((key, message, type = "success") => {
+        if (toastShownRef.current.has(key)) return;
+        toastShownRef.current.add(key);
+        showToast(message, type);
+        setTimeout(() => toastShownRef.current.delete(key), 1000);
+    }, []);
 
     // ───────────────────────────────────────
     // 3. EVENT HANDLERS
     // ───────────────────────────────────────
     const handleLogin = useCallback((profile) => {
         const user = { name: profile.name.trim(), email: profile.email.trim().toLowerCase() };
+        setStorageReady(false);
         setUserProfile(user);
         setIsLoggedIn(true);
         writeJson("azkar_user", user);
@@ -182,8 +204,22 @@ const AzkarApp = () => {
         setAzkarProgress({});
         setPrayerChecklist({});
         setStreak({ count: 0, lastDate: null });
+        completedAzkarRef.current = {};
+        azkarProgressRef.current = {};
+        toastShownRef.current.clear();
+        setStorageReady(false);
         showToast(t.logoutButton, "info");
     }, [t]);
+
+    const updateUserProfile = useCallback((profile) => {
+        const updated = {
+            ...userProfile,
+            ...profile,
+            name: profile.name ?? userProfile.name
+        };
+        setUserProfile(updated);
+        writeJson("azkar_user", updated);
+    }, [userProfile]);
 
     const handleZikrProgress = useCallback((id, max, list, type) => {
         if (completedAzkarRef.current[id]) return;
@@ -192,56 +228,51 @@ const AzkarApp = () => {
         setCountAnimation(id);
         setTimeout(() => setCountAnimation(null), 200);
 
-        setAzkarProgress((prev) => {
-            const next = (prev[id] || 0) + 1;
-            const updated = { ...prev, [id]: next };
+        const next = Math.min((azkarProgressRef.current[id] || 0) + 1, max);
+        const updatedProgress = { ...azkarProgressRef.current, [id]: next };
+        azkarProgressRef.current = updatedProgress;
+        setAzkarProgress(updatedProgress);
 
-            if (next >= max) {
-                // Mark as completed
-                setCompletedAzkar((prevC) => {
-                    const newCompleted = { ...prevC, [id]: true };
-                    // Update ref immediately for scrollToNextZikr
-                    completedAzkarRef.current = newCompleted;
-                    return newCompleted;
-                });
-                showToast(t.progressCompleted);
-                scrollToNextZikr(id, list, type);
-            }
+        if (next < max) return;
 
-            return updated;
-        });
-    }, [t, scrollToNextZikr]);
+        const updatedCompleted = { ...completedAzkarRef.current, [id]: true };
+        completedAzkarRef.current = updatedCompleted;
+        setCompletedAzkar(updatedCompleted);
+
+        const sectionComplete = list.every((z) => updatedCompleted[`${type}_${z.id}`]);
+        if (sectionComplete) {
+            showOncePerAction(`${type}_section_complete`, t.allComplete, "success");
+        } else {
+            showOncePerAction(`${id}_complete`, t.progressCompleted, "success");
+            scrollToNextZikr(id, list, type);
+        }
+    }, [t, scrollToNextZikr, showOncePerAction]);
 
     const toggleZikrComplete = useCallback((id, max) => {
-        setCompletedAzkar((prev) => {
-            const done = !prev[id];
-            const updated = { ...prev, [id]: done };
-            completedAzkarRef.current = updated;
-            return updated;
-        });
-        setAzkarProgress((prev) => {
-            const done = !completedAzkarRef.current[id];
-            // Note: completedAzkarRef was just updated above, so check the NEW value
-            // Actually we need the value AFTER the toggle. Since setCompletedAzkar runs first:
-            const isDone = completedAzkarRef.current[id];
-            return { ...prev, [id]: isDone ? max : 0 };
-        });
+        const done = !completedAzkarRef.current[id];
+        const updated = { ...completedAzkarRef.current, [id]: done };
+        const updatedProgress = { ...azkarProgressRef.current, [id]: done ? max : 0 };
+        completedAzkarRef.current = updated;
+        azkarProgressRef.current = updatedProgress;
+        setCompletedAzkar(updated);
+        setAzkarProgress(updatedProgress);
     }, []);
 
     const handleTabChange = useCallback((tabId) => {
+        if (!tabConfig.some((tab) => tab.id === tabId)) return;
         setActiveTab(tabId);
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, []);
 
     const addCustomDua = useCallback(() => {
         if (!newDua.trim()) return;
-        setCustomDuas((prev) => [...prev, { id: Date.now(), text: newDua.trim() }]);
+        setCustomDuas((prev) => [...prev, { id: createId(), text: newDua.trim() }]);
         setNewDua("");
         showToast(t.duaAdded);
     }, [newDua, t]);
 
-    const deleteCustomDua = useCallback((index) => {
-        setCustomDuas((prev) => prev.filter((_, i) => i !== index));
+    const deleteCustomDua = useCallback((id) => {
+        setCustomDuas((prev) => prev.filter((dua) => dua.id !== id));
         showToast(t.duaDeleted, "info");
     }, [t]);
 
@@ -250,6 +281,8 @@ const AzkarApp = () => {
         setCompletedAzkar({});
         setAzkarProgress({});
         completedAzkarRef.current = {};
+        azkarProgressRef.current = {};
+        toastShownRef.current.clear();
         showToast(t.resetAllToast, "info");
     }, [t]);
 
@@ -262,33 +295,49 @@ const AzkarApp = () => {
         completedAzkarRef.current = completedAzkar;
     }, [completedAzkar]);
 
+    useEffect(() => {
+        azkarProgressRef.current = azkarProgress;
+    }, [azkarProgress]);
+
     // Load user-scoped data when logged in or user changes
     useEffect(() => {
-        if (!isLoggedIn || !userProfile.email) return;
+        if (!isLoggedIn || !userProfile.email) {
+            setStorageReady(false);
+            return;
+        }
         const suffix = `_${userProfile.email}`;
-        setCompletedAzkar(readDailyState(`azkar_completed${suffix}`));
-        setAzkarProgress(readDailyState(`azkar_progress${suffix}`));
+        const savedCompleted = readDailyState(`azkar_completed${suffix}`);
+        const savedProgress = readDailyState(`azkar_progress${suffix}`);
+        completedAzkarRef.current = savedCompleted;
+        azkarProgressRef.current = savedProgress;
+        setCompletedAzkar(savedCompleted);
+        setAzkarProgress(savedProgress);
         setPrayerChecklist(readDailyState(`azkar_prayerChecklist${suffix}`));
         setStreak(readJson(`azkar_streak${suffix}`, { count: 0, lastDate: null }));
+        setStorageReady(true);
     }, [isLoggedIn, userProfile.email]);
 
     // Persist user-scoped data
     useEffect(() => {
-        if (!isLoggedIn || !userProfile.email) return;
+        if (!isLoggedIn || !userProfile.email || !storageReady) return;
         const today = new Date().toDateString();
         writeJson(`azkar_progress${userSuffix}`,       { date: today, items: azkarProgress });
         writeJson(`azkar_completed${userSuffix}`,      { date: today, items: completedAzkar });
         writeJson(`azkar_prayerChecklist${userSuffix}`, { date: today, items: prayerChecklist });
         writeJson(`azkar_streak${userSuffix}`,         streak);
-    }, [azkarProgress, completedAzkar, prayerChecklist, streak, userSuffix, isLoggedIn, userProfile.email]);
+    }, [azkarProgress, completedAzkar, prayerChecklist, streak, userSuffix, isLoggedIn, userProfile.email, storageReady]);
 
     // Persist custom duas
     useEffect(() => {
-        writeJson("azkar_customDuas", customDuas);
+        writeJson("azkar_customDuas", normalizeCustomDuas(customDuas));
     }, [customDuas]);
 
     // Persist UI preferences
-    useEffect(() => { localStorage.setItem("azkar_activeTab", activeTab); }, [activeTab]);
+    useEffect(() => {
+        const isValidTab = tabConfig.some((tab) => tab.id === activeTab);
+        if (!isValidTab) setActiveTab("morning");
+        else localStorage.setItem("azkar_activeTab", activeTab);
+    }, [activeTab]);
     useEffect(() => {
         localStorage.setItem("azkarDarkMode", String(isDarkMode));
         document.documentElement.classList.toggle("dark", isDarkMode);
@@ -398,26 +447,26 @@ const AzkarApp = () => {
 
             {/* Header */}
             <header className="sticky top-0 z-50 glass-panel !rounded-none border-x-0 border-t-0 shadow-sm">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange("morning")}>
-                        <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-lg transition-transform">
-                            <img src="hesnok_logo.png" alt="Hesnok" className="w-10 h-10 rounded-lg" />
+                        <div className="w-10 h-10 rounded-lg bg-white dark:bg-[var(--bg-subtle)] flex items-center justify-center shadow-sm border border-[var(--glass-border)] transition-transform">
+                            <img src="hesnok_logo.png" alt="Hesnok" className="w-8 h-8 rounded-md" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-outfit font-black text-primary dark:text-accent tracking-tighter leading-none">{t.appName}</h1>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-dark dark:text-slate-400 mt-1">{t.appTagline}</p>
+                            <h1 className="text-lg font-black text-[var(--text-primary)] leading-none">{t.appName}</h1>
+                            <p className="text-[10px] font-black uppercase tracking-wide text-[var(--text-secondary)] mt-1">{t.appTagline}</p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-bg-surface dark:bg-slate-800 text-text-primary font-bold border border-glass-border">
-                            <Clock className="w-4 h-4 text-accent" />
+                        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bg-surface text-text-primary font-bold border border-glass-border">
+                            <Clock className="w-4 h-4 text-[var(--primary)]" />
                             <span className="text-sm font-mono">{formatTime()}</span>
                         </div>
-                        <button onClick={() => setIsDarkMode((d) => !d)} className="p-2.5 rounded-xl bg-bg-surface dark:bg-slate-800 text-text-secondary border border-glass-border">
+                        <button onClick={() => setIsDarkMode((d) => !d)} className="p-2.5 rounded-lg bg-bg-surface text-text-secondary border border-glass-border hover:text-[var(--primary)]">
                             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                         </button>
-                        <button onClick={() => handleTabChange("settings")} className={`p-2.5 rounded-xl border transition-all ${activeTab === "settings" ? "bg-primary text-white" : "bg-bg-surface dark:bg-slate-800 text-text-secondary border-glass-border"}`}>
+                        <button onClick={() => handleTabChange("settings")} className={`p-2.5 rounded-lg border transition-all ${activeTab === "settings" ? "bg-[var(--primary)] text-white border-[var(--primary)]" : "bg-bg-surface text-text-secondary border-glass-border hover:text-[var(--primary)]"}`}>
                             <Settings className="w-5 h-5" />
                         </button>
                     </div>
@@ -426,13 +475,28 @@ const AzkarApp = () => {
                 {/* Progress bar in header */}
                 {DAILY_TAB_IDS.includes(activeTab) && (
                     <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800/50">
-                        <div className="h-full bg-gradient-to-l from-accent to-accent-dark transition-all duration-1000 ease-out" style={{ width: `${progressPercentage}%` }} />
+                        <div className="h-full bg-[var(--primary)] transition-all duration-1000 ease-out" style={{ width: `${progressPercentage}%` }} />
                     </div>
                 )}
+
+                <nav className="hidden md:block border-t border-glass-border bg-white/35 dark:bg-slate-950/20" aria-label={t.navLabel}>
+                    <div className="container mx-auto px-4 py-3 flex items-center justify-center gap-2">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => handleTabChange(tab.id)}
+                                className={`desktop-nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                            >
+                                <tab.icon className="w-4 h-4" />
+                                <span>{tab.labelText}</span>
+                            </button>
+                        ))}
+                    </div>
+                </nav>
             </header>
 
             {/* Main content */}
-            <main className="container mx-auto px-4 py-8 max-w-3xl space-y-8 animate-fade-in">
+            <main className="container mx-auto px-4 py-6 max-w-3xl space-y-6 animate-fade-in">
                 <StreakBanner streakCount={streak.count} goals={goals} t={t} />
 
                 <ProgressHero
@@ -489,19 +553,19 @@ const AzkarApp = () => {
                             resetAllProgress={resetAllProgress}
                             deferredPrompt={deferredPrompt}
                             installPWA={() => deferredPrompt?.prompt()}
-                            updateProfile={setUserProfile}
+                            updateProfile={updateUserProfile}
                         />
                     )}
                 </div>
             </main>
 
             {/* Footer */}
-            <footer className="py-20 text-center bg-white dark:bg-slate-900 border-t border-glass-border">
-                <p className="text-accent font-black mb-4 tracking-[0.3em] text-[10px] uppercase">{t.appName} — {t.appTagline}</p>
-                <h2 className="text-2xl font-amiri text-text-primary px-6 mb-8 italic leading-relaxed">"أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ"</h2>
+            <footer className="py-12 text-center bg-[var(--bg-surface)] border-t border-glass-border">
+                <p className="text-[var(--primary)] font-black mb-4 tracking-wide text-[10px] uppercase">{t.appName} — {t.appTagline}</p>
+                <h2 className="text-xl font-amiri text-text-primary px-6 mb-6 italic leading-relaxed">"أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ"</h2>
                 <div className="flex items-center justify-center gap-4 opacity-30">
                     <div className="w-10 h-px bg-current" />
-                    <BookOpen className="w-5 h-5 text-accent" />
+                    <BookOpen className="w-5 h-5 text-[var(--primary)]" />
                     <div className="w-10 h-px bg-current" />
                 </div>
             </footer>

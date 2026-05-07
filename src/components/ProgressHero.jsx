@@ -1,27 +1,19 @@
 import React from 'react';
-import { Sun, Moon, BookOpen, RotateCcw, Target } from 'lucide-react';
+import { Sun, Moon, BookOpen, RotateCcw } from 'lucide-react';
 import { DAILY_TAB_IDS } from '../utils/constants';
 
 const THEMES = {
     morning: {
-        gradient: "from-[#FAD961] to-[#D4A76A]",
-        icon: Sun,
-        textClass: "text-slate-900"
+        icon: Sun
     },
     evening: {
-        gradient: "from-[#423E87] to-[#2E2A5E]",
-        icon: Moon,
-        textClass: "text-white"
+        icon: Moon
     },
     sleeping: {
-        gradient: "from-[#1E293B] to-[#0F172A]",
-        icon: Moon,
-        textClass: "text-white"
+        icon: Moon
     },
     prayer_azkar: {
-        gradient: "from-[#D4A76A] to-[#B18F67]",
-        icon: BookOpen,
-        textClass: "text-slate-900"
+        icon: BookOpen
     }
 };
 
@@ -40,50 +32,47 @@ const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCoun
     }[activeTab];
 
     return (
-        <div className={`progress-hero bg-gradient-to-br ${theme.gradient} ${theme.textClass} shadow-2xl relative animate-scale-in`}>
-            {/* Decorative background icon */}
-            <Icon className="absolute top-0 right-0 w-48 h-48 opacity-10 -mr-10 -mt-10 rotate-12" />
-
-            <div className="relative z-10 flex flex-col gap-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="progress-hero relative animate-scale-in">
+            <div className="relative z-10 flex flex-col gap-5">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
                     <div className="space-y-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-black/10 border border-white/10">
-                            <Target className="w-3 h-3" />
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black tracking-wide bg-[var(--bg-subtle)] border border-[var(--glass-border)] text-[var(--text-secondary)]">
+                            <Icon className="w-3.5 h-3.5 text-[var(--primary)]" />
                             {userProfile?.name
                                 ? (language === "en" ? `Goals for ${userProfile.name}` : `أهداف ${userProfile.name}`)
                                 : t.goalsTitle}
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-black tracking-tighter">{label}</h2>
-                        <p className="text-sm md:text-lg font-bold opacity-80">
+                        <h2 className="text-2xl md:text-3xl font-black text-[var(--text-primary)] leading-tight">{label}</h2>
+                        <p className="text-sm font-bold text-[var(--text-secondary)]">
                             {t.progressText}{" "}
-                            <span className="font-black underline underline-offset-4">{completedCount}</span>{" "}
+                            <span className="font-black text-[var(--primary)]">{completedCount}</span>{" "}
                             {t.progressOf}{" "}
-                            <span className="font-black">{totalCount}</span>{" "}
+                            <span className="font-black text-[var(--text-primary)]">{totalCount}</span>{" "}
                             {t.progressAzkar}
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="bg-black/10 backdrop-blur-md px-6 py-4 rounded-3xl border border-white/10 flex flex-col items-center">
-                            <span className="text-4xl font-black">{progressPercentage}%</span>
-                            <span className="text-[10px] font-black uppercase tracking-wider opacity-60">{t.progressLabel}</span>
+                    <div className="flex items-center gap-3">
+                        <div className="bg-[var(--bg-subtle)] px-5 py-3 rounded-lg border border-[var(--glass-border)] flex flex-col items-center">
+                            <span className="text-2xl font-black text-[var(--primary)]">{progressPercentage}%</span>
+                            <span className="text-[10px] font-black uppercase tracking-wide text-[var(--text-secondary)]">{t.progressLabel}</span>
                         </div>
                         {progressPercentage > 0 && (
                             <button
                                 onClick={resetAllProgress}
-                                className="p-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all active:scale-90"
+                                className="p-3 rounded-lg bg-[var(--bg-subtle)] hover:bg-white dark:hover:bg-[var(--bg-surface)] border border-[var(--glass-border)] text-[var(--text-secondary)] transition-all active:scale-95"
                                 aria-label={t.resetProgress}
                             >
-                                <RotateCcw className="w-6 h-6" />
+                                <RotateCcw className="w-5 h-5" />
                             </button>
                         )}
                     </div>
                 </div>
 
                 {/* Progress bar */}
-                <div className="h-4 w-full bg-black/10 rounded-full overflow-hidden border border-white/5">
+                <div className="h-2.5 w-full bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--glass-border)]">
                     <div
-                        className="h-full bg-white transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+                        className="h-full bg-[var(--primary)] transition-all duration-1000 ease-out"
                         style={{ width: `${progressPercentage}%` }}
                     />
                 </div>
