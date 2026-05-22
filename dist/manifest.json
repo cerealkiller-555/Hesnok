@@ -5,14 +5,14 @@
     "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#0a0f1e",
-    "theme_color": "#059669",
+    "theme_color": "#423E87",
     "orientation": "portrait-primary",
     "lang": "ar",
     "dir": "rtl",
     "categories": ["lifestyle", "education"],
     "icons": [
         {
-            "src": "hesnok_logo.png",
+            "src": "azkari_logo.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"

@@ -5,7 +5,7 @@ import {
     PRAYER_CHECKLIST, I18N, azkar, defaultCustomDuas, tabConfig
 } from '../utils/constants';
 import {
-    showToast, readJson, readDailyState, writeJson, isSameDay, isYesterday
+    showToast, readJson, readDailyState, writeJson, readUsers, writeUsers, findUserByEmail, getUserStorageSuffix, isSameDay, isYesterday
 } from '../utils/helpers';
 
 import ToastContainer   from './ToastContainer';
@@ -19,6 +19,7 @@ import StreakBanner        from './StreakBanner';
 import PrayerChecklist     from './PrayerChecklist';
 import LoginScreen         from './LoginScreen';
 import ZikrCard            from './ZikrCard';
+import Logo                from './Logo';
 
 const createId = () => {
     if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
@@ -59,11 +60,13 @@ const AzkarApp = () => {
     const [language, setLanguage]         = useState(() => localStorage.getItem("azkar_language") || "ar");
     const [activeTab, setActiveTab]       = useState(() => localStorage.getItem("azkar_activeTab") || "morning");
     const [userProfile, setUserProfile]   = useState(() => readJson("azkar_user", { name: "", email: "" }));
+    const [savedUsers, setSavedUsers]     = useState(() => readUsers());
     const [isLoggedIn, setIsLoggedIn]     = useState(() => {
         const saved = readJson("azkar_user", null);
         return Boolean(saved && (saved.name || saved.email));
     });
     const [storageReady, setStorageReady] = useState(false);
+    const [showEnTranslations, setShowEnTranslations] = useState(() => localStorage.getItem("azkar_showEnTranslations") === "true");
 
     const [prayerTimes, setPrayerTimes]   = useState(null);
     const [location, setLocation]         = useState(() => readJson("azkar_location", { city: "Cairo", country: "EG" }));
@@ -80,6 +83,7 @@ const AzkarApp = () => {
     const [countAnimation, setCountAnimation]     = useState(null);
     const [deferredPrompt, setDeferredPrompt]     = useState(null);
     const [highlightedZikr, setHighlightedZikr]   = useState(null);
+    const [nextFocusZikr, setNextFocusZikr]       = useState(null);
 
     // Refs
     const completedAzkarRef = useRef(completedAzkar);
@@ -90,7 +94,7 @@ const AzkarApp = () => {
     // 2. DERIVED VALUES (useMemo / useCallback)
     // ───────────────────────────────────────
     const userSuffix = useMemo(
-        () => (isLoggedIn && userProfile.email ? `_${userProfile.email}` : ""),
+        () => (isLoggedIn && userProfile.email ? getUserStorageSuffix(userProfile.email) : ""),
         [isLoggedIn, userProfile.email]
     );
 
@@ -140,7 +144,11 @@ const AzkarApp = () => {
     const morningCompleted  = useMemo(() => azkar.morning.every((z) => completedAzkar[`morning_${z.id}`]), [completedAzkar]);
     const eveningCompleted  = useMemo(() => azkar.evening.every((z) => completedAzkar[`evening_${z.id}`]), [completedAzkar]);
     const prayersCompleted  = useMemo(() => PRAYER_CHECKLIST.every((p) => prayerChecklist[p.id]), [prayerChecklist]);
-    const dailyGoalsComplete = morningCompleted && eveningCompleted && prayersCompleted;
+    const sleepCompleted    = useMemo(() => azkar.sleeping.every((z) => completedAzkar[`sleeping_${z.id}`]), [completedAzkar]);
+    const jawamiCompleted   = useMemo(() => azkar.jawami.every((z) => completedAzkar[`jawami_${z.id}`]), [completedAzkar]);
+    
+    // Streak counts if morning and evening are done (standard requirement)
+    const dailyGoalsComplete = morningCompleted && eveningCompleted;
 
     const tabs = useMemo(() => tabConfig.map(tab => ({
         ...tab,
@@ -153,6 +161,17 @@ const AzkarApp = () => {
         { id: "evening",  label: t.goalEvening,  completed: eveningCompleted },
         { id: "prayers",  label: t.goalPrayers,  completed: prayersCompleted }
     ], [t, morningCompleted, eveningCompleted, prayersCompleted]);
+
+    // Calculate completion counts for all daily tabs for navigation badges
+    const tabProgress = useMemo(() => {
+        const result = {};
+        DAILY_TAB_IDS.forEach(tabId => {
+            const list = azkar[tabId === "prayer_azkar" ? "prayerAzkar" : tabId] || [];
+            const completed = list.filter(z => completedAzkar[`${tabId}_${z.id}`]).length;
+            result[tabId] = { completed, total: list.length, isAllDone: list.length > 0 && completed === list.length };
+        });
+        return result;
+    }, [completedAzkar]);
 
     // Prayer times fetcher
     const fetchPrayerTimes = useCallback(async () => {
@@ -177,12 +196,7 @@ const AzkarApp = () => {
 
         if (nextIncomplete) {
             const nextId = `${type}_${nextIncomplete.id}`;
-            setTimeout(() => {
-                setHighlightedZikr(nextId);
-                const el = document.getElementById(`zikr-${nextId}`);
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setTimeout(() => setHighlightedZikr(null), 2000);
-            }, 600);
+            setNextFocusZikr(nextId);
         }
     }, []);
 
@@ -196,13 +210,39 @@ const AzkarApp = () => {
     // ───────────────────────────────────────
     // 3. EVENT HANDLERS
     // ───────────────────────────────────────
-    const handleLogin = useCallback((profile) => {
-        const user = { name: profile.name.trim(), email: profile.email.trim().toLowerCase() };
-        setStorageReady(false);
+    const handleLogin = useCallback((profile, mode) => {
+        const email = profile.email.trim().toLowerCase();
+        const savedUser = findUserByEmail(email);
+
+        if (mode === "signin") {
+            if (!savedUser) {
+                showToast(t.userNotFound, "warning");
+                return false;
+            }
+            setUserProfile(savedUser);
+            setIsLoggedIn(true);
+            setStorageReady(false);
+            writeJson("azkar_user", savedUser);
+            showToast(t.loginSaved, "success");
+            return true;
+        }
+
+        if (savedUser) {
+            showToast(t.userExists, "warning");
+            return false;
+        }
+
+        const user = { name: profile.name.trim(), email };
+        const users = readUsers();
+        const nextUsers = [...users, user];
+        writeUsers(nextUsers);
+        setSavedUsers(nextUsers);
         setUserProfile(user);
         setIsLoggedIn(true);
+        setStorageReady(false);
         writeJson("azkar_user", user);
         showToast(t.loginSaved, "success");
+        return true;
     }, [t]);
 
     const logout = useCallback(() => {
@@ -218,7 +258,7 @@ const AzkarApp = () => {
         azkarProgressRef.current = {};
         toastShownRef.current.clear();
         setStorageReady(false);
-        showToast(t.logoutButton, "info");
+        showToast(t.loggedOut, "info");
     }, [t]);
 
     const updateUserProfile = useCallback((profile) => {
@@ -229,7 +269,21 @@ const AzkarApp = () => {
         };
         setUserProfile(updated);
         writeJson("azkar_user", updated);
+        const users = readUsers().map((user) => {
+            if (user.email === updated.email) return updated;
+            return user;
+        });
+        writeUsers(users);
+        setSavedUsers(users);
     }, [userProfile]);
+
+    const handleSelectExistingUser = useCallback((user) => {
+        setUserProfile(user);
+        setIsLoggedIn(true);
+        setStorageReady(false);
+        writeJson("azkar_user", user);
+        showToast(t.loginSaved, "success");
+    }, [t]);
 
     const handleZikrProgress = useCallback((id, max, list, type) => {
         if (completedAzkarRef.current[id]) return;
@@ -314,6 +368,25 @@ const AzkarApp = () => {
         azkarProgressRef.current = azkarProgress;
     }, [azkarProgress]);
 
+    useEffect(() => {
+        if (!nextFocusZikr) return;
+
+        let timer;
+        requestAnimationFrame(() => {
+            const el = document.getElementById(`zikr-${nextFocusZikr}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setHighlightedZikr(nextFocusZikr);
+            timer = setTimeout(() => {
+                setHighlightedZikr(null);
+                setNextFocusZikr(null);
+            }, 1200);
+        });
+
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [nextFocusZikr]);
+
     // Load user-scoped data when logged in or user changes
     useEffect(() => {
         if (!isLoggedIn || !userProfile.email) {
@@ -359,6 +432,7 @@ const AzkarApp = () => {
     }, [isDarkMode]);
     useEffect(() => { localStorage.setItem("azkar_language", language); }, [language]);
     useEffect(() => { localStorage.setItem("azkar_fontSize", arabicFontSize.toString()); }, [arabicFontSize]);
+    useEffect(() => { localStorage.setItem("azkar_showEnTranslations", String(showEnTranslations)); }, [showEnTranslations]);
     useEffect(() => { writeJson("azkar_location", location); }, [location]);
 
     // Clock tick
@@ -442,6 +516,7 @@ const AzkarApp = () => {
                         isHighlighted={highlightedZikr === uid}
                         isExpanded={!!expandedBenefits[uid]}
                         arabicFontSize={arabicFontSize}
+                        showEnTranslations={showEnTranslations}
                         onToggleBenefit={() => setExpandedBenefits((p) => ({ ...p, [uid]: !p[uid] }))}
                         onToggleComplete={() => toggleZikrComplete(uid, z.count)}
                         onProgress={() => handleZikrProgress(uid, z.count, list, type)}
@@ -455,7 +530,13 @@ const AzkarApp = () => {
     // 6. RENDER
     // ───────────────────────────────────────
     if (!isLoggedIn) {
-        return <LoginScreen onLogin={handleLogin} t={t} language={language} />;
+        return <LoginScreen
+            onLogin={handleLogin}
+            onSelectExistingUser={handleSelectExistingUser}
+            existingUsers={savedUsers}
+            t={t}
+            language={language}
+        />;
     }
 
     return (
@@ -472,7 +553,7 @@ const AzkarApp = () => {
                 <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange("morning")}>
                         <div className="w-10 h-10 rounded-lg bg-white dark:bg-[var(--bg-subtle)] flex items-center justify-center shadow-sm border border-[var(--glass-border)] transition-transform">
-                            <img src="hesnok_logo_v2_1778189277312.png" alt="Hesnok" className="w-10 h-10 rounded-lg shadow-lg" />
+                            <Logo className="w-10 h-10 rounded-lg shadow-lg" />
                         </div>
                         <div>
                             <h1 className="text-lg font-black text-[var(--text-primary)] leading-none">{t.appName}</h1>
@@ -494,30 +575,23 @@ const AzkarApp = () => {
                     </div>
                 </div>
 
-                {/* Progress bar in header */}
-                {DAILY_TAB_IDS.includes(activeTab) && (
-                    <div className="relative">
-                        <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800/50">
-                            <div className="h-full bg-[var(--primary)] transition-all duration-1000 ease-out" style={{ width: `${progressPercentage}%` }} />
-                        </div>
-                        <div className="absolute top-full left-0 right-0 py-1 bg-[var(--glass-bg)] backdrop-blur-md border-b border-[var(--glass-border)] text-center text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] shadow-sm">
-                            {completedCount} / {currentAzkarList.length} {t.doneLabel}
-                        </div>
-                    </div>
-                )}
-
-                <nav className="hidden md:block border-t border-glass-border bg-white/35 dark:bg-slate-950/20" aria-label={t.navLabel}>
+                {/* Navigation (Desktop) */}
+                <nav className="hidden md:block desktop-nav-wrapper">
                     <div className="container mx-auto px-4 py-3 flex items-center justify-center gap-2">
-                        {tabs.map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => handleTabChange(tab.id)}
-                                className={`desktop-nav-item ${activeTab === tab.id ? 'active' : ''}`}
-                            >
-                                <tab.icon className="w-4 h-4" />
-                                <span>{tab.labelText}</span>
-                            </button>
-                        ))}
+                        {tabs.map((tab) => {
+                            const prog = tabProgress[tab.id];
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => handleTabChange(tab.id)}
+                                    className={`desktop-nav-item relative ${activeTab === tab.id ? 'active' : ''} ${prog?.isAllDone ? 'border-emerald-500/30' : ''}`}
+                                >
+                                    <tab.icon className={`w-4 h-4 ${prog?.isAllDone ? 'text-emerald-500' : ''}`} />
+                                    <span>{tab.labelText}</span>
+                                    {/* removed numeric badge per UX request */}
+                                </button>
+                            );
+                        })}
                     </div>
                 </nav>
             </header>
@@ -584,6 +658,8 @@ const AzkarApp = () => {
                             updateProfile={updateUserProfile}
                             arabicFontSize={arabicFontSize}
                             setArabicFontSize={setArabicFontSize}
+                            showEnTranslations={showEnTranslations}
+                            setShowEnTranslations={setShowEnTranslations}
                         />
                     )}
                 </div>
@@ -600,21 +676,52 @@ const AzkarApp = () => {
                 </div>
             </footer>
 
+            {/* Persistent Progress Bar (Global Floating) */}
+            {DAILY_TAB_IDS.includes(activeTab) && (
+                <div className="fixed bottom-[75px] md:bottom-8 left-0 right-0 z-40 px-4 pointer-events-none">
+                    <div className="max-w-md mx-auto glass-panel p-2 shadow-xl border border-[var(--primary)]/20 pointer-events-auto overflow-hidden animate-slide-up bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+                        <div className="flex items-center justify-between mb-1.5 px-2">
+                            <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${progressPercentage === 100 ? 'bg-emerald-500 animate-pulse' : 'bg-[var(--primary)]'}`} />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">
+                                    {tabs.find(t => t.id === activeTab)?.labelText}
+                                </span>
+                            </div>
+                            <span className="text-[10px] font-black text-[var(--text-secondary)] bg-[var(--bg-subtle)] px-2 py-0.5 rounded-full">
+                                {completedCount} / {currentAzkarList.length} {t.doneLabel}
+                            </span>
+                        </div>
+                        <div className="h-1.5 w-full bg-slate-100/50 dark:bg-slate-800/50 rounded-full overflow-hidden border border-black/5">
+                            <div 
+                                className="h-full bg-gradient-to-r from-[var(--primary)] via-[var(--primary-light)] to-[var(--primary)] bg-[length:200%_100%] animate-shimmer rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(var(--primary-rgb),0.4)]" 
+                                style={{ width: `${progressPercentage}%` }} 
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Bottom navigation */}
-            <nav className="bottom-nav" aria-label={t.navLabel}>
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => handleTabChange(tab.id)}
-                        className={`bottom-nav-item ${activeTab === tab.id ? 'active' : ''}`}
-                    >
-                        <tab.icon />
-                        <span>{tab.labelText}</span>
-                    </button>
-                ))}
+            <nav className="bottom-nav border-t border-glass-border" aria-label={t.navLabel}>
+                {tabs.map((tab) => {
+                    const prog = tabProgress[tab.id];
+                    return (
+                        <button
+                            key={tab.id}
+                            onClick={() => handleTabChange(tab.id)}
+                            className={`bottom-nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                        >
+                            <div className="relative">
+                                <tab.icon className={`w-5 h-5 mb-1 ${prog?.isAllDone ? 'text-emerald-500' : ''}`} />
+                                {/* numeric badge removed for cleaner menu */}
+                            </div>
+                            <span className="text-[10px] font-bold">{tab.labelText}</span>
+                        </button>
+                    );
+                })}
             </nav>
         </div>
     );
 };
 
-export default AzkarApp;
+export default React.memo(AzkarApp);

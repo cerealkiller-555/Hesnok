@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { User, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import Logo from './Logo';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const LoginScreen = ({ onLogin, t, language }) => {
+const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, language }) => {
     const [form, setForm] = useState({ name: "", email: "" });
     const [errors, setErrors] = useState({ name: false, email: false });
+    const [authError, setAuthError] = useState("");
     const [mode, setMode] = useState("signin");
 
     const isCreateMode = mode === "create";
@@ -14,11 +16,15 @@ const LoginScreen = ({ onLogin, t, language }) => {
     const actionLabel = isCreateMode ? t.createAccountButton : t.loginButton;
 
     const handleSubmit = () => {
-        const nameError = !form.name.trim();
         const emailError = !form.email.trim() || !EMAIL_REGEX.test(form.email);
+        const nameError = isCreateMode && !form.name.trim();
         setErrors({ name: nameError, email: emailError });
-        if (!nameError && !emailError) {
-            onLogin(form, mode);
+        setAuthError("");
+
+        if (emailError || nameError) return;
+        const success = onLogin(form, mode);
+        if (!success) {
+            setAuthError(mode === "signin" ? t.userNotFound : t.userExists);
         }
     };
 
@@ -33,7 +39,7 @@ const LoginScreen = ({ onLogin, t, language }) => {
                     {/* Logo */}
                     <div className="text-center space-y-3">
                         <div className="w-20 h-20 mx-auto bg-white dark:bg-[var(--bg-subtle)] rounded-xl shadow-sm flex items-center justify-center border border-[var(--glass-border)]">
-                            <img src="hesnok_logo.png" alt="Hesnok logo" className="w-16 h-16 rounded-lg" />
+                            <Logo className="w-16 h-16 rounded-lg" />
                         </div>
                         <div className="space-y-1">
                             <h1 className="text-2xl font-black text-[var(--text-primary)] leading-tight">{title}</h1>
@@ -41,27 +47,48 @@ const LoginScreen = ({ onLogin, t, language }) => {
                         </div>
                     </div>
 
+                    {/* Saved accounts */}
+                    {mode === "signin" && existingUsers.length > 0 && (
+                        <div className="space-y-3 p-4 rounded-2xl bg-bg-subtle border border-glass-border">
+                            <p className="text-[10px] font-black uppercase tracking-wide text-text-secondary">{t.existingAccountsTitle}</p>
+                            <div className="grid gap-2">
+                                {existingUsers.map((user) => (
+                                    <button
+                                        type="button"
+                                        key={user.email}
+                                        onClick={() => onSelectExistingUser?.(user)}
+                                        className="w-full rounded-xl px-4 py-3 text-left bg-white/80 dark:bg-slate-900 border border-glass-border hover:border-[var(--primary)] transition-all"
+                                    >
+                                        <div className="text-sm font-black text-text-primary">{user.name}</div>
+                                        <div className="text-[11px] font-bold text-text-secondary">{t.signInAs} {user.email}</div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     {/* Form */}
                     <div className="space-y-6">
                         <div className="space-y-4">
                             {/* Name */}
-                            <div>
-                                <label className={`block text-[10px] font-black uppercase tracking-wide mb-1.5 ${errors.name ? 'text-error' : 'text-text-secondary'}`}>
-                                    {t.nameLabel}
-                                </label>
-                                <div className="relative group">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary group-focus-within:text-[var(--primary)] transition-colors" />
-                                    <input
-                                        id="login-name"
-                                        type="text"
-                                        className={`w-full bg-bg-subtle border py-3.5 pl-12 pr-6 rounded-lg focus:outline-none focus:border-[var(--primary)] text-text-primary transition-all font-bold ${errors.name ? 'border-error/50' : 'border-glass-border'}`}
-                                        placeholder={language === "en" ? "Your name" : "الاسم الكامل"}
-                                        value={form.name}
-                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                        onKeyDown={handleKeyDown}
-                                    />
+                            {isCreateMode && (
+                                <div>
+                                    <label className={`block text-[10px] font-black uppercase tracking-wide mb-1.5 ${errors.name ? 'text-error' : 'text-text-secondary'}`}>
+                                        {t.nameLabel}
+                                    </label>
+                                    <div className="relative group">
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary group-focus-within:text-[var(--primary)] transition-colors" />
+                                        <input
+                                            id="login-name"
+                                            type="text"
+                                            className={`w-full bg-bg-subtle border py-3.5 pl-12 pr-6 rounded-lg focus:outline-none focus:border-[var(--primary)] text-text-primary transition-all font-bold ${errors.name ? 'border-error/50' : 'border-glass-border'}`}
+                                            placeholder={language === "en" ? "Your name" : "الاسم الكامل"}
+                                            value={form.name}
+                                            onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                            onKeyDown={handleKeyDown}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Email */}
                             <div>
@@ -84,6 +111,9 @@ const LoginScreen = ({ onLogin, t, language }) => {
                         </div>
 
                         {/* Submit */}
+                        {authError && (
+                            <p className="text-error text-sm font-bold text-center">{authError}</p>
+                        )}
                         <button
                             id="login-submit"
                             onClick={handleSubmit}
@@ -95,7 +125,11 @@ const LoginScreen = ({ onLogin, t, language }) => {
 
                         {/* Toggle mode */}
                         <button
-                            onClick={() => setMode(isCreateMode ? "signin" : "create")}
+                            onClick={() => {
+                                setMode(isCreateMode ? "signin" : "create");
+                                setErrors({ name: false, email: false });
+                                setAuthError("");
+                            }}
                             className="w-full text-sm font-black text-[var(--primary)] opacity-90 hover:opacity-100 transition-opacity underline-offset-4 hover:underline"
                         >
                             {isCreateMode ? t.signInInstead : t.createAccountLink}

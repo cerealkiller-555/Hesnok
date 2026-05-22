@@ -8,7 +8,7 @@
             "type": "firefox",
             "request": "launch",
             "name": "Launch firefox against localhost",
-            "url": "http://localhost:5173",
+            "url": "http://localhost:8080",
             "webRoot": "${workspaceFolder}",
             "preLaunchTask": "Start Server"
         }

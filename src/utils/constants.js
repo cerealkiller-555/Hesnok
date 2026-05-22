@@ -44,6 +44,8 @@ export const I18N = {
         createAccountButton: "إنشاء حساب",
         createAccountLink: "إنشاء حساب جديد",
         signInInstead: "لديك حساب بالفعل",
+        existingAccountsTitle: "الحسابات المحفوظة",
+        signInAs: "تسجيل الدخول باسم",
         settingsHint: "ستجد الإعدادات من زر الترس أعلى الشاشة بعد الدخول.",
         openSettings: "الإعدادات",
         logoutButton: "تسجيل الخروج",
@@ -65,6 +67,9 @@ export const I18N = {
         profileNote: "بياناتك محفوظة محلياً على هذا الجهاز",
         updateProfile: "تحديث البيانات",
         loginSaved: "تم حفظ بياناتك",
+        userNotFound: "لم يتم العثور على حساب بهذا البريد",
+        userExists: "يوجد حساب بهذا البريد بالفعل",
+        loggedOut: "تم تسجيل الخروج",
         loginRequired: "الرجاء تسجيل الدخول للمتابعة",
         duaAdded: "تمت إضافة الدعاء بنجاح",
         duaDeleted: "تم حذف الدعاء",
@@ -113,7 +118,10 @@ export const I18N = {
         progressResetOne: "تم إعادة تعيين العداد",
         progressCompleted: "تم إتمام الذكر ✓",
         meaningTitle: "شرح ومعاني الكلمات",
-        allComplete: "🎉 تم إتمام القسم!"
+        allComplete: "🎉 تم إتمام القسم!",
+        toggleEnTrans: "ترجمة الفوائد والمصادر",
+        showArOriginal: "عرض الأصل العربي",
+        jawamiTitle: "جوامع الدعاء"
     },
     en: {
         appName: "Hesnok",
@@ -128,6 +136,8 @@ export const I18N = {
         createAccountButton: "Create account",
         createAccountLink: "Create a new account",
         signInInstead: "I already have an account",
+        existingAccountsTitle: "Saved accounts",
+        signInAs: "Sign in as",
         settingsHint: "You can find Settings from the gear button at the top after signing in.",
         openSettings: "Settings",
         logoutButton: "Sign out",
@@ -149,6 +159,9 @@ export const I18N = {
         profileNote: "Your data is stored locally on this device",
         updateProfile: "Update profile",
         loginSaved: "Profile saved",
+        userNotFound: "No account found for this email",
+        userExists: "An account already exists with this email",
+        loggedOut: "Signed out successfully",
         loginRequired: "Please sign in to continue",
         duaAdded: "Duaa added",
         duaDeleted: "Duaa deleted",
@@ -197,6 +210,9 @@ export const I18N = {
         progressResetOne: "Counter reset",
         progressCompleted: "Marked complete",
         meaningTitle: "Meaning and Explanation",
-        allComplete: "🎉 Category Complete!"
+        allComplete: "🎉 Category Complete!",
+        toggleEnTrans: "English Translation (Benefits)",
+        showArOriginal: "Show Original Arabic",
+        jawamiTitle: "Prophet's Duas"
     }
 };

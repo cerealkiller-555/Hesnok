@@ -8,6 +8,7 @@
     "server": "node server/index.js",
     "dev:all": "npx concurrently \"npm run server\" \"npm run dev\"",
     "build": "vite build",
+    "vercel-build": "npm run build",
     "test": "node scratch/validate_data.js",
     "preview": "vite preview"
   },

@@ -8,7 +8,8 @@ const SettingsSection = ({
     resetAllProgress,
     userProfile, updateProfile, logout,
     language, setLanguage, t,
-    arabicFontSize, setArabicFontSize
+    arabicFontSize, setArabicFontSize,
+    showEnTranslations, setShowEnTranslations
 }) => (
     <div className="animate-slide-up space-y-6">
         {/* PWA Install */}
@@ -62,12 +63,21 @@ const SettingsSection = ({
                     {isDarkMode ? <Moon className="w-5 h-5 text-[var(--primary)]" /> : <Sun className="w-5 h-5 text-[var(--primary)]" />}
                     {t.appearanceTitle}
                 </h3>
-                <button onClick={toggleDarkMode} className="w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all">
-                    <span className="text-text-secondary font-black">{isDarkMode ? t.darkOn : t.lightOn}</span>
-                    <div className={`w-12 h-7 rounded-full transition-all duration-500 flex items-center p-1 ${isDarkMode ? "bg-[var(--primary)]" : "bg-slate-300 dark:bg-slate-700"}`}>
-                        <div className={`w-6 h-6 rounded-full bg-white shadow-xl transform transition-transform duration-500 ${isDarkMode ? (language === 'ar' ? 'translate-x-6' : '-translate-x-6') : 'translate-x-0'}`} />
-                    </div>
-                </button>
+                <div className="space-y-4">
+                    <button onClick={toggleDarkMode} className="w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all">
+                        <span className="text-text-secondary font-black">{isDarkMode ? t.darkOn : t.lightOn}</span>
+                        <div className={`w-12 h-7 rounded-full transition-all duration-500 flex items-center p-1 ${isDarkMode ? "bg-[var(--primary)]" : "bg-slate-300 dark:bg-slate-700"}`}>
+                            <div className={`w-6 h-6 rounded-full bg-white shadow-xl transform transition-transform duration-500 ${isDarkMode ? (language === 'ar' ? '-translate-x-5' : 'translate-x-5') : 'translate-x-0'}`} />
+                        </div>
+                    </button>
+
+                    <button onClick={() => setShowEnTranslations(!showEnTranslations)} className="w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all">
+                        <span className="text-text-secondary font-black">{showEnTranslations ? t.showArOriginal : t.toggleEnTrans}</span>
+                        <div className={`w-12 h-7 rounded-full transition-all duration-500 flex items-center p-1 ${showEnTranslations ? "bg-[var(--primary)]" : "bg-slate-300 dark:bg-slate-700"}`}>
+                            <div className={`w-6 h-6 rounded-full bg-white shadow-xl transform transition-transform duration-500 ${showEnTranslations ? (language === 'ar' ? '-translate-x-5' : 'translate-x-5') : 'translate-x-0'}`} />
+                        </div>
+                    </button>
+                </div>
             </div>
 
             <div className="glass-panel p-5 space-y-5">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, BookOpen, RotateCcw } from 'lucide-react';
+import { Sun, Moon, BookOpen, Heart, RotateCcw } from 'lucide-react';
 import { DAILY_TAB_IDS } from '../utils/constants';
 
 const THEMES = {
@@ -14,6 +14,9 @@ const THEMES = {
     },
     prayer_azkar: {
         icon: BookOpen
+    },
+    jawami: {
+        icon: Heart
     }
 };
 
@@ -28,7 +31,8 @@ const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCoun
         morning: t.progressTitleMorning,
         evening: t.progressTitleEvening,
         sleeping: t.progressTitleSleeping,
-        prayer_azkar: t.progressTitlePrayer
+        prayer_azkar: t.progressTitlePrayer,
+        jawami: t.jawamiTitle
     }[activeTab];
 
     return (
@@ -70,9 +74,9 @@ const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCoun
                 </div>
 
                 {/* Progress bar */}
-                <div className="h-2.5 w-full bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--glass-border)]">
+                <div className="h-3 w-full bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--glass-border)] relative">
                     <div
-                        className="h-full bg-[var(--primary)] transition-all duration-1000 ease-out"
+                        className="h-full bg-gradient-to-r from-[var(--primary)] via-[var(--primary-light)] to-[var(--primary)] bg-[length:200%_100%] animate-shimmer transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(var(--primary-rgb),0.3)]"
                         style={{ width: `${progressPercentage}%` }}
                     />
                 </div>

@@ -52,6 +52,34 @@ export function writeJson(key, value) {
     }
 }
 
+export function readUsers() {
+    const users = readJson("azkar_users", []);
+    if (!Array.isArray(users)) return [];
+    return users
+        .filter((user) => user && typeof user.email === "string" && user.email.trim())
+        .map((user) => ({ ...user, email: user.email.trim().toLowerCase() }));
+}
+
+export function writeUsers(users) {
+    if (!Array.isArray(users)) return;
+    const normalizedUsers = users
+        .filter((user) => user && typeof user.email === "string" && user.email.trim())
+        .map((user) => ({ ...user, email: user.email.trim().toLowerCase() }));
+    writeJson("azkar_users", normalizedUsers);
+}
+
+export function findUserByEmail(email) {
+    if (!email || typeof email !== "string") return null;
+    const normalized = email.trim().toLowerCase();
+    return readUsers().find((user) => user.email === normalized) || null;
+}
+
+export function getUserStorageSuffix(email) {
+    if (!email || typeof email !== "string") return "";
+    const normalized = email.trim().toLowerCase().replace(/[^a-z0-9]/g, "_");
+    return normalized ? `_${normalized}` : "";
+}
+
 /**
  * Read daily-scoped state from localStorage.
  * Returns `{}` if the stored date differs from today.

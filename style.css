@@ -184,6 +184,24 @@ html, body {
     border-color: rgba(20, 184, 166, 0.3);
 }
 
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+    animation: shimmer 2.5s infinite linear;
+}
+
+/* Custom progress bar glass style */
+.glass-progress-bar {
+    background: var(--bg-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+}
+
 /* ═══════════════════════════════════════════
    ANIMATIONS
    ═══════════════════════════════════════════ */
@@ -369,6 +387,23 @@ html, body {
     background: transparent;
     transition: all var(--transition-smooth);
 }
+
+/* Ensure desktop nav items don't wrap and allow the nav to scroll when needed */
+.desktop-nav-item { white-space: nowrap; min-width: 72px; padding: 6px 12px; flex: 0 1 auto; }
+
+/* Make desktop nav container wrap and center items so menu fits on narrow widths */
+.desktop-nav-wrapper .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.desktop-nav-wrapper .container::-webkit-scrollbar { height: 8px; }
+.desktop-nav-wrapper .container::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.06); border-radius: 8px; }
 
 .desktop-nav-item:hover {
     color: var(--primary);
@@ -577,6 +612,26 @@ html, body {
 
 .scroll-top-btn:hover {
     background: var(--primary-light);
+}
+
+/* ═══════════════════════════════════════════
+   BOTTOM PROGRESS BAR
+   ═══════════════════════════════════════════ */
+.bottom-progress-indicator {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--glass-border);
+    transition: transform var(--transition-smooth);
+}
+
+.dark .bottom-progress-indicator {
+    background: rgba(15, 23, 42, 0.8);
+}
+
+/* Fix for RTL translate */
+.rtl-flip {
+    transform: scaleX(-1);
 }
 
 /* ═══════════════════════════════════════════

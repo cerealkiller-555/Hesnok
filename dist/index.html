@@ -4,34 +4,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>حصنك | دليلك للصلاة والأذكار - Hesnok </title>
+    <title>حصنك | دليلك للصلاة والأذكار </title>
     <meta name="description"
         content="تطبيق حصنك - أذكار الصباح والمساء ومواقيت الصلاة. حصنك اليومي مع خاصية العمل بدون انترنت.">
-    <meta name="theme-color" content="#059669">
+    <meta name="theme-color" content="#423E87">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="حصنك">
 
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/assets/manifest-ciqlz1Av.json">
 
     <!-- Favicon / Icons -->
-    <link rel="icon" type="image/png" href="hesnok_logo.jpg">
-    <link rel="apple-touch-icon" href="hesnok_logo.jpg">
+    <link rel="icon" type="image/png" href="azkari_logo.png">
+    <link rel="apple-touch-icon" href="azkari_logo.png">
 
     <!-- Custom Styles -->
 
 
-  <script type="module" crossorigin src="/assets/index-5a9wldBP.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-t5fwmFeG.css">
+  <script type="module" crossorigin src="/assets/index-DJdxV9sB.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-uJ_7ToDb.css">
 </head>
 
 <body class="bg-gray-50">
     <!-- React Root -->
     <div id="root"></div>
 
-    <script src="/data/azkar-data.js"></script>
-    <script src="/boot.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
 </body>
 
 </html>

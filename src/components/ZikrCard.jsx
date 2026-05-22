@@ -15,6 +15,7 @@ const ZikrCard = ({
     isHighlighted,
     language,
     arabicFontSize = 100,
+    showEnTranslations = false,
     onToggleBenefit,
     onToggleComplete,
     onProgress
@@ -22,7 +23,7 @@ const ZikrCard = ({
     const buttonRef = useRef(null);
     const [showCelebration, setShowCelebration] = useState(false);
 
-    const isEn = language === "en";
+    const isEn = language === "en" || showEnTranslations;
     const title   = isEn && zikr.titleEn   ? zikr.titleEn   : zikr.title;
     const benefit = isEn && zikr.benefitEn  ? zikr.benefitEn  : zikr.benefit;
     const meaning = isEn && zikr.meaningEn  ? zikr.meaningEn  : zikr.meaning;
@@ -46,11 +47,18 @@ const ZikrCard = ({
         }
     };
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        // ensure mount animation only runs once when the card enters the DOM
+        setMounted(true);
+    }, []);
+
     return (
         <div
             id={`zikr-${uniqueId}`}
-            className={`zikr-card animate-slide-up ${isCompleted ? 'completed border-emerald-500/30' : 'glass-card'} ${isHighlighted ? 'is-highlighted' : ''}`}
-            style={{ animationDelay: `${index * 50}ms` }}
+            className={`zikr-card ${mounted ? 'animate-slide-up' : ''} ${isCompleted ? 'completed border-emerald-500/30' : 'glass-card'} ${isHighlighted ? 'is-highlighted' : ''}`}
+            style={mounted ? { animationDelay: `${index * 50}ms` } : undefined}
         >
             {/* Celebration overlay */}
             {showCelebration && (
