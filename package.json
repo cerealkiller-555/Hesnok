@@ -1,5 +1,5 @@
 {
-  "name": "azkar_app",
+  "name": "hesnok",
   "version": "1.0.0",
   "description": "A comprehensive React-based web application for daily Islamic invocations (Azkar), prayer times, and more. The application features a modern Arabic-first UI with optional English mode, built with React and Tailwind CSS.",
   "main": "boot.js",

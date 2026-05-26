@@ -1,18 +1,18 @@
 {
-    "name": "حصنك - الحِصن المنيع للمسلم",
-    "short_name": "حصنك",
-    "description": "تطبيق أذكار الصباح والمساء ومواقيت الصلاة مع خاصية العمل بدون إنترنت",
+    "name": "Hesnok",
+    "short_name": "Hesnok",
+    "description": "Daily Azkar and Prayer Times",
     "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#0a0f1e",
     "theme_color": "#423E87",
     "orientation": "portrait-primary",
-    "lang": "ar",
-    "dir": "rtl",
+    "lang": "en",
+    "dir": "ltr",
     "categories": ["lifestyle", "education"],
     "icons": [
         {
-            "src": "azkari_logo.png",
+            "src": "hesnok_logo.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"

@@ -327,6 +327,10 @@ const AzkarApp = () => {
         setAzkarProgress(updatedProgress);
     }, []);
 
+    const toggleZikrBenefit = useCallback((uid) => {
+        setExpandedBenefits((prev) => ({ ...prev, [uid]: !prev[uid] }));
+    }, []);
+
     const handleTabChange = useCallback((tabId) => {
         if (!tabConfig.some((tab) => tab.id === tabId)) return;
         setActiveTab(tabId);
@@ -372,17 +376,24 @@ const AzkarApp = () => {
         if (!nextFocusZikr) return;
 
         let timer;
-        requestAnimationFrame(() => {
-            const el = document.getElementById(`zikr-${nextFocusZikr}`);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setHighlightedZikr(nextFocusZikr);
-            timer = setTimeout(() => {
-                setHighlightedZikr(null);
-                setNextFocusZikr(null);
-            }, 1200);
+        let raf1;
+        let raf2;
+
+        raf1 = requestAnimationFrame(() => {
+            raf2 = requestAnimationFrame(() => {
+                const el = document.getElementById(`zikr-${nextFocusZikr}`);
+                if (el) el.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+                setHighlightedZikr(nextFocusZikr);
+                timer = setTimeout(() => {
+                    setHighlightedZikr(null);
+                    setNextFocusZikr(null);
+                }, 800);
+            });
         });
 
         return () => {
+            if (raf1) cancelAnimationFrame(raf1);
+            if (raf2) cancelAnimationFrame(raf2);
             if (timer) clearTimeout(timer);
         };
     }, [nextFocusZikr]);
@@ -517,9 +528,11 @@ const AzkarApp = () => {
                         isExpanded={!!expandedBenefits[uid]}
                         arabicFontSize={arabicFontSize}
                         showEnTranslations={showEnTranslations}
-                        onToggleBenefit={() => setExpandedBenefits((p) => ({ ...p, [uid]: !p[uid] }))}
-                        onToggleComplete={() => toggleZikrComplete(uid, z.count)}
-                        onProgress={() => handleZikrProgress(uid, z.count, list, type)}
+                        list={list}
+                        listType={type}
+                        onToggleBenefit={toggleZikrBenefit}
+                        onToggleComplete={toggleZikrComplete}
+                        onProgress={handleZikrProgress}
                     />
                 );
             }))}

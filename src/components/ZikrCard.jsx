@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Share2, CheckCircle, Info, ChevronDown, BookOpen } from 'lucide-react';
 import { showToast } from '../utils/helpers';
 
@@ -16,11 +16,12 @@ const ZikrCard = ({
     language,
     arabicFontSize = 100,
     showEnTranslations = false,
+    list,
+    listType,
     onToggleBenefit,
     onToggleComplete,
     onProgress
 }) => {
-    const buttonRef = useRef(null);
     const [showCelebration, setShowCelebration] = useState(false);
 
     const isEn = language === "en" || showEnTranslations;
@@ -92,7 +93,7 @@ const ZikrCard = ({
                             <Share2 className="w-5 h-5" />
                         </button>
                         <button
-                            onClick={onToggleComplete}
+                            onClick={() => onToggleComplete(uniqueId, zikr.count)}
                             className={`p-2.5 rounded-lg transition-all active:scale-95 ${
                                 isCompleted
                                     ? "bg-emerald-600 text-white"
@@ -122,8 +123,7 @@ const ZikrCard = ({
                 {/* Counter button */}
                 <div className="flex flex-col gap-4">
                     <button
-                        ref={buttonRef}
-                        onClick={(e) => onProgress(e, buttonRef)}
+                        onClick={() => onProgress(uniqueId, zikr.count, list, listType)}
                         disabled={isCompleted}
                         className={`counter-btn relative group overflow-hidden transition-all active:scale-[0.98] ${
                             isCompleted
@@ -164,7 +164,7 @@ const ZikrCard = ({
                     {(benefit || source || meaning) && (
                         <div className="pt-2">
                             <button
-                                onClick={onToggleBenefit}
+                                onClick={() => onToggleBenefit(uniqueId)}
                                 className="flex items-center justify-between w-full py-3 px-1 text-[11px] font-black uppercase tracking-wide text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
                             >
                                 <div className="flex items-center gap-2">
