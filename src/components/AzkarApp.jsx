@@ -566,7 +566,7 @@ const AzkarApp = () => {
                 <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange("morning")}>
                         <div className="w-10 h-10 rounded-lg bg-white dark:bg-[var(--bg-subtle)] flex items-center justify-center shadow-sm border border-[var(--glass-border)] transition-transform">
-                            <Logo className="w-10 h-10 rounded-lg shadow-lg" />
+                            <Logo className="w-10 h-10 rounded-lg shadow-lg" mode={isDarkMode ? 'dark' : 'light'} />
                         </div>
                         <div>
                             <h1 className="text-lg font-black text-[var(--text-primary)] leading-none">{t.appName}</h1>
