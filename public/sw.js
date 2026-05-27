@@ -4,7 +4,7 @@ const ASSETS_TO_CACHE = [
     './index.html',
     './style.css',
     './manifest.json',
-    './hesnok_logo.png',
+    './hesnok_logo1.png',
     './boot.js',
     './data/azkar-data.js'
 ];

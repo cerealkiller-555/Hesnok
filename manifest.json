@@ -9,12 +9,12 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "hesnok_logo.png",
+      "src": "hesnok_logo1.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "hesnok_logo.png",
+      "src": "hesnok_logo1.png",
       "sizes": "512x512",
       "type": "image/png"
     }

@@ -4,7 +4,7 @@ const ASSETS = [
   '/index.html',
   '/style.css',
   '/manifest.json',
-  '/hesnok_logo.png',
+  '/hesnok_logo1.png',
   'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap'
 ];
 
