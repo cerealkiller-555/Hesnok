@@ -375,26 +375,30 @@ const AzkarApp = () => {
     useEffect(() => {
         if (!nextFocusZikr) return;
 
-        let timer;
-        let raf1;
-        let raf2;
+        let timers = [];
 
-        raf1 = requestAnimationFrame(() => {
-            raf2 = requestAnimationFrame(() => {
+        // Delay scroll to allow React to finish rendering and paint
+        timers.push(
+            setTimeout(() => {
                 const el = document.getElementById(`zikr-${nextFocusZikr}`);
-                if (el) el.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+                if (el) {
+                    // Use smooth behavior for better UX with longer scroll distance
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
                 setHighlightedZikr(nextFocusZikr);
-                timer = setTimeout(() => {
-                    setHighlightedZikr(null);
-                    setNextFocusZikr(null);
-                }, 800);
-            });
-        });
+            }, 100)
+        );
+
+        // Clear highlight after animation
+        timers.push(
+            setTimeout(() => {
+                setHighlightedZikr(null);
+                setNextFocusZikr(null);
+            }, 900)
+        );
 
         return () => {
-            if (raf1) cancelAnimationFrame(raf1);
-            if (raf2) cancelAnimationFrame(raf2);
-            if (timer) clearTimeout(timer);
+            timers.forEach(timer => clearTimeout(timer));
         };
     }, [nextFocusZikr]);
 
