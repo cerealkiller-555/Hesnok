@@ -448,6 +448,9 @@ html, body {
     padding: 22px;
     margin-bottom: 18px;
     transition: all var(--transition-smooth);
+    /* keep a stable height to avoid layout jumps when content changes */
+    min-height: 12rem;
+    will-change: transform, opacity;
 }
 
 .dark .zikr-card {
