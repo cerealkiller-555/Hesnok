@@ -372,29 +372,40 @@ const AzkarApp = () => {
         azkarProgressRef.current = azkarProgress;
     }, [azkarProgress]);
 
+    // Helper to check if element is in viewport
+    const isElementInViewport = (el) => {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    };
+
     useEffect(() => {
         if (!nextFocusZikr) return;
 
         let timers = [];
 
-        // Delay scroll to allow React to finish rendering and paint
+        // Highlight the next card without scrolling - just visual emphasis
         timers.push(
             setTimeout(() => {
-                const el = document.getElementById(`zikr-${nextFocusZikr}`);
-                if (el) {
-                    // Scroll to center of screen with smooth animation
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
                 setHighlightedZikr(nextFocusZikr);
+                // Optional: gentle scroll only if card is out of view
+                const el = document.getElementById(`zikr-${nextFocusZikr}`);
+                if (el && !isElementInViewport(el)) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
             }, 250)
         );
 
-        // Keep highlight visible longer, then clear
+        // Keep highlight visible longer
         timers.push(
             setTimeout(() => {
                 setHighlightedZikr(null);
                 setNextFocusZikr(null);
-            }, 2500)
+            }, 2800)
         );
 
         return () => {
