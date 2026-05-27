@@ -382,19 +382,19 @@ const AzkarApp = () => {
             setTimeout(() => {
                 const el = document.getElementById(`zikr-${nextFocusZikr}`);
                 if (el) {
-                    // Use smooth behavior for better UX with longer scroll distance
-                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    // Scroll to center of screen with smooth animation
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 setHighlightedZikr(nextFocusZikr);
-            }, 100)
+            }, 250)
         );
 
-        // Clear highlight after animation
+        // Keep highlight visible longer, then clear
         timers.push(
             setTimeout(() => {
                 setHighlightedZikr(null);
                 setNextFocusZikr(null);
-            }, 900)
+            }, 2500)
         );
 
         return () => {
