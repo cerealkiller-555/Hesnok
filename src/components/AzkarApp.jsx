@@ -48,10 +48,10 @@ const PRAYER_BANNERS = [
 ];
 
 const ACCENT_OPTIONS = [
-    { id: "indigo", labelAr: "أزرق ملكي", labelEn: "Indigo", vars: { '--primary': '#6366f1', '--primary-light': '#818cf8', '--primary-dark': '#4f46e5', '--accent': '#f59e0b', '--accent-light': '#fbbf24', '--accent-dark': '#d97706', '--accent-glow': 'rgba(99, 102, 241, 0.25)' } },
-    { id: "emerald", labelAr: "أخضر زمردي", labelEn: "Emerald", vars: { '--primary': '#10b981', '--primary-light': '#34d399', '--primary-dark': '#059669', '--accent': '#14b8a6', '--accent-light': '#2dd4bf', '--accent-dark': '#0f766e', '--accent-glow': 'rgba(20, 184, 166, 0.25)' } },
-    { id: "rose", labelAr: "وردي ناعم", labelEn: "Rose", vars: { '--primary': '#ec4899', '--primary-light': '#f472b6', '--primary-dark': '#be185d', '--accent': '#f97316', '--accent-light': '#fb923c', '--accent-dark': '#ea580c', '--accent-glow': 'rgba(236, 72, 153, 0.2)' } },
-    { id: "teal", labelAr: "أخضر بحري", labelEn: "Teal", vars: { '--primary': '#14b8a6', '--primary-light': '#2dd4bf', '--primary-dark': '#0f766e', '--accent': '#22d3ee', '--accent-light': '#67e8f9', '--accent-dark': '#0e7490', '--accent-glow': 'rgba(20, 184, 166, 0.25)' } }
+    { id: "indigo", labelAr: "أزرق ملكي", labelEn: "Indigo", vars: { '--primary': '#6366f1', '--primary-light': '#818cf8', '--primary-dark': '#4f46e5', '--accent': '#f59e0b', '--accent-light': '#fbbf24', '--accent-dark': '#d97706', '--accent-glow': 'rgba(99, 102, 241, 0.25)', '--primary-rgb': '99,102,241', '--accent-rgb': '245,158,11' }, darkVars: { '--primary': '#818cf8', '--primary-light': '#a5b4fc', '--primary-dark': '#6366f1', '--accent': '#fbbf24', '--accent-light': '#fcd34d', '--accent-dark': '#f59e0b', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '129,140,248', '--accent-rgb': '251,191,36' } },
+    { id: "emerald", labelAr: "أخضر زمردي", labelEn: "Emerald", vars: { '--primary': '#10b981', '--primary-light': '#34d399', '--primary-dark': '#059669', '--accent': '#14b8a6', '--accent-light': '#2dd4bf', '--accent-dark': '#0f766e', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '16,185,129', '--accent-rgb': '20,184,166' }, darkVars: { '--primary': '#34d399', '--primary-light': '#6ee7b7', '--primary-dark': '#10b981', '--accent': '#2dd4bf', '--accent-light': '#5eead4', '--accent-dark': '#14b8a6', '--accent-glow': 'rgba(45, 212, 191, 0.25)', '--primary-rgb': '52,211,153', '--accent-rgb': '45,212,191' } },
+    { id: "rose", labelAr: "وردي ناعم", labelEn: "Rose", vars: { '--primary': '#ec4899', '--primary-light': '#f472b6', '--primary-dark': '#be185d', '--accent': '#f97316', '--accent-light': '#fb923c', '--accent-dark': '#ea580c', '--accent-glow': 'rgba(236, 72, 153, 0.2)', '--primary-rgb': '236,72,153', '--accent-rgb': '249,115,22' }, darkVars: { '--primary': '#f472b6', '--primary-light': '#fbcfe8', '--primary-dark': '#ec4899', '--accent': '#fb923c', '--accent-light': '#fdba74', '--accent-dark': '#f97316', '--accent-glow': 'rgba(251, 146, 60, 0.25)', '--primary-rgb': '244,114,182', '--accent-rgb': '251,146,60' } },
+    { id: "teal", labelAr: "أخضر بحري", labelEn: "Teal", vars: { '--primary': '#14b8a6', '--primary-light': '#2dd4bf', '--primary-dark': '#0f766e', '--accent': '#22d3ee', '--accent-light': '#67e8f9', '--accent-dark': '#0e7490', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '20,184,166', '--accent-rgb': '34,211,238' }, darkVars: { '--primary': '#2dd4bf', '--primary-light': '#5eead4', '--primary-dark': '#14b8a6', '--accent': '#67e8f9', '--accent-light': '#a5f3fc', '--accent-dark': '#22d3ee', '--accent-glow': 'rgba(103, 232, 249, 0.25)', '--primary-rgb': '45,212,191', '--accent-rgb': '103,232,249' } }
 ];
 
 const SOUND_OPTIONS = [
@@ -692,11 +692,12 @@ const AzkarApp = () => {
     useEffect(() => {
         const style = getAccentStyle();
         const root = document.documentElement;
-        Object.entries(style.vars).forEach(([key, value]) => root.style.setProperty(key, value));
-        root.style.setProperty('--primary-rgb', hexToRgb(style.vars['--primary']));
-        root.style.setProperty('--accent-rgb', hexToRgb(style.vars['--accent']));
+        const currentVars = isDarkMode && style.darkVars ? style.darkVars : style.vars;
+        Object.entries(currentVars).forEach(([key, value]) => root.style.setProperty(key, value));
+        root.style.setProperty('--primary-rgb', hexToRgb(currentVars['--primary']));
+        root.style.setProperty('--accent-rgb', hexToRgb(currentVars['--accent']));
         localStorage.setItem("azkar_accentColor", accentColor);
-    }, [accentColor, getAccentStyle, hexToRgb]);
+    }, [accentColor, getAccentStyle, hexToRgb, isDarkMode]);
 
     useEffect(() => {
         localStorage.setItem("azkar_notificationSound", notificationSound);

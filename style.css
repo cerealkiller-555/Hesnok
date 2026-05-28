@@ -11,7 +11,7 @@
     --accent: #f59e0b; /* Amber/Gold */
     --accent-light: #fbbf24;
     --accent-dark: #d97706;
-    --accent-glow: rgba(var(--accent-rgb), 0.25);
+    --accent-glow: color-mix(in srgb, var(--accent) 25%, transparent);
     --primary-rgb: 99,102,241;
     --accent-rgb: 245,158,11;
 
@@ -56,7 +56,7 @@
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     --primary-rgb: 129,140,248;
-    --accent-glow: rgba(var(--accent-rgb), 0.25);
+    --accent-glow: color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
 
@@ -177,13 +177,13 @@ html, body {
 
 .glass-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 16px 32px rgba(var(--accent-rgb), 0.15);
-    border-color: rgba(var(--accent-rgb), 0.2);
+    box-shadow: 0 16px 32px color-mix(in srgb, var(--accent) 15%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .dark .glass-card:hover {
-    box-shadow: 0 16px 32px rgba(var(--accent-rgb), 0.25);
-    border-color: rgba(var(--accent-rgb), 0.3);
+    box-shadow: 0 16px 32px color-mix(in srgb, var(--accent) 25%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .prayer-time-card {
@@ -412,28 +412,28 @@ html, body {
 
 .desktop-nav-item:hover {
     color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.08);
-    border-color: rgba(var(--accent-rgb), 0.14);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
 .desktop-nav-item.active {
     color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.16);
-    border-color: rgba(var(--accent-rgb), 0.28);
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.12);
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .dark .desktop-nav-item:hover {
     color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.08);
-    border-color: rgba(var(--accent-rgb), 0.14);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
 .dark .desktop-nav-item.active {
     color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.16);
-    border-color: rgba(var(--accent-rgb), 0.28);
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.12);
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .next-prayer-card {
@@ -449,7 +449,7 @@ html, body {
     width: 260%;
     height: 220%;
     transform: translateX(-50%);
-    background: radial-gradient(circle at top, rgba(var(--accent-rgb), 0.18), transparent 42%);
+    background: radial-gradient(circle at top, color-mix(in srgb, var(--accent) 18%, transparent), transparent 42%);
     pointer-events: none;
 }
 
@@ -490,11 +490,11 @@ html, body {
 
 .zikr-card.completed {
     border-color: var(--success);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(var(--accent-rgb), 0.15) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, color-mix(in srgb, var(--accent) 15%, transparent) 100%);
 }
 
 .dark .zikr-card.completed {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(var(--accent-rgb), 0.15) 100%);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, color-mix(in srgb, var(--accent) 15%, transparent) 100%);
 }
 
 .zikr-card.is-highlighted {
@@ -598,9 +598,9 @@ html, body {
 }
 
 .prayer-time-card:hover {
-    border-color: rgba(var(--accent-rgb), 0.3);
+    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.12);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 .prayer-time-icon {

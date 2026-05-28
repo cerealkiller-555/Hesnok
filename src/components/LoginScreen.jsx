@@ -15,15 +15,18 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
     const subtitle = isCreateMode ? t.createAccountSubtitle : t.loginSubtitle;
     const actionLabel = isCreateMode ? t.createAccountButton : t.loginButton;
 
-    const handleSubmit = async () => {
-        const emailError = !form.email.trim() || !EMAIL_REGEX.test(form.email);
+    const handleSubmit = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const trimmedEmail = form.email.trim();
+        const emailError = !trimmedEmail || !EMAIL_REGEX.test(trimmedEmail);
         const nameError = isCreateMode && !form.name.trim();
         const passwordError = !form.password.trim() || (isCreateMode && form.password.trim().length < 6);
         setErrors({ name: nameError, email: emailError, password: passwordError });
         setAuthError("");
 
         if (emailError || nameError || passwordError) return;
-        const result = await onLogin(form, mode);
+        const submitForm = { ...form, email: trimmedEmail };
+        const result = await onLogin(submitForm, mode);
         if (!result.success) {
             setAuthError(result.error || (mode === "signin" ? t.userNotFound : t.userExists));
         }
@@ -57,12 +60,7 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                     <button
                                         type="button"
                                         key={user.email}
-                                        onClick={() => {
-                                            setForm({ name: user.name, email: user.email, password: "" });
-                                            setMode("signin");
-                                            setErrors({ name: false, email: false, password: false });
-                                            setAuthError("");
-                                        }}
+                                        onClick={() => onSelectExistingUser(user)}
                                         className="w-full rounded-xl px-4 py-3 text-left bg-white/80 dark:bg-slate-900 border border-glass-border hover:border-[var(--primary)] transition-all"
                                     >
                                         <div className="text-sm font-black text-text-primary">{user.name}</div>
@@ -73,7 +71,7 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                         </div>
                     )}
                     {/* Form */}
-                    <div className="space-y-6">
+                    <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="space-y-4">
                             {/* Name */}
                             {isCreateMode && (
@@ -90,9 +88,14 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                             placeholder={language === "en" ? "Your name" : "الاسم الكامل"}
                                             value={form.name}
                                             onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                            onKeyDown={handleKeyDown}
+                                            autoComplete="name"
                                         />
                                     </div>
+                                    {errors.name && (
+                                        <p className="text-[11px] font-bold text-error mt-1.5 ml-1">
+                                            {language === "en" ? "Name is required" : "الاسم مطلوب"}
+                                        </p>
+                                    )}
                                 </div>
                             )}
 
@@ -110,9 +113,14 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                         placeholder="email@example.com"
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                        onKeyDown={handleKeyDown}
+                                        autoComplete="username"
                                     />
                                 </div>
+                                {errors.email && (
+                                    <p className="text-[11px] font-bold text-error mt-1.5 ml-1">
+                                        {language === "en" ? "Valid email is required" : "البريد الإلكتروني غير صحيح"}
+                                    </p>
+                                )}
                             </div>
 
                             {/* Password */}
@@ -128,9 +136,16 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                         placeholder={language === "en" ? "Enter password" : "اكتب كلمة المرور"}
                                         value={form.password}
                                         onChange={(e) => setForm({ ...form, password: e.target.value })}
-                                        onKeyDown={handleKeyDown}
+                                        autoComplete={isCreateMode ? "new-password" : "current-password"}
                                     />
                                 </div>
+                                {errors.password && (
+                                    <p className="text-[11px] font-bold text-error mt-1.5 ml-1">
+                                        {isCreateMode 
+                                            ? (language === "en" ? "Password must be at least 6 characters" : "كلمة المرور يجب أن تكون 6 أحرف على الأقل") 
+                                            : (language === "en" ? "Password is required" : "كلمة المرور مطلوبة")}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
@@ -139,8 +154,8 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                             <p className="text-error text-sm font-bold text-center">{authError}</p>
                         )}
                         <button
+                            type="submit"
                             id="login-submit"
-                            onClick={handleSubmit}
                             className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white font-black py-3.5 rounded-lg flex items-center justify-center gap-2 transform active:scale-95 transition-all group"
                         >
                             <span>{actionLabel}</span>
@@ -149,6 +164,7 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
 
                         {/* Toggle mode */}
                         <button
+                            type="button"
                             onClick={() => {
                                 setMode(isCreateMode ? "signin" : "create");
                                 setForm({ name: "", email: "", password: "" });
@@ -159,7 +175,7 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                         >
                             {isCreateMode ? t.signInInstead : t.createAccountLink}
                         </button>
-                    </div>
+                    </form>
 
                     {/* Trust banner */}
                     <div className="bg-[var(--bg-subtle)] border border-[var(--glass-border)] p-4 rounded-lg flex items-start gap-3">
