@@ -58,13 +58,13 @@ const ZikrCard = ({
     return (
         <div
             id={`zikr-${uniqueId}`}
-            className={`zikr-card ${mounted ? 'animate-slide-up' : ''} ${isCompleted ? 'completed border-emerald-500/30' : 'glass-card'} ${isHighlighted ? 'is-highlighted' : ''}`}
+            className={`zikr-card ${mounted ? 'animate-slide-up' : ''} ${isCompleted ? 'completed border-[rgba(var(--accent-rgb),0.25)]' : 'glass-card'} ${isHighlighted ? 'is-highlighted' : ''}`}
             style={mounted ? { animationDelay: `${index * 50}ms` } : undefined}
         >
             {/* Celebration overlay */}
             {showCelebration && (
                 <div className="absolute inset-0 z-20 pointer-events-none">
-                    <div className="absolute inset-0 bg-emerald-500/10 animate-pulse rounded-lg" />
+                    <div className="absolute inset-0 bg-[var(--primary)]/10 animate-pulse rounded-lg" />
                 </div>
             )}
 
@@ -74,10 +74,10 @@ const ZikrCard = ({
                     <div className="flex items-center gap-3 min-w-0">
                         <div className={`flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-sm font-black transition-all duration-500 ${
                             isCompleted
-                                ? "bg-emerald-600 text-white"
+                                ? "bg-[var(--primary)] text-white"
                                 : "bg-[var(--bg-subtle)] text-[var(--text-secondary)]"
                         }`}>
-                            {isCompleted ? <CheckCircle className="w-5 h-5" /> : index + 1}
+                            {index + 1}
                         </div>
                         {title && (
                             <h3 className="text-base md:text-lg font-black text-[var(--text-primary)] leading-snug truncate">{title}</h3>
@@ -87,21 +87,22 @@ const ZikrCard = ({
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleShare}
-                            className="p-2.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--primary)] transition-all active:scale-95"
+                            className="p-2.5 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-all active:scale-95"
                             aria-label={t.shareLabel}
                         >
                             <Share2 className="w-5 h-5" />
                         </button>
                         <button
                             onClick={() => onToggleComplete(uniqueId, zikr.count)}
-                            className={`p-2.5 rounded-lg transition-all active:scale-95 ${
+                            disabled={isCompleted}
+                            className={`px-4 py-2 rounded-lg transition-all active:scale-95 font-black ${
                                 isCompleted
-                                    ? "bg-emerald-600 text-white"
+                                    ? "bg-[var(--primary)] text-white cursor-default"
                                     : "bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--primary)]"
                             }`}
-                            aria-label={t.markComplete}
+                            aria-label={isCompleted ? t.doneLabel : t.markComplete}
                         >
-                            <CheckCircle className="w-5 h-5" />
+                            {isCompleted ? t.doneLabel : <CheckCircle className="w-5 h-5" />}
                         </button>
                     </div>
                 </div>
@@ -141,8 +142,7 @@ const ZikrCard = ({
 
                         <div className="relative z-10 flex items-center justify-center gap-4">
                             {isCompleted ? (
-                                <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-black">
-                                    <CheckCircle className="w-5 h-5" />
+                                <div className="text-[var(--primary)] font-black">
                                     <span className="text-sm uppercase tracking-wide">{t.doneLabel}</span>
                                 </div>
                             ) : (
@@ -150,7 +150,7 @@ const ZikrCard = ({
                                     <span className={`text-3xl font-black tabular-nums transition-transform duration-300 ${isAnimating ? "scale-110" : ""}`}>
                                         {progress}
                                     </span>
-                                    <div className="h-8 w-px bg-white/25 rounded-full" />
+                                    <div className="h-8 w-px bg-[var(--accent)]/35 rounded-full" />
                                     <div className="flex flex-col items-start leading-none opacity-80">
                                         <span className="text-[10px] font-black uppercase tracking-wide mb-1">{t.requiredLabel}</span>
                                         <span className="text-base font-black">{zikr.count}</span>
@@ -165,7 +165,7 @@ const ZikrCard = ({
                         <div className="pt-2">
                             <button
                                 onClick={() => onToggleBenefit(uniqueId)}
-                                className="flex items-center justify-between w-full py-3 px-1 text-[11px] font-black uppercase tracking-wide text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                                className="flex items-center justify-between w-full py-3 px-1 text-[11px] font-black uppercase tracking-wide text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
                             >
                                 <div className="flex items-center gap-2">
                                     <Info className="w-4 h-4" />

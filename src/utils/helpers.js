@@ -52,6 +52,19 @@ export function writeJson(key, value) {
     }
 }
 
+export async function hashString(value) {
+    if (typeof value !== "string") return "";
+    try {
+        const data = new TextEncoder().encode(value);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        return Array.from(new Uint8Array(hashBuffer))
+            .map((byte) => byte.toString(16).padStart(2, "0"))
+            .join("");
+    } catch {
+        return value;
+    }
+}
+
 export function readUsers() {
     const users = readJson("azkar_users", []);
     if (!Array.isArray(users)) return [];

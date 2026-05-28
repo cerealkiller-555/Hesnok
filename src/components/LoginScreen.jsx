@@ -5,8 +5,8 @@ import Logo from './Logo';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, language }) => {
-    const [form, setForm] = useState({ name: "", email: "" });
-    const [errors, setErrors] = useState({ name: false, email: false });
+    const [form, setForm] = useState({ name: "", email: "", password: "" });
+    const [errors, setErrors] = useState({ name: false, email: false, password: false });
     const [authError, setAuthError] = useState("");
     const [mode, setMode] = useState("signin");
 
@@ -15,16 +15,17 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
     const subtitle = isCreateMode ? t.createAccountSubtitle : t.loginSubtitle;
     const actionLabel = isCreateMode ? t.createAccountButton : t.loginButton;
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const emailError = !form.email.trim() || !EMAIL_REGEX.test(form.email);
         const nameError = isCreateMode && !form.name.trim();
-        setErrors({ name: nameError, email: emailError });
+        const passwordError = !form.password.trim() || (isCreateMode && form.password.trim().length < 6);
+        setErrors({ name: nameError, email: emailError, password: passwordError });
         setAuthError("");
 
-        if (emailError || nameError) return;
-        const success = onLogin(form, mode);
-        if (!success) {
-            setAuthError(mode === "signin" ? t.userNotFound : t.userExists);
+        if (emailError || nameError || passwordError) return;
+        const result = await onLogin(form, mode);
+        if (!result.success) {
+            setAuthError(result.error || (mode === "signin" ? t.userNotFound : t.userExists));
         }
     };
 
@@ -56,7 +57,12 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                     <button
                                         type="button"
                                         key={user.email}
-                                        onClick={() => onSelectExistingUser?.(user)}
+                                        onClick={() => {
+                                            setForm({ name: user.name, email: user.email, password: "" });
+                                            setMode("signin");
+                                            setErrors({ name: false, email: false, password: false });
+                                            setAuthError("");
+                                        }}
                                         className="w-full rounded-xl px-4 py-3 text-left bg-white/80 dark:bg-slate-900 border border-glass-border hover:border-[var(--primary)] transition-all"
                                     >
                                         <div className="text-sm font-black text-text-primary">{user.name}</div>
@@ -108,6 +114,24 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                     />
                                 </div>
                             </div>
+
+                            {/* Password */}
+                            <div>
+                                <label className={`block text-[10px] font-black uppercase tracking-wide mb-1.5 ${errors.password ? 'text-error' : 'text-text-secondary'}`}>
+                                    {t.passwordLabel}
+                                </label>
+                                <div className="relative group">
+                                    <input
+                                        id="login-password"
+                                        type="password"
+                                        className={`w-full bg-bg-subtle border py-3.5 pl-4 pr-6 rounded-lg focus:outline-none focus:border-[var(--primary)] text-text-primary transition-all font-bold ${errors.password ? 'border-error/50' : 'border-glass-border'}`}
+                                        placeholder={language === "en" ? "Enter password" : "اكتب كلمة المرور"}
+                                        value={form.password}
+                                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         {/* Submit */}
@@ -127,7 +151,8 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                         <button
                             onClick={() => {
                                 setMode(isCreateMode ? "signin" : "create");
-                                setErrors({ name: false, email: false });
+                                setForm({ name: "", email: "", password: "" });
+                                setErrors({ name: false, email: false, password: false });
                                 setAuthError("");
                             }}
                             className="w-full text-sm font-black text-[var(--primary)] opacity-90 hover:opacity-100 transition-opacity underline-offset-4 hover:underline"
@@ -139,7 +164,7 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                     {/* Trust banner */}
                     <div className="bg-[var(--bg-subtle)] border border-[var(--glass-border)] p-4 rounded-lg flex items-start gap-3">
                         <ShieldCheck className="w-5 h-5 text-[var(--primary)] shrink-0" />
-                        <p className="text-[11px] text-text-primary font-bold leading-relaxed">{t.settingsHint}</p>
+                        <p className="text-[11px] text-text-primary font-bold leading-relaxed">{t.passwordHint}</p>
                     </div>
                 </div>
             </div>

@@ -5,7 +5,7 @@ import {
     PRAYER_CHECKLIST, I18N, azkar, defaultCustomDuas, tabConfig
 } from '../utils/constants';
 import {
-    showToast, readJson, readDailyState, writeJson, readUsers, writeUsers, findUserByEmail, getUserStorageSuffix, isSameDay, isYesterday
+    showToast, readJson, readDailyState, writeJson, readUsers, writeUsers, findUserByEmail, getUserStorageSuffix, isSameDay, isYesterday, hashString
 } from '../utils/helpers';
 
 import ToastContainer   from './ToastContainer';
@@ -14,9 +14,7 @@ import OfflineBanner    from './OfflineBanner';
 import PrayerTimesSection from './PrayerTimesSection';
 import CustomDuasSection  from './CustomDuasSection';
 import SettingsSection    from './SettingsSection';
-import ProgressHero       from './ProgressHero';
 import StreakBanner        from './StreakBanner';
-import PrayerChecklist     from './PrayerChecklist';
 import LoginScreen         from './LoginScreen';
 import ZikrCard            from './ZikrCard';
 import Logo                from './Logo';
@@ -40,6 +38,27 @@ const normalizeCustomDuas = (duas) => {
         })
         .filter((dua) => dua && dua.text.trim());
 };
+
+const PRAYER_BANNERS = [
+    { key: "Fajr",    ar: "الفجر",   en: "Fajr",    icon: "🌅" },
+    { key: "Dhuhr",   ar: "الظهر",   en: "Dhuhr",   icon: "🌞" },
+    { key: "Asr",     ar: "العصر",   en: "Asr",     icon: "🌤️" },
+    { key: "Maghrib", ar: "المغرب",  en: "Maghrib", icon: "🌆" },
+    { key: "Isha",    ar: "العشاء",  en: "Isha",    icon: "🌙" }
+];
+
+const ACCENT_OPTIONS = [
+    { id: "indigo", labelAr: "أزرق ملكي", labelEn: "Indigo", vars: { '--primary': '#6366f1', '--primary-light': '#818cf8', '--primary-dark': '#4f46e5', '--accent': '#f59e0b', '--accent-light': '#fbbf24', '--accent-dark': '#d97706', '--accent-glow': 'rgba(99, 102, 241, 0.25)' } },
+    { id: "emerald", labelAr: "أخضر زمردي", labelEn: "Emerald", vars: { '--primary': '#10b981', '--primary-light': '#34d399', '--primary-dark': '#059669', '--accent': '#14b8a6', '--accent-light': '#2dd4bf', '--accent-dark': '#0f766e', '--accent-glow': 'rgba(20, 184, 166, 0.25)' } },
+    { id: "rose", labelAr: "وردي ناعم", labelEn: "Rose", vars: { '--primary': '#ec4899', '--primary-light': '#f472b6', '--primary-dark': '#be185d', '--accent': '#f97316', '--accent-light': '#fb923c', '--accent-dark': '#ea580c', '--accent-glow': 'rgba(236, 72, 153, 0.2)' } },
+    { id: "teal", labelAr: "أخضر بحري", labelEn: "Teal", vars: { '--primary': '#14b8a6', '--primary-light': '#2dd4bf', '--primary-dark': '#0f766e', '--accent': '#22d3ee', '--accent-light': '#67e8f9', '--accent-dark': '#0e7490', '--accent-glow': 'rgba(20, 184, 166, 0.25)' } }
+];
+
+const SOUND_OPTIONS = [
+    { id: "bell", labelAr: "جرس ناعم", labelEn: "Soft bell" },
+    { id: "chime", labelAr: "تلويحة", labelEn: "Gentle chime" },
+    { id: "beep", labelAr: "تنبيه سريع", labelEn: "Quick beep" }
+];
 
 // ═══════════════════════════════════════════════════════
 // AzkarApp — Root Component
@@ -67,6 +86,10 @@ const AzkarApp = () => {
     });
     const [storageReady, setStorageReady] = useState(false);
     const [showEnTranslations, setShowEnTranslations] = useState(() => localStorage.getItem("azkar_showEnTranslations") === "true");
+    const [accentColor, setAccentColor]   = useState(() => localStorage.getItem("azkar_accentColor") || "indigo");
+    const [notificationSound, setNotificationSound] = useState(() => localStorage.getItem("azkar_notificationSound") || "bell");
+    const [enablePrayerNotifications, setEnablePrayerNotifications] = useState(() => localStorage.getItem("azkar_prayerNotifications") === "true");
+    const [enableAzkarNotifications, setEnableAzkarNotifications] = useState(() => localStorage.getItem("azkar_azkarNotifications") === "true");
 
     const [prayerTimes, setPrayerTimes]   = useState(null);
     const [location, setLocation]         = useState(() => readJson("azkar_location", { city: "Cairo", country: "EG" }));
@@ -89,6 +112,7 @@ const AzkarApp = () => {
     const completedAzkarRef = useRef(completedAzkar);
     const azkarProgressRef  = useRef(azkarProgress);
     const toastShownRef     = useRef(new Set());
+    const notificationTimersRef = useRef([]);
 
     // ───────────────────────────────────────
     // 2. DERIVED VALUES (useMemo / useCallback)
@@ -136,7 +160,7 @@ const AzkarApp = () => {
     );
 
     const formatTime = useCallback(
-        () => currentTime.toLocaleTimeString(language === "en" ? "en-US" : "ar-EG", { hour: "2-digit", minute: "2-digit" }),
+        () => currentTime.toLocaleTimeString(language === "en" ? "en-US" : "ar-EG", { hour: "numeric", minute: "2-digit", hour12: true }),
         [currentTime, language]
     );
 
@@ -207,42 +231,195 @@ const AzkarApp = () => {
         setTimeout(() => toastShownRef.current.delete(key), 1000);
     }, []);
 
+    const parsePrayerTime = useCallback((timeStr) => {
+        if (!timeStr || typeof timeStr !== 'string') return null;
+        const [hour, minute] = timeStr.split(':').map((n) => parseInt(n, 10));
+        if (Number.isNaN(hour) || Number.isNaN(minute)) return null;
+        const date = new Date();
+        date.setHours(hour, minute, 0, 0);
+        return date;
+    }, []);
+
+    const prayerHeaders = useMemo(() => {
+        if (!prayerTimes) return [];
+        const headers = PRAYER_BANNERS.map((prayer) => {
+            const time = prayerTimes[prayer.key] || "--:--";
+            const date = parsePrayerTime(time);
+            return {
+                ...prayer,
+                time,
+                date,
+                isNext: false
+            };
+        });
+
+        const upcoming = headers.filter((item) => item.date && item.date > currentTime);
+        if (upcoming.length) {
+            const next = upcoming[0];
+            return headers.map((item) => ({
+                ...item,
+                isNext: item.key === next.key
+            }));
+        }
+
+        if (headers.length > 0 && headers[0].date) {
+            const tomorrow = new Date(headers[0].date);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return headers.map((item, index) => ({
+                ...item,
+                isNext: index === 0,
+                date: index === 0 ? tomorrow : item.date
+            }));
+        }
+
+        return headers;
+    }, [prayerTimes, currentTime, parsePrayerTime]);
+
+    const nextPrayer = useMemo(() => {
+        return prayerHeaders.find((item) => item.isNext) || prayerHeaders[0] || null;
+    }, [prayerHeaders]);
+
+    const nextPrayerCountdown = useMemo(() => {
+        if (!nextPrayer?.date) return null;
+        const diffMs = nextPrayer.date.getTime() - currentTime.getTime();
+        if (diffMs <= 0) return null;
+        const totalMinutes = Math.floor(diffMs / 60000);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        if (hours > 0) {
+            return language === 'en'
+                ? `${hours}h ${minutes}m`
+                : `${hours} ساعة و ${minutes} دقيقة`;
+        }
+        return language === 'en'
+            ? `${minutes}m`
+            : `${minutes} دقيقة`;
+    }, [nextPrayer, currentTime, language]);
+
+    const formatNextPrayerTime = useCallback((date) => {
+        if (!date) return "--:--";
+        return date.toLocaleTimeString(language === 'en' ? 'en-US' : 'ar-EG', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    }, [language]);
+
+    const getAccentStyle = useCallback(() => {
+        return ACCENT_OPTIONS.find((item) => item.id === accentColor) || ACCENT_OPTIONS[0];
+    }, [accentColor]);
+
+    const hexToRgb = useCallback((hex) => {
+        const clean = hex.replace('#', '');
+        const full = clean.length === 3 ? clean.split('').map((char) => char.repeat(2)).join('') : clean;
+        const r = parseInt(full.slice(0, 2), 16);
+        const g = parseInt(full.slice(2, 4), 16);
+        const b = parseInt(full.slice(4, 6), 16);
+        return `${r},${g},${b}`;
+    }, []);
+
+    const playReminderSound = useCallback((soundId) => {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const context = new AudioContext();
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            const sounds = {
+                bell: { frequency: 880, duration: 0.35 },
+                chime: { frequency: 440, duration: 0.45 },
+                beep: { frequency: 520, duration: 0.18 }
+            };
+            const config = sounds[soundId] || sounds.bell;
+            oscillator.type = 'sine';
+            oscillator.frequency.value = config.frequency;
+            gain.gain.value = 0.05;
+            oscillator.connect(gain);
+            gain.connect(context.destination);
+            oscillator.start();
+            oscillator.stop(context.currentTime + config.duration);
+            oscillator.onended = () => context.close();
+        } catch (e) {
+            console.warn('Audio notification failed', e);
+        }
+    }, []);
+
+    const requestNotificationPermission = useCallback(async () => {
+        if (!('Notification' in window)) return false;
+        if (Notification.permission === 'granted') return true;
+        if (Notification.permission === 'denied') return false;
+        const permission = await Notification.requestPermission();
+        return permission === 'granted';
+    }, []);
+
+    const sendReminder = useCallback(async (title, body) => {
+        if (!title) return;
+        if (await requestNotificationPermission()) {
+            new Notification(title, { body });
+        }
+        playReminderSound(notificationSound);
+        showToast(body, 'info', 5500);
+    }, [notificationSound, playReminderSound, requestNotificationPermission]);
+
+    const scheduleReminder = useCallback((when, title, body) => {
+        if (!when || when <= new Date()) return;
+        const delay = when.getTime() - Date.now();
+        const timer = window.setTimeout(() => sendReminder(title, body), delay);
+        notificationTimersRef.current.push(timer);
+    }, [sendReminder]);
+
+    const clearScheduledReminders = useCallback(() => {
+        notificationTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+        notificationTimersRef.current = [];
+    }, []);
+
+    const makeReminderText = useCallback((template, name) => {
+        return template.replace('{name}', name || '').trim();
+    }, []);
+
     // ───────────────────────────────────────
     // 3. EVENT HANDLERS
     // ───────────────────────────────────────
-    const handleLogin = useCallback((profile, mode) => {
+    const handleLogin = useCallback(async (profile, mode) => {
         const email = profile.email.trim().toLowerCase();
         const savedUser = findUserByEmail(email);
+        const passwordHash = await hashString(profile.password);
 
         if (mode === "signin") {
             if (!savedUser) {
                 showToast(t.userNotFound, "warning");
-                return false;
+                return { success: false, error: t.userNotFound };
             }
-            setUserProfile(savedUser);
+            if (savedUser.passwordHash !== passwordHash) {
+                showToast(t.wrongPassword, "warning");
+                return { success: false, error: t.wrongPassword };
+            }
+            const userProfileData = { name: savedUser.name, email };
+            setUserProfile(userProfileData);
             setIsLoggedIn(true);
             setStorageReady(false);
-            writeJson("azkar_user", savedUser);
-            showToast(t.loginSaved, "success");
-            return true;
+            writeJson("azkar_user", userProfileData);
+            showToast(t.signedIn, "success");
+            return { success: true };
         }
 
         if (savedUser) {
             showToast(t.userExists, "warning");
-            return false;
+            return { success: false, error: t.userExists };
         }
 
-        const user = { name: profile.name.trim(), email };
+        const newUser = { name: profile.name.trim(), email, passwordHash };
         const users = readUsers();
-        const nextUsers = [...users, user];
+        const nextUsers = [...users, newUser];
         writeUsers(nextUsers);
         setSavedUsers(nextUsers);
-        setUserProfile(user);
+        const userProfileData = { name: profile.name.trim(), email };
+        setUserProfile(userProfileData);
         setIsLoggedIn(true);
         setStorageReady(false);
-        writeJson("azkar_user", user);
-        showToast(t.loginSaved, "success");
-        return true;
+        writeJson("azkar_user", userProfileData);
+        showToast(t.accountCreated, "success");
+        return { success: true };
     }, [t]);
 
     const logout = useCallback(() => {
@@ -327,6 +504,10 @@ const AzkarApp = () => {
         setAzkarProgress(updatedProgress);
     }, []);
 
+    const handleTogglePrayer = useCallback((prayerId) => {
+        setPrayerChecklist((prev) => ({ ...prev, [prayerId]: !prev[prayerId] }));
+    }, []);
+
     const toggleZikrBenefit = useCallback((uid) => {
         setExpandedBenefits((prev) => ({ ...prev, [uid]: !prev[uid] }));
     }, []);
@@ -394,8 +575,8 @@ const AzkarApp = () => {
                 setHighlightedZikr(nextFocusZikr);
                 // Optional: gentle scroll only if card is out of view
                 const el = document.getElementById(`zikr-${nextFocusZikr}`);
-                if (el && !isElementInViewport(el)) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 250)
         );
@@ -430,6 +611,25 @@ const AzkarApp = () => {
         setStreak(readJson(`azkar_streak${suffix}`, { count: 0, lastDate: null }));
         setStorageReady(true);
     }, [isLoggedIn, userProfile.email]);
+
+    useEffect(() => {
+        if (!isLoggedIn || !storageReady) return;
+        const welcomeKey = `azkar_welcome_shown${userSuffix}`;
+        const shown = readJson(welcomeKey, false);
+        if (!shown) {
+            showToast(makeReminderText(t.welcomeMessage, userProfile.name), 'success', 6000);
+            writeJson(welcomeKey, true);
+        }
+    }, [isLoggedIn, storageReady, userProfile.name, userSuffix, t, makeReminderText]);
+
+    useEffect(() => {
+        if (!isLoggedIn || !dailyGoalsComplete) return;
+        const praise = language === 'ar'
+            ? ["أشطر كتكوت", "أشطر كتكوتة"][Math.floor(Math.random() * 2)]
+            : t.goalCompleteMessage;
+        const message = userProfile.name ? `${userProfile.name}، ${praise}` : praise;
+        showOncePerAction('daily_goals_complete', message, 'success');
+    }, [dailyGoalsComplete, isLoggedIn, language, showOncePerAction, userProfile.name, t]);
 
     // Persist user-scoped data
     useEffect(() => {
@@ -488,6 +688,58 @@ const AzkarApp = () => {
         window.addEventListener("beforeinstallprompt", handler);
         return () => window.removeEventListener("beforeinstallprompt", handler);
     }, []);
+
+    useEffect(() => {
+        const style = getAccentStyle();
+        const root = document.documentElement;
+        Object.entries(style.vars).forEach(([key, value]) => root.style.setProperty(key, value));
+        root.style.setProperty('--primary-rgb', hexToRgb(style.vars['--primary']));
+        root.style.setProperty('--accent-rgb', hexToRgb(style.vars['--accent']));
+        localStorage.setItem("azkar_accentColor", accentColor);
+    }, [accentColor, getAccentStyle, hexToRgb]);
+
+    useEffect(() => {
+        localStorage.setItem("azkar_notificationSound", notificationSound);
+    }, [notificationSound]);
+
+    useEffect(() => {
+        localStorage.setItem("azkar_prayerNotifications", String(enablePrayerNotifications));
+    }, [enablePrayerNotifications]);
+
+    useEffect(() => {
+        localStorage.setItem("azkar_azkarNotifications", String(enableAzkarNotifications));
+    }, [enableAzkarNotifications]);
+
+    useEffect(() => {
+        if (!prayerTimes || !isLoggedIn) return;
+        clearScheduledReminders();
+
+        if (enablePrayerNotifications) {
+            PRAYER_BANNERS.forEach((prayer) => {
+                if (!prayerTimes[prayer.key]) return;
+                const when = parsePrayerTime(prayerTimes[prayer.key]);
+                const prayerName = language === "en" ? prayer.en : prayer.ar;
+                const title = makeReminderText(t.notificationTitlePrayer, userProfile.name);
+                const body = `${makeReminderText(t.notificationBodyPrayer, userProfile.name)} ${prayerName}`.trim();
+                scheduleReminder(when, title, body);
+            });
+        }
+
+        if (enableAzkarNotifications) {
+            const morningTime = parsePrayerTime(prayerTimes.Fajr);
+            const eveningTime = parsePrayerTime(prayerTimes.Maghrib);
+            if (morningTime) {
+                morningTime.setMinutes(morningTime.getMinutes() + 15);
+                scheduleReminder(morningTime, makeReminderText(t.notificationTitleAzkar, userProfile.name), makeReminderText(t.notificationBodyAzkar, userProfile.name));
+            }
+            if (eveningTime) {
+                eveningTime.setMinutes(eveningTime.getMinutes() + 15);
+                scheduleReminder(eveningTime, makeReminderText(t.notificationTitleAzkar, userProfile.name), makeReminderText(t.notificationBodyAzkar, userProfile.name));
+            }
+        }
+
+        return clearScheduledReminders;
+    }, [prayerTimes, enablePrayerNotifications, enableAzkarNotifications, language, makeReminderText, scheduleReminder, t, isLoggedIn, userProfile.name, clearScheduledReminders]);
 
     // Streak updater — runs when dailyGoalsComplete changes
     useEffect(() => {
@@ -560,7 +812,6 @@ const AzkarApp = () => {
     if (!isLoggedIn) {
         return <LoginScreen
             onLogin={handleLogin}
-            onSelectExistingUser={handleSelectExistingUser}
             existingUsers={savedUsers}
             t={t}
             language={language}
@@ -624,20 +875,37 @@ const AzkarApp = () => {
                 </nav>
             </header>
 
+            {nextPrayer && (
+                <section className="container mx-auto px-4 py-3">
+                    <div className="next-prayer-card mx-auto w-full max-w-3xl rounded-3xl border border-[var(--glass-border)] bg-[var(--bg-surface)] shadow-[0_12px_24px_rgba(15,23,42,0.08)] p-3 overflow-hidden">
+                        <div className="relative z-10 flex flex-col sm:flex-row items-center gap-3">
+                            <div className="flex items-center justify-center flex-shrink-0 w-14 h-14 rounded-2xl bg-[var(--accent)]/15 text-[var(--accent)] shadow-sm shadow-[var(--accent)]/10 text-2xl">
+                                {nextPrayer.icon}
+                            </div>
+                            <div className="flex-1 min-w-0 text-center sm:text-left">
+                                <span className="inline-flex items-center justify-center rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.35em] text-[var(--accent)]">
+                                    {language === 'en' ? 'Next prayer' : 'الصلاة القادمة'}
+                                </span>
+                                <h2 className="mt-2 text-lg font-black text-[var(--text-primary)] leading-snug truncate">
+                                    {language === 'en' ? nextPrayer.en : nextPrayer.ar}
+                                </h2>
+                                <p className="mt-1 text-2xl font-black text-[var(--accent)] leading-none" dir="ltr">
+                                    {formatNextPrayerTime(nextPrayer.date)}
+                                </p>
+                                {nextPrayerCountdown && (
+                                    <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                                        {language === 'en' ? 'In ' : 'بعد '}<span className="font-black text-[var(--text-primary)]">{nextPrayerCountdown}</span>
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            )}
+
             {/* Main content */}
             <main className="container mx-auto px-4 py-6 max-w-3xl space-y-6 animate-fade-in">
                 <StreakBanner streakCount={streak.count} goals={goals} t={t} />
-
-                <ProgressHero
-                    activeTab={activeTab}
-                    progressPercentage={progressPercentage}
-                    completedCount={completedCount}
-                    totalCount={currentAzkarList.length}
-                    resetAllProgress={resetAllProgress}
-                    t={t}
-                    userProfile={userProfile}
-                    language={language}
-                />
 
                 <div className="space-y-6">
                     {activeTab === "morning"       && renderAzkarList(azkar.morning, "morning")}
@@ -648,12 +916,13 @@ const AzkarApp = () => {
 
                     {activeTab === "prayer" && (
                         <div className="animate-slide-up space-y-8">
-                            <PrayerTimesSection prayerTimes={prayerTimes} location={location} t={t} language={language} />
-                            <PrayerChecklist
-                                checklist={prayerChecklist}
-                                onToggle={(id) => setPrayerChecklist((p) => ({ ...p, [id]: !p[id] }))}
-                                language={language}
+                            <PrayerTimesSection
+                                prayerTimes={prayerTimes}
+                                location={location}
                                 t={t}
+                                language={language}
+                                prayerChecklist={prayerChecklist}
+                                onTogglePrayer={handleTogglePrayer}
                             />
                         </div>
                     )}
@@ -688,6 +957,14 @@ const AzkarApp = () => {
                             setArabicFontSize={setArabicFontSize}
                             showEnTranslations={showEnTranslations}
                             setShowEnTranslations={setShowEnTranslations}
+                            accentColor={accentColor}
+                            setAccentColor={setAccentColor}
+                            enablePrayerNotifications={enablePrayerNotifications}
+                            setEnablePrayerNotifications={setEnablePrayerNotifications}
+                            enableAzkarNotifications={enableAzkarNotifications}
+                            setEnableAzkarNotifications={setEnableAzkarNotifications}
+                            notificationSound={notificationSound}
+                            setNotificationSound={setNotificationSound}
                         />
                     )}
                 </div>

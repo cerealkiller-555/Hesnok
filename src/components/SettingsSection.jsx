@@ -9,7 +9,11 @@ const SettingsSection = ({
     userProfile, updateProfile, logout,
     language, setLanguage, t,
     arabicFontSize, setArabicFontSize,
-    showEnTranslations, setShowEnTranslations
+    showEnTranslations, setShowEnTranslations,
+    accentColor, setAccentColor,
+    enablePrayerNotifications, setEnablePrayerNotifications,
+    enableAzkarNotifications, setEnableAzkarNotifications,
+    notificationSound, setNotificationSound
 }) => (
     <div className="animate-slide-up space-y-6">
         {/* PWA Install */}
@@ -77,6 +81,52 @@ const SettingsSection = ({
                             <div className={`w-6 h-6 rounded-full bg-white shadow-xl transform transition-transform duration-500 ${showEnTranslations ? (language === 'ar' ? '-translate-x-5' : 'translate-x-5') : 'translate-x-0'}`} />
                         </div>
                     </button>
+                </div>
+            </div>
+
+            <div className="glass-panel p-5 space-y-5">
+                <h3 className="text-xl font-black text-text-primary flex items-center gap-3">
+                    <Sun className="w-5 h-5 text-[var(--primary)]" />
+                    {t.colorThemeLabel}
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                    {[
+                        { value: 'indigo', label: language === 'en' ? 'Indigo' : 'أزرق' },
+                        { value: 'emerald', label: language === 'en' ? 'Emerald' : 'أخضر' },
+                        { value: 'rose', label: language === 'en' ? 'Rose' : 'وردي' },
+                        { value: 'teal', label: language === 'en' ? 'Teal' : 'تركواز' }
+                    ].map((option) => (
+                        <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => setAccentColor(option.value)}
+                            className={`py-3 rounded-lg text-sm font-black border transition-all ${accentColor === option.value ? 'bg-[var(--primary)] text-white border-[var(--primary)]' : 'bg-bg-subtle text-text-secondary border-glass-border hover:border-[var(--primary)]'}`}
+                        >
+                            {option.label}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="space-y-4 pt-4">
+                    <h4 className="text-sm font-black text-text-primary uppercase tracking-wide">{t.notificationsTitle}</h4>
+                    <div className="space-y-3">
+                        <button onClick={() => setEnablePrayerNotifications((prev) => !prev)} className={`w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all ${enablePrayerNotifications ? 'border-[var(--primary)]' : ''}`}>
+                            <span className="text-text-secondary font-black">{t.prayerNotificationLabel}</span>
+                            <span className="text-sm font-black">{enablePrayerNotifications ? (language === 'en' ? 'On' : 'تشغيل') : (language === 'en' ? 'Off' : 'إيقاف')}</span>
+                        </button>
+                        <button onClick={() => setEnableAzkarNotifications((prev) => !prev)} className={`w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all ${enableAzkarNotifications ? 'border-[var(--primary)]' : ''}`}>
+                            <span className="text-text-secondary font-black">{t.azkarNotificationLabel}</span>
+                            <span className="text-sm font-black">{enableAzkarNotifications ? (language === 'en' ? 'On' : 'تشغيل') : (language === 'en' ? 'Off' : 'إيقاف')}</span>
+                        </button>
+                        <div className="space-y-2">
+                            <label className="block text-[10px] font-black uppercase tracking-wide text-text-secondary">{t.notificationSoundLabel}</label>
+                            <select value={notificationSound} onChange={(e) => setNotificationSound(e.target.value)} className="w-full px-4 py-3 rounded-lg bg-bg-subtle border border-glass-border text-text-primary font-bold outline-none transition-all">
+                                <option value="bell">{language === 'en' ? 'Soft bell' : 'جرس ناعم'}</option>
+                                <option value="chime">{language === 'en' ? 'Gentle chime' : 'تلويحة'}</option>
+                                <option value="beep">{language === 'en' ? 'Quick beep' : 'تنبيه سريع'}</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -11,7 +11,9 @@
     --accent: #f59e0b; /* Amber/Gold */
     --accent-light: #fbbf24;
     --accent-dark: #d97706;
-    --accent-glow: rgba(99, 102, 241, 0.25);
+    --accent-glow: rgba(var(--accent-rgb), 0.25);
+    --primary-rgb: 99,102,241;
+    --accent-rgb: 245,158,11;
 
     --success: #10B981;
     --warning: #F59E0B;
@@ -50,13 +52,13 @@
     --primary: #818cf8;
     --primary-light: #a5b4fc;
     --primary-dark: #6366f1;
-    --accent: #fbbf24;
-    --accent-dark: #f59e0b;
     --glass-bg: rgba(15, 23, 42, 0.45);
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --accent-glow: rgba(20, 184, 166, 0.25);
+    --primary-rgb: 129,140,248;
+    --accent-glow: rgba(var(--accent-rgb), 0.25);
 }
+
 
 /* ═══════════════════════════════════════════
    BASE RESET & TYPOGRAPHY
@@ -175,13 +177,22 @@ html, body {
 
 .glass-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 16px 32px rgba(13, 148, 136, 0.1);
-    border-color: rgba(13, 148, 136, 0.2);
+    box-shadow: 0 16px 32px rgba(var(--accent-rgb), 0.15);
+    border-color: rgba(var(--accent-rgb), 0.2);
 }
 
 .dark .glass-card:hover {
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
-    border-color: rgba(20, 184, 166, 0.3);
+    box-shadow: 0 16px 32px rgba(var(--accent-rgb), 0.25);
+    border-color: rgba(var(--accent-rgb), 0.3);
+}
+
+.prayer-time-card {
+    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), border-color var(--transition-smooth);
+}
+
+.dark .prayer-time-card {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 @keyframes shimmer {
@@ -351,19 +362,13 @@ html, body {
 }
 
 .bottom-nav-item.active {
-    color: var(--primary);
+    color: var(--accent);
     transform: translateY(-4px);
 }
 
 .bottom-nav-item.active::after {
     opacity: 1;
     transform: scale(1);
-}
-
-.dark .bottom-nav-item.active {
-    color: var(--accent);
-}
-.dark .bottom-nav-item.active::after {
     background: var(--accent);
 }
 
@@ -406,29 +411,54 @@ html, body {
 .desktop-nav-wrapper .container::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.06); border-radius: 8px; }
 
 .desktop-nav-item:hover {
-    color: var(--primary);
-    background: rgba(13, 148, 136, 0.05);
-    border-color: rgba(13, 148, 136, 0.1);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.08);
+    border-color: rgba(var(--accent-rgb), 0.14);
 }
 
 .desktop-nav-item.active {
-    color: var(--primary-dark);
-    background: rgba(13, 148, 136, 0.15);
-    border-color: rgba(13, 148, 136, 0.3);
-    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.16);
+    border-color: rgba(var(--accent-rgb), 0.28);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.12);
 }
 
 .dark .desktop-nav-item:hover {
     color: var(--accent);
-    background: rgba(245, 158, 11, 0.05);
-    border-color: rgba(245, 158, 11, 0.1);
+    background: rgba(var(--accent-rgb), 0.08);
+    border-color: rgba(var(--accent-rgb), 0.14);
 }
 
 .dark .desktop-nav-item.active {
     color: var(--accent);
-    background: rgba(245, 158, 11, 0.15);
-    border-color: rgba(245, 158, 11, 0.3);
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+    background: rgba(var(--accent-rgb), 0.16);
+    border-color: rgba(var(--accent-rgb), 0.28);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.12);
+}
+
+.next-prayer-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.next-prayer-card::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    width: 260%;
+    height: 220%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at top, rgba(var(--accent-rgb), 0.18), transparent 42%);
+    pointer-events: none;
+}
+
+.next-prayer-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
+    pointer-events: none;
 }
 
 /* ═══════════════════════════════════════════
@@ -460,11 +490,11 @@ html, body {
 
 .zikr-card.completed {
     border-color: var(--success);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(16, 185, 129, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(var(--accent-rgb), 0.15) 100%);
 }
 
 .dark .zikr-card.completed {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(16, 185, 129, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(var(--accent-rgb), 0.15) 100%);
 }
 
 .zikr-card.is-highlighted {
@@ -568,9 +598,9 @@ html, body {
 }
 
 .prayer-time-card:hover {
-    border-color: rgba(13, 148, 136, 0.3);
+    border-color: rgba(var(--accent-rgb), 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(13, 148, 136, 0.08);
+    box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.12);
 }
 
 .prayer-time-icon {
