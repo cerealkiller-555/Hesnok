@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import '../style.css';
 import AzkarApp from './components/AzkarApp';
+import { Analytics } from '@vercel/analytics/react';
 
 // ═══════════════════════════════════════════
 // Global Error Boundary
@@ -82,6 +83,7 @@ if (rootElement) {
         <React.StrictMode>
             <AppErrorBoundary>
                 <AzkarApp />
+                <Analytics />
             </AppErrorBoundary>
         </React.StrictMode>
     );
