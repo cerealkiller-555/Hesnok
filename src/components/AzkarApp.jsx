@@ -694,8 +694,13 @@ const AzkarApp = () => {
         const root = document.documentElement;
         const currentVars = isDarkMode && style.darkVars ? style.darkVars : style.vars;
         Object.entries(currentVars).forEach(([key, value]) => root.style.setProperty(key, value));
+        // Explicitly compute rgb channels (override any stale values from the vars object)
         root.style.setProperty('--primary-rgb', hexToRgb(currentVars['--primary']));
-        root.style.setProperty('--accent-rgb', hexToRgb(currentVars['--accent']));
+        root.style.setProperty('--accent-rgb',  hexToRgb(currentVars['--accent']));
+        // Compute --accent-glow explicitly so color-mix() re-evaluates immediately
+        // even in browsers that cache inline custom property values
+        const accentRgb = hexToRgb(currentVars['--accent']);
+        root.style.setProperty('--accent-glow', `rgba(${accentRgb}, 0.25)`);
         localStorage.setItem("azkar_accentColor", accentColor);
     }, [accentColor, getAccentStyle, hexToRgb, isDarkMode]);
 
@@ -813,6 +818,7 @@ const AzkarApp = () => {
     if (!isLoggedIn) {
         return <LoginScreen
             onLogin={handleLogin}
+            onSelectExistingUser={handleSelectExistingUser}
             existingUsers={savedUsers}
             t={t}
             language={language}

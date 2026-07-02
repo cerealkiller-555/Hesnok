@@ -2,6 +2,41 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════
+   TAILWIND v4 THEME TOKENS
+   Maps CSS custom properties → Tailwind utilities
+   e.g. bg-bg-subtle, text-text-primary, border-glass-border
+   ═══════════════════════════════════════════ */
+@theme {
+    /* Colors — backgrounds */
+    --color-bg-main:    var(--bg-main);
+    --color-bg-surface: var(--bg-surface);
+    --color-bg-subtle:  var(--bg-subtle);
+
+    /* Colors — text */
+    --color-text-primary:   var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-tertiary:  var(--text-tertiary);
+    --color-text-on-primary: var(--text-on-primary);
+
+    /* Colors — brand */
+    --color-primary:       var(--primary);
+    --color-primary-light: var(--primary-light);
+    --color-primary-dark:  var(--primary-dark);
+    --color-accent:        var(--accent);
+    --color-accent-light:  var(--accent-light);
+    --color-accent-dark:   var(--accent-dark);
+
+    /* Colors — semantic */
+    --color-success: var(--success);
+    --color-warning: var(--warning);
+    --color-error:   var(--error);
+
+    /* Colors — glass */
+    --color-glass-bg:     var(--glass-bg);
+    --color-glass-border: var(--glass-border);
+}
+
+/* ═══════════════════════════════════════════
    DESIGN TOKENS
    ═══════════════════════════════════════════ */
 :root {

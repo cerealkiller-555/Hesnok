@@ -72,6 +72,22 @@ class AppErrorBoundary extends React.Component {
 }
 
 // ═══════════════════════════════════════════
+// Dark Mode — synchronous init before first render
+// Reads saved preference and applies the `dark`
+// class to <html> immediately so the login screen
+// (which renders outside AzkarApp's dark wrapper)
+// also gets the correct theme from the first paint.
+// ═══════════════════════════════════════════
+(function initDarkMode() {
+    try {
+        const isDark = localStorage.getItem('azkarDarkMode') === 'true';
+        document.documentElement.classList.toggle('dark', isDark);
+    } catch (e) {
+        // localStorage unavailable (e.g. private mode restrictions) — ignore
+    }
+})();
+
+// ═══════════════════════════════════════════
 // Mount
 // ═══════════════════════════════════════════
 const rootElement = document.getElementById('root');

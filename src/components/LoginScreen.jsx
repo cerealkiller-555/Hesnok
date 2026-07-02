@@ -37,7 +37,7 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-main pattern-bg" dir={language === "ar" ? "rtl" : "ltr"}>
+        <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-main)] pattern-bg" dir={language === "ar" ? "rtl" : "ltr"}>
             <div className="w-full max-w-sm animate-scale-in">
                 <div className="glass-panel p-6 md:p-8 space-y-6 relative overflow-hidden">
                     {/* Logo */}
