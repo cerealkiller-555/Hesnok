@@ -15,6 +15,7 @@ import PrayerTimesSection from './PrayerTimesSection';
 import CustomDuasSection  from './CustomDuasSection';
 import SettingsSection    from './SettingsSection';
 import StreakBanner        from './StreakBanner';
+import ProgressHero        from './ProgressHero';
 import LoginScreen         from './LoginScreen';
 import ZikrCard            from './ZikrCard';
 import Logo                from './Logo';
@@ -514,6 +515,11 @@ const AzkarApp = () => {
 
     const handleTabChange = useCallback((tabId) => {
         if (!tabConfig.some((tab) => tab.id === tabId)) return;
+        // Clear any in-progress highlight / counter animation from the
+        // previous tab so they don't bleed into the newly-mounted content.
+        setHighlightedZikr(null);
+        setNextFocusZikr(null);
+        setCountAnimation(null);
         setActiveTab(tabId);
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, []);
@@ -914,7 +920,18 @@ const AzkarApp = () => {
             <main className="container mx-auto px-4 py-6 max-w-3xl space-y-6 animate-fade-in">
                 <StreakBanner streakCount={streak.count} goals={goals} t={t} />
 
-                <div className="space-y-6">
+                <ProgressHero
+                    activeTab={activeTab}
+                    progressPercentage={progressPercentage}
+                    completedCount={completedCount}
+                    totalCount={currentAzkarList.length}
+                    resetAllProgress={resetAllProgress}
+                    t={t}
+                    userProfile={userProfile}
+                    language={language}
+                />
+
+                <div key={activeTab} className="space-y-6">
                     {activeTab === "morning"       && renderAzkarList(azkar.morning, "morning")}
                     {activeTab === "evening"       && renderAzkarList(azkar.evening, "evening")}
                     {activeTab === "sleeping"      && renderAzkarList(azkar.sleeping, "sleeping")}
@@ -980,7 +997,7 @@ const AzkarApp = () => {
             {/* Footer */}
             <footer className="py-12 text-center bg-[var(--bg-surface)] border-t border-glass-border">
                 <p className="text-[var(--primary)] font-black mb-4 tracking-wide text-[10px] uppercase">{t.appName} — {t.appTagline}</p>
-                <h2 className="text-xl font-amiri text-text-primary px-6 mb-6 italic leading-relaxed">"أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ"</h2>
+                <h2 className="text-2xl md:text-3xl font-amiri text-[var(--primary)] px-6 mb-6 leading-relaxed font-bold">أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</h2>
                 <div className="flex items-center justify-center gap-4 opacity-30">
                     <div className="w-10 h-px bg-current" />
                     <BookOpen className="w-5 h-5 text-[var(--primary)]" />

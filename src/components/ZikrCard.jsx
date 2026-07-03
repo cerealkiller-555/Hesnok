@@ -48,18 +48,12 @@ const ZikrCard = ({
         }
     };
 
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        // ensure mount animation only runs once when the card enters the DOM
-        setMounted(true);
-    }, []);
 
     return (
         <div
             id={`zikr-${uniqueId}`}
-            className={`zikr-card ${mounted ? 'animate-slide-up' : ''} ${isCompleted ? 'completed border-[rgba(var(--accent-rgb),0.25)]' : 'glass-card'} ${isHighlighted ? 'is-highlighted' : ''}`}
-            style={mounted ? { animationDelay: `${index * 50}ms` } : undefined}
+            className={`zikr-card animate-slide-up ${isCompleted ? 'completed border-[rgba(var(--accent-rgb),0.25)]' : 'glass-card'} ${isHighlighted ? 'is-highlighted' : ''}`}
+            style={{ animationDelay: `${index * 50}ms` }}
         >
             {/* Celebration overlay */}
             {showCelebration && (

@@ -19,6 +19,35 @@ const formatPrayerTime = (timeStr, language) => {
     });
 };
 
+const getActivePrayerKey = (prayerTimes) => {
+    if (!prayerTimes) return null;
+    const now = new Date();
+    
+    const parsed = PRAYER_CARDS.map(p => {
+        const time = prayerTimes[p.key];
+        const date = parsePrayerTime(time);
+        return { key: p.key, date };
+    }).filter(p => p.date);
+    
+    if (parsed.length === 0) return null;
+    
+    parsed.sort((a, b) => a.date - b.date);
+    
+    let activeKey = null;
+    for (let i = parsed.length - 1; i >= 0; i--) {
+        if (parsed[i].date <= now) {
+            activeKey = parsed[i].key;
+            break;
+        }
+    }
+    
+    if (!activeKey) {
+        activeKey = parsed[parsed.length - 1].key;
+    }
+    
+    return activeKey;
+};
+
 const PRAYER_CARDS = [
     { name_ar: "الفجر",  name_en: "Fajr",    key: "Fajr",    icon: "🌅" },
     { name_ar: "الشروق", name_en: "Sunrise",  key: "Sunrise",  icon: "☀️" },
@@ -28,53 +57,72 @@ const PRAYER_CARDS = [
     { name_ar: "العشاء", name_en: "Isha",     key: "Isha",     icon: "🌙" }
 ];
 
-const PrayerTimesSection = ({ prayerTimes, location, t, language, prayerChecklist, onTogglePrayer }) => (
-    <div className="animate-slide-up">
-        <div className="mb-5 text-center">
-            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">{t.prayerTimesTitle}</h2>
-            <p className="text-sm text-[var(--text-secondary)] font-medium">
-                {location.city} — {new Date().toLocaleDateString(language === "en" ? "en-US" : "ar-EG", {
-                    weekday: "long", year: "numeric", month: "long", day: "numeric"
-                })}
-            </p>
-        </div>
+const PrayerTimesSection = ({ prayerTimes, location, t, language, prayerChecklist, onTogglePrayer }) => {
+    const activePrayerKey = getActivePrayerKey(prayerTimes);
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {prayerTimes ? PRAYER_CARDS.map((p) => {
-                const prayerId = p.key.toLowerCase();
-                const isMarkable = prayerId !== 'sunrise';
-                const checked = Boolean(prayerChecklist?.[prayerId]);
-                return (
-                    <div key={p.key} className="prayer-time-card group cursor-default rounded-3xl border border-[var(--glass-border)] bg-[var(--bg-surface)] p-5 shadow-sm transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="prayer-time-icon text-xl transition-transform duration-300 group-hover:scale-105">{p.icon}</span>
-                            <div className="w-2 h-2 rounded-full bg-[var(--primary)] opacity-60" />
+    return (
+        <div className="animate-slide-up">
+            <div className="mb-5 text-center">
+                <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2">{t.prayerTimesTitle}</h2>
+                <p className="text-sm text-[var(--text-secondary)] font-medium">
+                    {location.city} — {new Date().toLocaleDateString(language === "en" ? "en-US" : "ar-EG", {
+                        weekday: "long", year: "numeric", month: "long", day: "numeric"
+                    })}
+                </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {prayerTimes ? PRAYER_CARDS.map((p) => {
+                    const prayerId = p.key.toLowerCase();
+                    const isMarkable = prayerId !== 'sunrise';
+                    const checked = Boolean(prayerChecklist?.[prayerId]);
+                    const isActive = activePrayerKey === p.key;
+
+                    return (
+                        <div 
+                            key={p.key} 
+                            className={`prayer-time-card group cursor-default rounded-3xl border p-5 shadow-sm transition-all relative overflow-hidden ${
+                                isActive 
+                                    ? 'border-[var(--primary)] bg-[var(--bg-surface)] shadow-[0_8px_24px_rgba(var(--primary-rgb),0.12)] ring-1 ring-[var(--primary)]/30' 
+                                    : 'border-[var(--glass-border)] bg-[var(--bg-surface)]'
+                            }`}
+                        >
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="prayer-time-icon text-xl transition-transform duration-300 group-hover:scale-105">{p.icon}</span>
+                                {isActive ? (
+                                    <span className="inline-flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-[10px] font-black uppercase px-2.5 py-0.5 tracking-wider">
+                                        {language === "en" ? "Active" : "الآن"}
+                                    </span>
+                                ) : (
+                                    <div className="w-2 h-2 rounded-full bg-[var(--primary)] opacity-60" />
+                                )}
+                            </div>
+                            <h3 className="text-sm md:text-base font-bold mb-1 text-[var(--text-secondary)]">
+                                {language === "en" ? p.name_en : p.name_ar}
+                            </h3>
+                            <p className="text-xl md:text-2xl font-black text-[var(--text-primary)]" dir="ltr">
+                                {formatPrayerTime(prayerTimes[p.key], language)}
+                            </p>
+                            {isMarkable && (
+                                <button
+                                    type="button"
+                                    onClick={() => onTogglePrayer(prayerId)}
+                                    className={`mt-4 w-full rounded-full px-4 py-3 text-sm font-black transition-all ${checked ? 'bg-[var(--primary)] text-white' : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--glass-border)] hover:border-[var(--primary)] hover:text-[var(--primary)]'}`}
+                                >
+                                    {checked ? t.doneLabel : t.markPrayer}
+                                </button>
+                            )}
                         </div>
-                        <h3 className="text-sm md:text-base font-bold mb-1 text-[var(--text-secondary)]">
-                            {language === "en" ? p.name_en : p.name_ar}
-                        </h3>
-                        <p className="text-xl md:text-2xl font-black text-[var(--text-primary)]" dir="ltr">
-                            {formatPrayerTime(prayerTimes[p.key], language)}
-                        </p>
-                        {isMarkable && (
-                            <button
-                                type="button"
-                                onClick={() => onTogglePrayer(prayerId)}
-                                className={`mt-4 w-full rounded-full px-4 py-3 text-sm font-black transition-all ${checked ? 'bg-[var(--primary)] text-white' : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--glass-border)] hover:border-[var(--primary)] hover:text-[var(--primary)]'}`}
-                            >
-                                {checked ? t.doneLabel : t.markPrayer}
-                            </button>
-                        )}
+                    );
+                }) : (
+                    <div className="col-span-full py-16 text-center">
+                        <div className="inline-block w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-4" />
+                        <p className="text-[var(--text-secondary)] font-bold">{t.prayerTimesLoading}</p>
                     </div>
-                );
-            }) : (
-                <div className="col-span-full py-16 text-center">
-                    <div className="inline-block w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-4" />
-                    <p className="text-[var(--text-secondary)] font-bold">{t.prayerTimesLoading}</p>
-                </div>
-            )}
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default PrayerTimesSection;

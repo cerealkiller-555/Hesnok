@@ -91,18 +91,22 @@ const SettingsSection = ({
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                     {[
-                        { value: 'indigo', label: language === 'en' ? 'Indigo' : 'أزرق' },
-                        { value: 'emerald', label: language === 'en' ? 'Emerald' : 'أخضر' },
-                        { value: 'rose', label: language === 'en' ? 'Rose' : 'وردي' },
-                        { value: 'teal', label: language === 'en' ? 'Teal' : 'تركواز' }
+                        { value: 'indigo', label: language === 'en' ? 'Indigo' : 'أزرق', color: '#6366f1' },
+                        { value: 'emerald', label: language === 'en' ? 'Emerald' : 'أخضر', color: '#10b981' },
+                        { value: 'rose', label: language === 'en' ? 'Rose' : 'وردي', color: '#ec4899' },
+                        { value: 'teal', label: language === 'en' ? 'Teal' : 'تركواز', color: '#14b8a6' }
                     ].map((option) => (
                         <button
                             key={option.value}
                             type="button"
                             onClick={() => setAccentColor(option.value)}
-                            className={`py-3 rounded-lg text-sm font-black border transition-all ${accentColor === option.value ? 'bg-[var(--primary)] text-white border-[var(--primary)]' : 'bg-bg-subtle text-text-secondary border-glass-border hover:border-[var(--primary)]'}`}
+                            className={`py-3 px-4 rounded-lg text-sm font-black border transition-all flex items-center justify-center gap-2.5 ${accentColor === option.value ? 'bg-[var(--primary)] text-white border-[var(--primary)] shadow-sm' : 'bg-bg-subtle text-text-secondary border-glass-border hover:border-[var(--primary)]'}`}
                         >
-                            {option.label}
+                            <span 
+                                className="w-3.5 h-3.5 rounded-full border border-black/10 dark:border-white/20 shrink-0 shadow-inner" 
+                                style={{ backgroundColor: option.color }}
+                            />
+                            <span>{option.label}</span>
                         </button>
                     ))}
                 </div>
