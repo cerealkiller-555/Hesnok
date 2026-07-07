@@ -18,5 +18,7 @@ pnpm-debug.log*
 .env
 .env.*
 
-# VS Code workspace settings
-.vscode/
+# VS Code workspace settings (keep settings.json and custom data for Tailwind CSS v4 support)
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/tailwindcss-data.css.json
