@@ -701,8 +701,6 @@ body {
     border-color: var(--success);
 }
 
-.dark .zikr-card.completed {}
-
 .zikr-card.is-highlighted {
     transform: scale(1.02);
 }
