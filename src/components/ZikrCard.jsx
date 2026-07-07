@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Share2, CheckCircle, Info, ChevronDown, BookOpen } from 'lucide-react';
 import { showToast } from '../utils/helpers';
 
@@ -23,12 +23,29 @@ const ZikrCard = ({
     onProgress
 }) => {
     const [showCelebration, setShowCelebration] = useState(false);
+    const cardRef = useRef(null);
 
     const isEn = language === "en" || showEnTranslations;
     const title   = isEn && zikr.titleEn   ? zikr.titleEn   : zikr.title;
     const benefit = isEn && zikr.benefitEn  ? zikr.benefitEn  : zikr.benefit;
     const meaning = isEn && zikr.meaningEn  ? zikr.meaningEn  : zikr.meaning;
     const source  = isEn && zikr.sourceEn   ? zikr.sourceEn   : zikr.source;
+
+    // Auto-scroll to center the card when it's highlighted
+    useEffect(() => {
+        if (isHighlighted && cardRef.current) {
+            const cardElement = cardRef.current;
+            const rect = cardElement.getBoundingClientRect();
+            const scrollTop = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const targetTop = rect.top + scrollTop - (windowHeight / 2) + (rect.height / 2);
+            
+            window.scrollTo({
+                top: targetTop,
+                behavior: 'smooth'
+            });
+        }
+    }, [isHighlighted]);
 
     // Celebration flash when completed via counter (not toggle)
     useEffect(() => {
@@ -52,6 +69,7 @@ const ZikrCard = ({
     return (
         <div
             id={`zikr-${uniqueId}`}
+            ref={cardRef}
             className={`zikr-card animate-slide-up ${isCompleted ? 'completed border-[rgba(var(--accent-rgb),0.25)]' : 'glass-card'} ${isHighlighted ? 'is-highlighted' : ''}`}
             style={{ animationDelay: `${index * 50}ms` }}
         >

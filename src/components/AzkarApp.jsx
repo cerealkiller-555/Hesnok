@@ -48,6 +48,15 @@ const PRAYER_BANNERS = [
     { key: "Isha",    ar: "العشاء",  en: "Isha",    icon: "🌙" }
 ];
 
+// Map tab IDs to azkar data keys
+const TAB_TO_AZKAR_KEY = {
+    morning: "morning",
+    evening: "evening",
+    sleeping: "sleeping",
+    prayer_azkar: "prayerAzkar",
+    jawami: "jawami"
+};
+
 const ACCENT_OPTIONS = [
     { id: "indigo", labelAr: "أزرق ملكي", labelEn: "Indigo", vars: { '--primary': '#6366f1', '--primary-light': '#818cf8', '--primary-dark': '#4f46e5', '--accent': '#f59e0b', '--accent-light': '#fbbf24', '--accent-dark': '#d97706', '--accent-glow': 'rgba(245, 158, 11, 0.25)', '--primary-rgb': '99,102,241', '--accent-rgb': '245,158,11' }, darkVars: { '--primary': '#818cf8', '--primary-light': '#a5b4fc', '--primary-dark': '#6366f1', '--accent': '#fbbf24', '--accent-light': '#fcd34d', '--accent-dark': '#f59e0b', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '129,140,248', '--accent-rgb': '251,191,36' } },
     { id: "emerald", labelAr: "أخضر زمردي", labelEn: "Emerald", vars: { '--primary': '#10b981', '--primary-light': '#34d399', '--primary-dark': '#059669', '--accent': '#14b8a6', '--accent-light': '#2dd4bf', '--accent-dark': '#0f766e', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '16,185,129', '--accent-rgb': '20,184,166' }, darkVars: { '--primary': '#34d399', '--primary-light': '#6ee7b7', '--primary-dark': '#10b981', '--accent': '#2dd4bf', '--accent-light': '#5eead4', '--accent-dark': '#14b8a6', '--accent-glow': 'rgba(45, 212, 191, 0.25)', '--primary-rgb': '52,211,153', '--accent-rgb': '45,212,191' } },
@@ -145,7 +154,7 @@ const AzkarApp = () => {
             jawami: azkar.jawami
         };
         return map[activeTab] || [];
-    }, [activeTab]);
+    }, [activeTab, azkar]);
 
     const progressPercentage = useMemo(() => {
         if (!currentAzkarList.length) return 0;
@@ -1019,7 +1028,7 @@ const AzkarApp = () => {
                                     {tabs.find(t => t.id === activeTab)?.labelText}
                                 </span>
                             </div>
-                            <span className="text-[10px] font-black text-[var(--text-secondary)] bg-[var(--bg-subtle)] px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] font-black text-[var(--text-secondary)]">
                                 {completedCount} / {currentAzkarList.length} {t.doneLabel}
                             </span>
                         </div>

@@ -12,7 +12,7 @@ const THEMES = {
     sleeping: {
         icon: Moon
     },
-    prayer_azkar: {
+    prayerAzkar: {
         icon: BookOpen
     },
     jawami: {
@@ -31,7 +31,7 @@ const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCoun
         morning: t.progressTitleMorning,
         evening: t.progressTitleEvening,
         sleeping: t.progressTitleSleeping,
-        prayer_azkar: t.progressTitlePrayer,
+        prayerAzkar: t.progressTitlePrayer,
         jawami: t.jawamiTitle
     }[activeTab];
 
