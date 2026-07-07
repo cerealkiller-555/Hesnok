@@ -80,11 +80,11 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                         {t.nameLabel}
                                     </label>
                                     <div className="relative group">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary group-focus-within:text-[var(--primary)] transition-colors" />
+                                        <User className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary group-focus-within:text-[var(--primary)] transition-colors ${language === 'ar' ? 'right-4' : 'left-4'}`} />
                                         <input
                                             id="login-name"
                                             type="text"
-                                            className={`w-full bg-bg-subtle border py-3.5 pl-12 pr-6 rounded-lg focus:outline-none focus:border-[var(--primary)] text-text-primary transition-all font-bold ${errors.name ? 'border-error/50' : 'border-glass-border'}`}
+                                            className={`w-full bg-bg-subtle border py-3.5 rounded-lg focus:outline-none focus:border-[var(--primary)] text-text-primary transition-all font-bold ${errors.name ? 'border-error/50' : 'border-glass-border'} ${language === 'ar' ? 'pr-12 pl-4' : 'pl-12 pr-6'}`}
                                             placeholder={language === "en" ? "Your name" : "الاسم الكامل"}
                                             value={form.name}
                                             onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -92,9 +92,7 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                         />
                                     </div>
                                     {errors.name && (
-                                        <p className="text-[11px] font-bold text-error mt-1.5 ml-1">
-                                            {language === "en" ? "Name is required" : "الاسم مطلوب"}
-                                        </p>
+                                        <p className="text-[11px] font-bold text-error mt-1.5">{language === "en" ? "Name is required" : "الاسم مطلوب"}</p>
                                     )}
                                 </div>
                             )}
@@ -105,11 +103,11 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                     {t.emailLabel}
                                 </label>
                                 <div className="relative group">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary group-focus-within:text-[var(--primary)] transition-colors" />
+                                    <Mail className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary group-focus-within:text-[var(--primary)] transition-colors ${language === 'ar' ? 'right-4' : 'left-4'}`} />
                                     <input
                                         id="login-email"
                                         type="email"
-                                        className={`w-full bg-bg-subtle border py-3.5 pl-12 pr-6 rounded-lg focus:outline-none focus:border-[var(--primary)] text-text-primary transition-all font-bold ${errors.email ? 'border-error/50' : 'border-glass-border'}`}
+                                        className={`w-full bg-bg-subtle border py-3.5 rounded-lg focus:outline-none focus:border-[var(--primary)] text-text-primary transition-all font-bold ${errors.email ? 'border-error/50' : 'border-glass-border'} ${language === 'ar' ? 'pr-12 pl-4' : 'pl-12 pr-6'}`}
                                         placeholder="email@example.com"
                                         value={form.email}
                                         onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -117,9 +115,7 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                                     />
                                 </div>
                                 {errors.email && (
-                                    <p className="text-[11px] font-bold text-error mt-1.5 ml-1">
-                                        {language === "en" ? "Valid email is required" : "البريد الإلكتروني غير صحيح"}
-                                    </p>
+                                    <p className="text-[11px] font-bold text-error mt-1.5">{language === "en" ? "Valid email is required" : "البريد الإلكتروني غير صحيح"}</p>
                                 )}
                             </div>
 
@@ -159,7 +155,7 @@ const LoginScreen = ({ onLogin, onSelectExistingUser, existingUsers = [], t, lan
                             className="w-full bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white font-black py-3.5 rounded-lg flex items-center justify-center gap-2 transform active:scale-95 transition-all group"
                         >
                             <span>{actionLabel}</span>
-                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            <ArrowRight className={`w-5 h-5 transition-transform ${language === 'ar' ? 'group-hover:-translate-x-1 rtl-flip' : 'group-hover:translate-x-1'}`} />
                         </button>
 
                         {/* Toggle mode */}

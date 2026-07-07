@@ -70,14 +70,14 @@ const SettingsSection = ({
                 <div className="space-y-4">
                     <button onClick={toggleDarkMode} className="w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all">
                         <span className="text-text-secondary font-black">{isDarkMode ? t.darkOn : t.lightOn}</span>
-                        <div className={`w-12 h-7 rounded-full transition-all duration-500 flex items-center p-1 ${isDarkMode ? "bg-[var(--primary)]" : "bg-slate-300 dark:bg-slate-700"}`}>
+                        <div className={`w-12 h-7 rounded-full transition-all duration-500 flex items-center p-1 ${isDarkMode ? "bg-[var(--primary)]" : "bg-[var(--bg-subtle)] border border-[var(--glass-border)]"}`}>
                             <div className={`w-6 h-6 rounded-full bg-white shadow-xl transform transition-transform duration-500 ${isDarkMode ? (language === 'ar' ? '-translate-x-5' : 'translate-x-5') : 'translate-x-0'}`} />
                         </div>
                     </button>
 
                     <button onClick={() => setShowEnTranslations(!showEnTranslations)} className="w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all">
                         <span className="text-text-secondary font-black">{showEnTranslations ? t.showArOriginal : t.toggleEnTrans}</span>
-                        <div className={`w-12 h-7 rounded-full transition-all duration-500 flex items-center p-1 ${showEnTranslations ? "bg-[var(--primary)]" : "bg-slate-300 dark:bg-slate-700"}`}>
+                        <div className={`w-12 h-7 rounded-full transition-all duration-500 flex items-center p-1 ${showEnTranslations ? "bg-[var(--primary)]" : "bg-[var(--bg-subtle)] border border-[var(--glass-border)]"}`}>
                             <div className={`w-6 h-6 rounded-full bg-white shadow-xl transform transition-transform duration-500 ${showEnTranslations ? (language === 'ar' ? '-translate-x-5' : 'translate-x-5') : 'translate-x-0'}`} />
                         </div>
                     </button>
@@ -89,18 +89,21 @@ const SettingsSection = ({
                     <Sun className="w-5 h-5 text-[var(--primary)]" />
                     {t.colorThemeLabel}
                 </h3>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                     {[
                         { value: 'indigo', label: language === 'en' ? 'Indigo' : 'أزرق', color: '#6366f1' },
                         { value: 'emerald', label: language === 'en' ? 'Emerald' : 'أخضر', color: '#10b981' },
                         { value: 'rose', label: language === 'en' ? 'Rose' : 'وردي', color: '#ec4899' },
-                        { value: 'teal', label: language === 'en' ? 'Teal' : 'تركواز', color: '#14b8a6' }
+                        { value: 'teal', label: language === 'en' ? 'Teal' : 'تركواز', color: '#14b8a6' },
+                        { value: 'blue', label: language === 'en' ? 'Blue' : 'أزرق كحلي', color: '#3b82f6' },
+                        { value: 'purple', label: language === 'en' ? 'Purple' : 'بنفسجي', color: '#a855f7' },
+                        { value: 'amber', label: language === 'en' ? 'Amber' : 'عنابي', color: '#f59e0b' }
                     ].map((option) => (
                         <button
                             key={option.value}
                             type="button"
                             onClick={() => setAccentColor(option.value)}
-                            className={`py-3 px-4 rounded-lg text-sm font-black border transition-all flex items-center justify-center gap-2.5 ${accentColor === option.value ? 'bg-[var(--primary)] text-white border-[var(--primary)] shadow-sm' : 'bg-bg-subtle text-text-secondary border-glass-border hover:border-[var(--primary)]'}`}
+                            className={`py-3 px-4 rounded-lg text-sm font-black border transition-all ${accentColor === option.value ? 'bg-[var(--primary)] text-white border-[var(--primary)] shadow-sm' : 'bg-bg-subtle text-text-secondary border-glass-border hover:border-[var(--primary)]'}`}
                         >
                             <span 
                                 className="w-3.5 h-3.5 rounded-full border border-black/10 dark:border-white/20 shrink-0 shadow-inner" 
@@ -193,7 +196,7 @@ const SettingsSection = ({
         </div>
 
         {/* Reset */}
-        <button onClick={resetAllProgress} className="w-full py-4 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black transform active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+        <button onClick={resetAllProgress} className="w-full py-4 rounded-lg bg-[var(--error)] hover:opacity-90 text-white font-black transform active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-rose-500/20">
             <RotateCcw className="w-5 h-5" />
             {t.resetAllLabel}
         </button>

@@ -44,7 +44,7 @@ const CustomDuasSection = ({ customDuas, newDua, setNewDua, addCustomDua, delete
                         <p className="text-lg font-amiri text-[var(--text-primary)] leading-relaxed flex-1">{dua.text}</p>
                         <button
                             onClick={() => deleteCustomDua(dua.id)}
-                            className="p-2 rounded-lg bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-300 md:opacity-0 md:group-hover:opacity-100 transition-all hover:scale-105 active:scale-95 flex-shrink-0"
+                            className="p-2 rounded-lg bg-[var(--error)]/10 text-[var(--error)] md:opacity-0 md:group-hover:opacity-100 transition-all hover:scale-105 active:scale-95 flex-shrink-0"
                             aria-label={t.deleteDua}
                         >
                             <Trash2 className="w-4 h-4" />

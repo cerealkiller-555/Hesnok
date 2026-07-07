@@ -49,10 +49,13 @@ const PRAYER_BANNERS = [
 ];
 
 const ACCENT_OPTIONS = [
-    { id: "indigo", labelAr: "أزرق ملكي", labelEn: "Indigo", vars: { '--primary': '#6366f1', '--primary-light': '#818cf8', '--primary-dark': '#4f46e5', '--accent': '#f59e0b', '--accent-light': '#fbbf24', '--accent-dark': '#d97706', '--accent-glow': 'rgba(99, 102, 241, 0.25)', '--primary-rgb': '99,102,241', '--accent-rgb': '245,158,11' }, darkVars: { '--primary': '#818cf8', '--primary-light': '#a5b4fc', '--primary-dark': '#6366f1', '--accent': '#fbbf24', '--accent-light': '#fcd34d', '--accent-dark': '#f59e0b', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '129,140,248', '--accent-rgb': '251,191,36' } },
+    { id: "indigo", labelAr: "أزرق ملكي", labelEn: "Indigo", vars: { '--primary': '#6366f1', '--primary-light': '#818cf8', '--primary-dark': '#4f46e5', '--accent': '#f59e0b', '--accent-light': '#fbbf24', '--accent-dark': '#d97706', '--accent-glow': 'rgba(245, 158, 11, 0.25)', '--primary-rgb': '99,102,241', '--accent-rgb': '245,158,11' }, darkVars: { '--primary': '#818cf8', '--primary-light': '#a5b4fc', '--primary-dark': '#6366f1', '--accent': '#fbbf24', '--accent-light': '#fcd34d', '--accent-dark': '#f59e0b', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '129,140,248', '--accent-rgb': '251,191,36' } },
     { id: "emerald", labelAr: "أخضر زمردي", labelEn: "Emerald", vars: { '--primary': '#10b981', '--primary-light': '#34d399', '--primary-dark': '#059669', '--accent': '#14b8a6', '--accent-light': '#2dd4bf', '--accent-dark': '#0f766e', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '16,185,129', '--accent-rgb': '20,184,166' }, darkVars: { '--primary': '#34d399', '--primary-light': '#6ee7b7', '--primary-dark': '#10b981', '--accent': '#2dd4bf', '--accent-light': '#5eead4', '--accent-dark': '#14b8a6', '--accent-glow': 'rgba(45, 212, 191, 0.25)', '--primary-rgb': '52,211,153', '--accent-rgb': '45,212,191' } },
     { id: "rose", labelAr: "وردي ناعم", labelEn: "Rose", vars: { '--primary': '#ec4899', '--primary-light': '#f472b6', '--primary-dark': '#be185d', '--accent': '#f97316', '--accent-light': '#fb923c', '--accent-dark': '#ea580c', '--accent-glow': 'rgba(236, 72, 153, 0.2)', '--primary-rgb': '236,72,153', '--accent-rgb': '249,115,22' }, darkVars: { '--primary': '#f472b6', '--primary-light': '#fbcfe8', '--primary-dark': '#ec4899', '--accent': '#fb923c', '--accent-light': '#fdba74', '--accent-dark': '#f97316', '--accent-glow': 'rgba(251, 146, 60, 0.25)', '--primary-rgb': '244,114,182', '--accent-rgb': '251,146,60' } },
-    { id: "teal", labelAr: "أخضر بحري", labelEn: "Teal", vars: { '--primary': '#14b8a6', '--primary-light': '#2dd4bf', '--primary-dark': '#0f766e', '--accent': '#22d3ee', '--accent-light': '#67e8f9', '--accent-dark': '#0e7490', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '20,184,166', '--accent-rgb': '34,211,238' }, darkVars: { '--primary': '#2dd4bf', '--primary-light': '#5eead4', '--primary-dark': '#14b8a6', '--accent': '#67e8f9', '--accent-light': '#a5f3fc', '--accent-dark': '#22d3ee', '--accent-glow': 'rgba(103, 232, 249, 0.25)', '--primary-rgb': '45,212,191', '--accent-rgb': '103,232,249' } }
+    { id: "teal", labelAr: "أخضر بحري", labelEn: "Teal", vars: { '--primary': '#14b8a6', '--primary-light': '#2dd4bf', '--primary-dark': '#0f766e', '--accent': '#22d3ee', '--accent-light': '#67e8f9', '--accent-dark': '#0e7490', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '20,184,166', '--accent-rgb': '34,211,238' }, darkVars: { '--primary': '#2dd4bf', '--primary-light': '#5eead4', '--primary-dark': '#14b8a6', '--accent': '#67e8f9', '--accent-light': '#a5f3fc', '--accent-dark': '#22d3ee', '--accent-glow': 'rgba(103, 232, 249, 0.25)', '--primary-rgb': '45,212,191', '--accent-rgb': '103,232,249' } },
+    { id: "blue", labelAr: "أزرق كحلي", labelEn: "Blue", vars: { '--primary': '#3b82f6', '--primary-light': '#60a5fa', '--primary-dark': '#2563eb', '--accent': '#8b5cf6', '--accent-light': '#a78bfa', '--accent-dark': '#7c3aed', '--accent-glow': 'rgba(59, 130, 246, 0.25)', '--primary-rgb': '59,130,246', '--accent-rgb': '139,92,246' }, darkVars: { '--primary': '#60a5fa', '--primary-light': '#93c5fd', '--primary-dark': '#3b82f6', '--accent': '#a78bfa', '--accent-light': '#c4b5fd', '--accent-dark': '#8b5cf6', '--accent-glow': 'rgba(96, 165, 250, 0.25)', '--primary-rgb': '96,165,250', '--accent-rgb': '167,139,250' } },
+    { id: "purple", labelAr: "بنفسجي", labelEn: "Purple", vars: { '--primary': '#a855f7', '--primary-light': '#c084fc', '--primary-dark': '#9333ea', '--accent': '#ec4899', '--accent-light': '#f472b6', '--accent-dark': '#db2777', '--accent-glow': 'rgba(168, 85, 247, 0.25)', '--primary-rgb': '168,85,247', '--accent-rgb': '236,72,153' }, darkVars: { '--primary': '#c084fc', '--primary-light': '#e9d5ff', '--primary-dark': '#a855f7', '--accent': '#f472b6', '--accent-light': '#fda5d5', '--accent-dark': '#ec4899', '--accent-glow': 'rgba(192, 132, 252, 0.25)', '--primary-rgb': '192,132,252', '--accent-rgb': '244,114,182' } },
+    { id: "amber", labelAr: "عنابي", labelEn: "Amber", vars: { '--primary': '#f59e0b', '--primary-light': '#fbbf24', '--primary-dark': '#d97706', '--accent': '#ef4444', '--accent-light': '#f87171', '--accent-dark': '#dc2626', '--accent-glow': 'rgba(245, 158, 11, 0.25)', '--primary-rgb': '245,158,11', '--accent-rgb': '239,68,68' }, darkVars: { '--primary': '#fbbf24', '--primary-light': '#fde68a', '--primary-dark': '#f59e0b', '--accent': '#f87171', '--accent-light': '#fca5a5', '--accent-dark': '#ef4444', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '251,191,36', '--accent-rgb': '248,113,113' } }
 ];
 
 const SOUND_OPTIONS = [
@@ -579,10 +582,10 @@ const AzkarApp = () => {
         timers.push(
             setTimeout(() => {
                 setHighlightedZikr(nextFocusZikr);
-                // Optional: gentle scroll only if card is out of view
+                // Gentle scroll only if card is out of view
                 const el = document.getElementById(`zikr-${nextFocusZikr}`);
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (el && !isElementInViewport(el)) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
             }, 250)
         );
@@ -696,17 +699,17 @@ const AzkarApp = () => {
     }, []);
 
     useEffect(() => {
-        const style = getAccentStyle();
         const root = document.documentElement;
+        // Set data-theme attribute to apply the theme CSS variables
+        root.setAttribute('data-theme', accentColor);
+        // Also set inline styles for accent colors (not covered by data-theme)
+        const style = getAccentStyle();
         const currentVars = isDarkMode && style.darkVars ? style.darkVars : style.vars;
-        Object.entries(currentVars).forEach(([key, value]) => root.style.setProperty(key, value));
-        // Explicitly compute rgb channels (override any stale values from the vars object)
-        root.style.setProperty('--primary-rgb', hexToRgb(currentVars['--primary']));
-        root.style.setProperty('--accent-rgb',  hexToRgb(currentVars['--accent']));
-        // Compute --accent-glow explicitly so color-mix() re-evaluates immediately
-        // even in browsers that cache inline custom property values
-        const accentRgb = hexToRgb(currentVars['--accent']);
-        root.style.setProperty('--accent-glow', `rgba(${accentRgb}, 0.25)`);
+        root.style.setProperty('--accent', currentVars['--accent']);
+        root.style.setProperty('--accent-light', currentVars['--accent-light']);
+        root.style.setProperty('--accent-dark', currentVars['--accent-dark']);
+        root.style.setProperty('--accent-rgb', hexToRgb(currentVars['--accent']));
+        root.style.setProperty('--accent-glow', `rgba(${hexToRgb(currentVars['--accent'])}, 0.25)`);
         localStorage.setItem("azkar_accentColor", accentColor);
     }, [accentColor, getAccentStyle, hexToRgb, isDarkMode]);
 
@@ -844,7 +847,7 @@ const AzkarApp = () => {
             <header className="sticky top-0 z-50 glass-panel !rounded-none border-x-0 border-t-0 shadow-sm">
                 <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange("morning")}>
-                        <div className="w-10 h-10 rounded-lg bg-white dark:bg-[var(--bg-subtle)] flex items-center justify-center shadow-sm border border-[var(--glass-border)] transition-transform">
+                        <div className="w-10 h-10 rounded-lg bg-[var(--bg-surface)] flex items-center justify-center shadow-sm border border-[var(--glass-border)] transition-transform">
                             <Logo className="w-10 h-10 rounded-lg shadow-lg" mode={isDarkMode ? 'dark' : 'light'} />
                         </div>
                         <div>
@@ -876,9 +879,9 @@ const AzkarApp = () => {
                                 <button
                                     key={tab.id}
                                     onClick={() => handleTabChange(tab.id)}
-                                    className={`desktop-nav-item relative ${activeTab === tab.id ? 'active' : ''} ${prog?.isAllDone ? 'border-emerald-500/30' : ''}`}
+                                    className={`desktop-nav-item relative ${activeTab === tab.id ? 'active' : ''} ${prog?.isAllDone ? 'border-[var(--success)]/30' : ''}`}
                                 >
-                                    <tab.icon className={`w-4 h-4 ${prog?.isAllDone ? 'text-emerald-500' : ''}`} />
+                                    <tab.icon className={`w-4 h-4 ${prog?.isAllDone ? 'text-[var(--success)]' : ''}`} />
                                     <span>{tab.labelText}</span>
                                     {/* removed numeric badge per UX request */}
                                 </button>
@@ -892,17 +895,17 @@ const AzkarApp = () => {
                 <section className="container mx-auto px-4 py-3">
                     <div className="next-prayer-card mx-auto w-full max-w-3xl rounded-3xl border border-[var(--glass-border)] bg-[var(--bg-surface)] shadow-[0_12px_24px_rgba(15,23,42,0.08)] p-3 overflow-hidden">
                         <div className="relative z-10 flex flex-col sm:flex-row items-center gap-3">
-                            <div className="flex items-center justify-center flex-shrink-0 w-14 h-14 rounded-2xl bg-[var(--accent)]/15 text-[var(--accent)] shadow-sm shadow-[var(--accent)]/10 text-2xl">
+                            <div className="flex items-center justify-center flex-shrink-0 w-14 h-14 rounded-2xl bg-[var(--primary)]/15 text-[var(--primary)] shadow-sm shadow-[var(--primary)]/10 text-2xl">
                                 {nextPrayer.icon}
                             </div>
                             <div className="flex-1 min-w-0 text-center sm:text-left">
-                                <span className="inline-flex items-center justify-center rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.35em] text-[var(--accent)]">
+                                <span className="inline-flex items-center justify-center rounded-full border border-[var(--primary)]/20 bg-[var(--primary)]/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.35em] text-[var(--primary)]">
                                     {language === 'en' ? 'Next prayer' : 'الصلاة القادمة'}
                                 </span>
                                 <h2 className="mt-2 text-lg font-black text-[var(--text-primary)] leading-snug truncate">
                                     {language === 'en' ? nextPrayer.en : nextPrayer.ar}
                                 </h2>
-                                <p className="mt-1 text-2xl font-black text-[var(--accent)] leading-none" dir="ltr">
+                                <p className="mt-1 text-2xl font-black text-[var(--primary)] leading-none" dir="ltr">
                                     {formatNextPrayerTime(nextPrayer.date)}
                                 </p>
                                 {nextPrayerCountdown && (
@@ -1011,7 +1014,7 @@ const AzkarApp = () => {
                     <div className="max-w-md mx-auto glass-panel p-2 shadow-xl border border-[var(--primary)]/20 pointer-events-auto overflow-hidden animate-slide-up bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
                         <div className="flex items-center justify-between mb-1.5 px-2">
                             <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${progressPercentage === 100 ? 'bg-emerald-500 animate-pulse' : 'bg-[var(--primary)]'}`} />
+                                <div className={`w-2 h-2 rounded-full ${progressPercentage === 100 ? 'bg-[var(--success)] animate-pulse' : 'bg-[var(--primary)]'}`} />
                                 <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">
                                     {tabs.find(t => t.id === activeTab)?.labelText}
                                 </span>
@@ -1020,7 +1023,7 @@ const AzkarApp = () => {
                                 {completedCount} / {currentAzkarList.length} {t.doneLabel}
                             </span>
                         </div>
-                        <div className="h-1.5 w-full bg-slate-100/50 dark:bg-slate-800/50 rounded-full overflow-hidden border border-black/5">
+                        <div className="h-1.5 w-full bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-black/5">
                             <div 
                                 className="h-full bg-gradient-to-r from-[var(--primary)] via-[var(--primary-light)] to-[var(--primary)] bg-[length:200%_100%] animate-shimmer rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(var(--primary-rgb),0.4)]" 
                                 style={{ width: `${progressPercentage}%` }} 
@@ -1041,7 +1044,7 @@ const AzkarApp = () => {
                             className={`bottom-nav-item ${activeTab === tab.id ? 'active' : ''}`}
                         >
                             <div className="relative">
-                                <tab.icon className={`w-5 h-5 mb-1 ${prog?.isAllDone ? 'text-emerald-500' : ''}`} />
+                                <tab.icon className={`w-5 h-5 mb-1 ${prog?.isAllDone ? 'text-[var(--success)]' : ''}`} />
                                 {/* numeric badge removed for cleaner menu */}
                             </div>
                             <span className="text-[10px] font-bold">{tab.labelText}</span>

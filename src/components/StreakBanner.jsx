@@ -27,11 +27,11 @@ const StreakBanner = ({ streakCount, goals, t }) => (
                             className={`p-3 rounded-lg border flex items-center gap-3 text-sm font-black transition-all ${
                                 goal.completed
                                     ? "bg-[var(--primary)] text-white border-[var(--primary)]"
-                                    : "bg-bg-subtle dark:bg-slate-900/50 border-glass-border text-text-secondary"
+                                    : "bg-[var(--bg-subtle)] border-[var(--glass-border)] text-text-secondary"
                             }`}
                         >
                             <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                                goal.completed ? "bg-white/15 text-white" : "bg-white dark:bg-slate-800 text-text-secondary"
+                                goal.completed ? "bg-white/15 text-white" : "bg-[var(--bg-surface)] text-text-secondary"
                             }`}>
                                 <CheckCircle className="w-4 h-4" />
                             </div>
