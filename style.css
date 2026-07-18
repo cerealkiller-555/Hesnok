@@ -781,9 +781,9 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     border-left: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
-    padding: 24px;
+    padding: 16px;
     color: var(--text-primary);
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     position: relative;
     overflow: hidden;
     box-shadow: var(--glass-shadow);
@@ -805,11 +805,11 @@ body {
     border: 1px solid var(--glass-border);
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     border-left: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    border-radius: 16px;
     color: var(--text-primary);
-    padding: 18px;
+    padding: 16px;
     box-shadow: var(--glass-shadow);
-    transition: border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .dark .prayer-time-card {

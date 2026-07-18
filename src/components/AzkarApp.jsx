@@ -761,7 +761,7 @@ const AzkarApp = () => {
             <ScrollToTop t={t} />
 
             {/* Header */}
-            <header className="sticky top-0 z-50 glass-panel !rounded-none border-x-0 border-t-0 shadow-sm">
+            <header className="sticky top-0 z-[1001] glass-panel !rounded-none border-x-0 border-t-0 shadow-sm">
                 <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleTabChange("morning")}>
                         <div className="w-10 h-10 rounded-lg bg-[var(--bg-surface)] flex items-center justify-center shadow-sm border border-[var(--glass-border)] transition-transform">
@@ -778,7 +778,7 @@ const AzkarApp = () => {
                             <Clock className="w-4 h-4 text-[var(--primary)]" />
                             <span className="text-sm font-mono">{formatTime()}</span>
                             {hijriDate && (
-                                <span className="text-[10px] text-[var(--text-secondary)] font-medium border-l border-glass-border pl-2 ml-1">
+                                <span className="text-xs text-[var(--text-secondary)] font-medium border-l border-glass-border pl-2 ml-1">
                                     {formatHijriDate()}
                                 </span>
                             )}

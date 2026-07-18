@@ -12,7 +12,7 @@ const parsePrayerTime = (timeStr) => {
 const formatPrayerTime = (timeStr, language) => {
     const date = parsePrayerTime(timeStr);
     if (!date) return "--:--";
-    return date.toLocaleTimeString(language === 'en' ? 'en-US' : 'ar-EG', {
+    return date.toLocaleTimeStringnguage === 'en' ? 'en-US' : 'ar-EG', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
@@ -83,7 +83,7 @@ const PrayerTimesSection = ({ prayerTimes, hijriDate, location, t, language, pra
                 )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {prayerTimes ? PRAYER_CARDS.map((p) => {
                     const prayerId = p.key.toLowerCase();
                     const isMarkable = prayerId !== 'sunrise';
@@ -93,33 +93,33 @@ const PrayerTimesSection = ({ prayerTimes, hijriDate, location, t, language, pra
                     return (
                         <div 
                             key={p.key} 
-                            className={`prayer-time-card group cursor-default rounded-3xl border p-5 shadow-sm transition-all relative overflow-hidden ${
+                            className={`prayer-time-card group cursor-default rounded-xl border p-4 shadow-sm transition-all relative overflow-hidden ${
                                 isActive 
                                     ? 'border-primary bg-bg-surface shadow-[0_8px_24px_rgba(var(--primary-rgb),0.12)] ring-1 ring-primary/30' 
                                     : 'border-glass-border bg-bg-surface'
                             }`}
                         >
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="prayer-time-icon text-xl transition-transform duration-300 group-hover:scale-105">{p.icon}</span>
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="prayer-time-icon text-lg transition-transform duration-300 group-hover:scale-105">{p.icon}</span>
                                 {isActive ? (
-                                    <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase px-2.5 py-0.5 tracking-wider">
+                                    <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary text-[9px] font-black uppercase px-2 py-0.5 tracking-wider">
                                         {language === "en" ? "Active" : "الآن"}
                                     </span>
                                 ) : (
-                                    <div className="w-2 h-2 rounded-full bg-primary opacity-60" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary opacity-60" />
                                 )}
                             </div>
-                            <h3 className="text-sm md:text-base font-bold mb-1 text-[var(--text-secondary)]">
+                            <h3 className="text-xs md:text-sm font-bold mb-1 text-[var(--text-secondary)]">
                                 {language === "en" ? p.name_en : p.name_ar}
                             </h3>
-                            <p className="text-xl md:text-2xl font-black text-[var(--text-primary)]" dir="ltr">
+                            <p className="text-lg md:text-xl font-black text-[var(--text-primary)]" dir="ltr">
                                 {formatPrayerTime(prayerTimes[p.key], language)}
                             </p>
                             {isMarkable && (
                                 <button
                                     type="button"
                                     onClick={() => onTogglePrayer(prayerId)}
-                                    className={`mt-4 w-full rounded-full px-4 py-3 text-sm font-black transition-all ${checked ? 'bg-primary text-white' : 'bg-bg-subtle text-text-secondary border border-glass-border hover:border-primary hover:text-primary'}`}
+                                    className={`mt-3 w-full rounded-full px-3 py-2 text-xs font-black transition-all ${checked ? 'bg-primary text-white' : 'bg-bg-subtle text-text-secondary border border-glass-border hover:border-primary hover:text-primary'}`}
                                 >
                                     {checked ? t.doneLabel : t.markPrayer}
                                 </button>
@@ -127,9 +127,9 @@ const PrayerTimesSection = ({ prayerTimes, hijriDate, location, t, language, pra
                         </div>
                     );
                 }) : (
-                    <div className="col-span-full py-16 text-center">
-                        <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-                        <p className="text-[var(--text-secondary)] font-bold">{t.prayerTimesLoading}</p>
+                    <div className="col-span-full py-12 text-center">
+                        <div className="inline-block w-6 h-6 border-3 border-primary border-t-transparent rounded-full animate-spin mb-3" />
+                        <p className="text-[var(--text-secondary)] font-bold text-sm">{t.prayerTimesLoading}</p>
                     </div>
                 )}
             </div>
