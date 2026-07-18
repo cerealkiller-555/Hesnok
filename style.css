@@ -582,14 +582,14 @@ body {
 }
 
 .bottom-nav-item.active {
-    color: var(--accent);
+    color: var(--primary);
     transform: translateY(-4px);
 }
 
 .bottom-nav-item.active::after {
     opacity: 1;
     transform: scale(1);
-    background: var(--accent);
+    background: var(--primary);
 }
 
 .bottom-nav-item svg {
@@ -642,27 +642,27 @@ body {
 }
 
 .desktop-nav-item:hover {
-    color: var(--accent);
-    background: var(--bg-subtle);
-    border-color: var(--glass-border);
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
 .desktop-nav-item.active {
-    color: var(--accent);
-    background: var(--bg-subtle);
-    border-color: var(--glass-border);
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 15%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .dark .desktop-nav-item:hover {
-    color: var(--accent);
-    background: var(--bg-subtle);
-    border-color: var(--glass-border);
+    color: var(--primary-light);
+    background: color-mix(in srgb, var(--primary) 15%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 30%, transparent);
 }
 
 .dark .desktop-nav-item.active {
-    color: var(--accent);
-    background: var(--bg-subtle);
-    border-color: var(--glass-border);
+    color: var(--primary-light);
+    background: color-mix(in srgb, var(--primary) 20%, transparent);
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
 }
 
 .next-prayer-card {
