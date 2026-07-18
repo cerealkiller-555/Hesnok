@@ -8,7 +8,7 @@ if (!azkarData) {
     process.exit(1);
 }
 
-const sections = ['morning', 'evening', 'sleeping', 'prayerAzkar'];
+const sections = ['morning', 'evening', 'sleeping', 'prayerAzkar', 'jawami'];
 sections.forEach(section => {
     const list = azkarData.azkar[section];
     if (!list) {

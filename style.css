@@ -902,22 +902,27 @@ body {
 /* ═══════════════════════════════════════════
     OFFLINE BANNER
     ═══════════════════════════════════════════ */
-.offline-banner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: var(--primary);
-    color: var(--text-on-primary);
-    font-size: 13px;
-    font-weight: 700;
-    animation: slideUp 0.3s var(--ease) both;
+ .offline-banner {
+     position: fixed;
+     top: 0;
+     left: 0;
+     right: 0;
+     z-index: 1000;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+     padding: 8px 16px;
+     background: var(--primary);
+     color: var(--text-on-primary);
+     font-size: 13px;
+     font-weight: 700;
+     animation: slideUp 0.3s var(--ease) both;
+ }
+
+/* Move header down when offline banner is visible */
+header.glass-panel {
+    top: 40px;
 }
 
 .offline-banner {
