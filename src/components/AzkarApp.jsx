@@ -815,7 +815,7 @@ const AzkarApp = () => {
 
             {nextPrayer && (
                 <section className="container mx-auto px-4 py-3">
-                    <div className="next-prayer-card mx-auto w-full max-w-3xl rounded-3xl border border-[var(--glass-border)] bg-[var(--bg-surface)] shadow-[0_12px_24px_rgba(15,23,42,0.08)] p-3 overflow-hidden">
+                        <div className="next-prayer-card mx-auto w-full max-w-3xl rounded-3xl border border-[var(--glass-border)] bg-[var(--bg-surface)] shadow-[0_12px_24px_rgba(15,23,42,0.08)] p-3 z-10">
                         <div className="relative z-10 flex flex-col sm:flex-row items-center gap-3">
                             <div className="flex items-center justify-center flex-shrink-0 w-14 h-14 rounded-2xl bg-primary/15 text-primary shadow-sm shadow-primary/10 text-2xl">
                                 {nextPrayer.icon}

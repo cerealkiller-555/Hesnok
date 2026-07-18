@@ -683,7 +683,6 @@ body {
 
 .next-prayer-card {
     position: relative;
-    overflow: hidden;
 }
 
 /* ═══════════════════════════════════════════
@@ -902,35 +901,45 @@ body {
 /* ═══════════════════════════════════════════
     OFFLINE BANNER
     ═══════════════════════════════════════════ */
- .offline-banner {
-     position: fixed;
-     top: 0;
-     left: 0;
-     right: 0;
-     z-index: 1000;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     gap: 8px;
-     padding: 8px 16px;
-     background: var(--primary);
-     color: var(--text-on-primary);
-     font-size: 13px;
-     font-weight: 700;
-     animation: slideUp 0.3s var(--ease) both;
- }
-
-/* Move header down when offline banner is visible */
-header.glass-panel {
-    top: 40px;
-}
-
 .offline-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
     background: var(--primary);
     color: var(--text-on-primary);
+    font-size: 13px;
+    font-weight: 700;
+    animation: slideUp 0.3s var(--ease) both;
+}
+
+/* Move header down when offline banner is visible - use margin-top instead of top for sticky */
+header.glass-panel {
+    margin-top: 0;
+}
+
+/* When offline banner is present, push header down */
+body:has(.offline-banner) header.glass-panel,
+.offline-banner ~ header.glass-panel {
+    margin-top: 40px;
+}
+
+/* Toast container - position at top to avoid overlap with bottom nav */
+.toast-container {
+    top: 50px;
+    bottom: auto;
+    z-index: 1002;
 }
 
 .dark .offline-banner {
     background: var(--primary);
     color: var(--text-on-primary);
 }
+
+

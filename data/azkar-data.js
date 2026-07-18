@@ -1,4 +1,4 @@
-window.AZKAR_DATA = {
+const AZKAR_DATA = {
     defaultCustomDuas: [
         "اللهم إني أسألك العفو والعافية في الدنيا والآخرة",
         "ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار"
@@ -198,3 +198,4 @@ window.AZKAR_DATA = {
         ]
     }
 };
+export default AZKAR_DATA;
