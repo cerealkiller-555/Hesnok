@@ -83,18 +83,18 @@ const PrayerTimesSection = ({ prayerTimes, location, t, language, prayerChecklis
                             key={p.key} 
                             className={`prayer-time-card group cursor-default rounded-3xl border p-5 shadow-sm transition-all relative overflow-hidden ${
                                 isActive 
-                                    ? 'border-[var(--primary)] bg-[var(--bg-surface)] shadow-[0_8px_24px_rgba(var(--primary-rgb),0.12)] ring-1 ring-[var(--primary)]/30' 
-                                    : 'border-[var(--glass-border)] bg-[var(--bg-surface)]'
+                                    ? 'border-primary bg-bg-surface shadow-[0_8px_24px_rgba(var(--primary-rgb),0.12)] ring-1 ring-primary/30' 
+                                    : 'border-glass-border bg-bg-surface'
                             }`}
                         >
                             <div className="flex items-center justify-between mb-4">
                                 <span className="prayer-time-icon text-xl transition-transform duration-300 group-hover:scale-105">{p.icon}</span>
                                 {isActive ? (
-                                    <span className="inline-flex items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-[10px] font-black uppercase px-2.5 py-0.5 tracking-wider">
+                                    <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase px-2.5 py-0.5 tracking-wider">
                                         {language === "en" ? "Active" : "الآن"}
                                     </span>
                                 ) : (
-                                    <div className="w-2 h-2 rounded-full bg-[var(--primary)] opacity-60" />
+                                    <div className="w-2 h-2 rounded-full bg-primary opacity-60" />
                                 )}
                             </div>
                             <h3 className="text-sm md:text-base font-bold mb-1 text-[var(--text-secondary)]">
@@ -107,7 +107,7 @@ const PrayerTimesSection = ({ prayerTimes, location, t, language, prayerChecklis
                                 <button
                                     type="button"
                                     onClick={() => onTogglePrayer(prayerId)}
-                                    className={`mt-4 w-full rounded-full px-4 py-3 text-sm font-black transition-all ${checked ? 'bg-[var(--primary)] text-white' : 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--glass-border)] hover:border-[var(--primary)] hover:text-[var(--primary)]'}`}
+                                    className={`mt-4 w-full rounded-full px-4 py-3 text-sm font-black transition-all ${checked ? 'bg-primary text-white' : 'bg-bg-subtle text-text-secondary border border-glass-border hover:border-primary hover:text-primary'}`}
                                 >
                                     {checked ? t.doneLabel : t.markPrayer}
                                 </button>
@@ -116,7 +116,7 @@ const PrayerTimesSection = ({ prayerTimes, location, t, language, prayerChecklis
                     );
                 }) : (
                     <div className="col-span-full py-16 text-center">
-                        <div className="inline-block w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-4" />
+                        <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
                         <p className="text-[var(--text-secondary)] font-bold">{t.prayerTimesLoading}</p>
                     </div>
                 )}
