@@ -12,7 +12,7 @@ const parsePrayerTime = (timeStr) => {
 const formatPrayerTime = (timeStr, language) => {
     const date = parsePrayerTime(timeStr);
     if (!date) return "--:--";
-    return date.toLocaleTimeStringnguage === 'en' ? 'en-US' : 'ar-EG', {
+    return date.toLocaleTimeString(language === 'en' ? 'en-US' : 'ar-EG', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
