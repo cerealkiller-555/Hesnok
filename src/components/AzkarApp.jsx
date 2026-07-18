@@ -105,6 +105,7 @@ const AzkarApp = () => {
     const [enableAzkarNotifications, setEnableAzkarNotifications] = useState(() => localStorage.getItem("azkar_azkarNotifications") === "true");
 
     const [prayerTimes, setPrayerTimes]   = useState(null);
+    const [hijriDate, setHijriDate]      = useState(null);
     const [location, setLocation]         = useState(() => readJson("azkar_location", { city: "Cairo", country: "EG" }));
     const [currentTime, setCurrentTime]   = useState(new Date());
 
@@ -218,7 +219,11 @@ const AzkarApp = () => {
             const url  = `https://api.aladhan.com/v1/timingsByCity/${date}?city=${encodeURIComponent(location.city)}&country=${encodeURIComponent(location.country)}&method=5`;
             const res  = await fetch(url);
             const data = await res.json();
-            if (data.code === 200) { setPrayerTimes(data.data.timings); return; }
+            if (data.code === 200) { 
+                setPrayerTimes(data.data.timings); 
+                setHijriDate(data.data.date.hijri);
+                return; 
+            }
         } catch (e) {
             console.error("Prayer times fetch failed:", e);
         }
@@ -331,32 +336,6 @@ const AzkarApp = () => {
         return `${r},${g},${b}`;
     }, []);
 
-    const playReminderSound = useCallback((soundId) => {
-        try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return;
-            const context = new AudioContext();
-            const oscillator = context.createOscillator();
-            const gain = context.createGain();
-            const sounds = {
-                bell: { frequency: 880, duration: 0.35 },
-                chime: { frequency: 440, duration: 0.45 },
-                beep: { frequency: 520, duration: 0.18 }
-            };
-            const config = sounds[soundId] || sounds.bell;
-            oscillator.type = 'sine';
-            oscillator.frequency.value = config.frequency;
-            gain.gain.value = 0.05;
-            oscillator.connect(gain);
-            gain.connect(context.destination);
-            oscillator.start();
-            oscillator.stop(context.currentTime + config.duration);
-            oscillator.onended = () => context.close();
-        } catch (e) {
-            console.warn('Audio notification failed', e);
-        }
-    }, []);
-
     const requestNotificationPermission = useCallback(async () => {
         if (!('Notification' in window)) return false;
         if (Notification.permission === 'granted') return true;
@@ -370,9 +349,8 @@ const AzkarApp = () => {
         if (await requestNotificationPermission()) {
             new Notification(title, { body });
         }
-        playReminderSound(notificationSound);
         showToast(body, 'info', 5500);
-    }, [notificationSound, playReminderSound, requestNotificationPermission]);
+    }, [requestNotificationPermission]);
 
     const scheduleReminder = useCallback((when, title, body) => {
         if (!when || when <= new Date()) return;
@@ -499,12 +477,10 @@ const AzkarApp = () => {
         setCompletedAzkar(updatedCompleted);
 
         const sectionComplete = list.every((z) => updatedCompleted[`${type}_${z.id}`]);
-        if (sectionComplete) {
-            showOncePerAction(`${type}_section_complete`, t.allComplete, "success");
-        } else {
+        if (!sectionComplete) {
             scrollToNextZikr(id, list, type);
         }
-    }, [t, scrollToNextZikr, showOncePerAction]);
+    }, [scrollToNextZikr]);
 
     const toggleZikrComplete = useCallback((id, max) => {
         const done = !completedAzkarRef.current[id];
@@ -756,11 +732,9 @@ const AzkarApp = () => {
             const morningTime = parsePrayerTime(prayerTimes.Fajr);
             const eveningTime = parsePrayerTime(prayerTimes.Asr);
             if (morningTime) {
-                morningTime.setMinutes(morningTime.getMinutes() + 15);
                 scheduleReminder(morningTime, makeReminderText(t.notificationTitleAzkar, userProfile.name), makeReminderText(t.notificationBodyAzkar, userProfile.name));
             }
             if (eveningTime) {
-                eveningTime.setMinutes(eveningTime.getMinutes() + 15);
                 scheduleReminder(eveningTime, makeReminderText(t.notificationTitleAzkar, userProfile.name), makeReminderText(t.notificationBodyAzkar, userProfile.name));
             }
         }
@@ -957,6 +931,7 @@ const AzkarApp = () => {
                         <div className="animate-slide-up space-y-8">
                             <PrayerTimesSection
                                 prayerTimes={prayerTimes}
+                                hijriDate={hijriDate}
                                 location={location}
                                 t={t}
                                 language={language}

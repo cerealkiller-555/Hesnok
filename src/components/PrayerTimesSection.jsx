@@ -57,8 +57,15 @@ const PRAYER_CARDS = [
     { name_ar: "العشاء", name_en: "Isha",     key: "Isha",     icon: "🌙" }
 ];
 
-const PrayerTimesSection = ({ prayerTimes, location, t, language, prayerChecklist, onTogglePrayer }) => {
+const PrayerTimesSection = ({ prayerTimes, hijriDate, location, t, language, prayerChecklist, onTogglePrayer }) => {
     const activePrayerKey = getActivePrayerKey(prayerTimes);
+
+    // Format Hijri date
+    const formatHijriDate = (hijri) => {
+        if (!hijri) return null;
+        const hijriMonth = language === "en" ? hijri.month.en : hijri.month.ar;
+        return `${hijri.day} ${hijriMonth} ${hijri.year}`;
+    };
 
     return (
         <div className="animate-slide-up">
@@ -69,6 +76,11 @@ const PrayerTimesSection = ({ prayerTimes, location, t, language, prayerChecklis
                         weekday: "long", year: "numeric", month: "long", day: "numeric"
                     })}
                 </p>
+                {hijriDate && (
+                    <p className="text-xs text-[var(--primary)] font-bold mt-1">
+                        {formatHijriDate(hijriDate)}
+                    </p>
+                )}
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
