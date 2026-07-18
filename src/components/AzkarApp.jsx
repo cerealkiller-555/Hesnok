@@ -502,7 +502,6 @@ const AzkarApp = () => {
         if (sectionComplete) {
             showOncePerAction(`${type}_section_complete`, t.allComplete, "success");
         } else {
-            showOncePerAction(`${id}_complete`, t.progressCompleted, "success");
             scrollToNextZikr(id, list, type);
         }
     }, [t, scrollToNextZikr, showOncePerAction]);
@@ -755,7 +754,7 @@ const AzkarApp = () => {
 
         if (enableAzkarNotifications) {
             const morningTime = parsePrayerTime(prayerTimes.Fajr);
-            const eveningTime = parsePrayerTime(prayerTimes.Maghrib);
+            const eveningTime = parsePrayerTime(prayerTimes.Asr);
             if (morningTime) {
                 morningTime.setMinutes(morningTime.getMinutes() + 15);
                 scheduleReminder(morningTime, makeReminderText(t.notificationTitleAzkar, userProfile.name), makeReminderText(t.notificationBodyAzkar, userProfile.name));

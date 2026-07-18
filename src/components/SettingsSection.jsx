@@ -116,6 +116,13 @@ const SettingsSection = ({
 
                 <div className="space-y-4 pt-4">
                     <h4 className="text-sm font-black text-text-primary uppercase tracking-wide">{t.notificationsTitle}</h4>
+                    {(!enablePrayerNotifications || !enableAzkarNotifications) && (
+                        <div className="p-3 mb-2 rounded-lg bg-[var(--accent-glow)] border border-[var(--accent)]/20 text-sm text-[var(--text-primary)] font-medium leading-relaxed">
+                            {language === 'en' 
+                                ? "Enable notifications to receive timely reminders for prayers, morning azkar after Fajr, and evening azkar after Asr." 
+                                : "يرجى تفعيل الإشعارات لتصلك تنبيهات بأوقات الصلاة، وأذكار الصباح بعد صلاة الفجر، وأذكار المساء بعد صلاة العصر."}
+                        </div>
+                    )}
                     <div className="space-y-3">
                         <button onClick={() => setEnablePrayerNotifications((prev) => !prev)} className={`w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all ${enablePrayerNotifications ? 'border-[var(--primary)]' : ''}`}>
                             <span className="text-text-secondary font-black">{t.prayerNotificationLabel}</span>

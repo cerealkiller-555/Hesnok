@@ -202,7 +202,7 @@ const ZikrCard = ({
                         <div className="pt-2">
                             <button
                                 onClick={() => onToggleBenefit(uniqueId)}
-                                className="flex items-center justify-between w-full py-3 px-1 text-[11px] font-black uppercase tracking-wide text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
+                                className="flex items-center justify-between w-full py-3 px-1 text-[11px] font-black uppercase tracking-wide text-[var(--primary)] hover:text-[var(--primary-dark)] transition-colors"
                             >
                                 <div className="flex items-center gap-2">
                                     <Info className="w-4 h-4" />
@@ -221,12 +221,13 @@ const ZikrCard = ({
                                         </div>
                                     )}
                                     {benefit && (
-                                        <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--glass-border)]">
-                                            <p className="text-sm text-[var(--text-primary)] leading-7 font-medium">{benefit}</p>
+                                        <div className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--glass-border)] relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-1 h-full bg-[var(--primary)] opacity-60 transition-colors" />
+                                            <p className="text-sm text-[var(--primary)] leading-7 font-medium">{benefit}</p>
                                         </div>
                                     )}
                                     {source && (
-                                        <div className="flex items-center gap-2 px-1 text-[11px] text-[var(--text-secondary)] font-bold">
+                                        <div className="flex items-center gap-2 px-1 text-[11px] text-[var(--primary)] font-bold">
                                             <BookOpen className="w-4 h-4" />
                                             <span>{source}</span>
                                         </div>
