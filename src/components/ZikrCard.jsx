@@ -121,16 +121,41 @@ const ZikrCard = ({
 
                 {/* Arabic text */}
                 <div className="relative py-2">
-                    <p 
-                        className={`text-arabic font-amiri transition-all duration-500 ${
-                            isCompleted
-                                ? "text-[var(--text-tertiary)] opacity-80"
-                                : "text-[var(--text-primary)]"
-                        }`}
-                        style={{ fontSize: `clamp(${1.25 * (arabicFontSize / 100)}rem, ${3 * (arabicFontSize / 100)}vw, ${1.75 * (arabicFontSize / 100)}rem)` }}
-                    >
-                        {zikr.text}
-                    </p>
+                    {(() => {
+                        const parts = zikr.text.split('\n');
+                        const hasPrefix = parts.length > 1;
+                        const prefixLine = hasPrefix ? parts[0].trim() : null;
+                        const mainText = hasPrefix ? parts.slice(1).join('\n').trim() : zikr.text;
+                        return (
+                            <>
+                                {prefixLine && (
+                                    <p
+                                        className={`font-amiri text-center mb-3 transition-all duration-500 ${
+                                            isCompleted
+                                                ? "text-[var(--text-tertiary)] opacity-60"
+                                                : "text-[var(--text-secondary)]"
+                                        }`}
+                                        style={{
+                                            fontSize: `clamp(${0.95 * (arabicFontSize / 100)}rem, ${2.2 * (arabicFontSize / 100)}vw, ${1.2 * (arabicFontSize / 100)}rem)`,
+                                            lineHeight: 1.9
+                                        }}
+                                    >
+                                        {prefixLine}
+                                    </p>
+                                )}
+                                <p
+                                    className={`text-arabic font-amiri transition-all duration-500 ${
+                                        isCompleted
+                                            ? "text-[var(--text-tertiary)] opacity-80"
+                                            : "text-[var(--text-primary)]"
+                                    }`}
+                                    style={{ fontSize: `clamp(${1.25 * (arabicFontSize / 100)}rem, ${3 * (arabicFontSize / 100)}vw, ${1.75 * (arabicFontSize / 100)}rem)` }}
+                                >
+                                    {mainText}
+                                </p>
+                            </>
+                        );
+                    })()}
                 </div>
 
                 {/* Counter button */}

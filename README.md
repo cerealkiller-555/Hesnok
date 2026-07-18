@@ -1,36 +1,32 @@
-# Azkar App (تطبيق الأذكار)
+# حصنك (Hesnok) - دليلك اليومي للأذكار والصلاة 🕌
 
-A comprehensive React-based web application for daily Islamic invocations (Azkar), prayer times, and more. The application features a modern Arabic-first UI with optional English mode, built with React and Tailwind CSS.
+تطبيق ويب تقدمي (PWA) متكامل صُمم بعناية لمساعدة المسلم في الحفاظ على أذكاره اليومية ومواقيت صلاته بتجربة مستخدم عصرية وسلسة. مبني باستخدام تقنيات حديثة مثل React و Tailwind CSS.
 
-## Features
+![Azkar App Banner](hesnok_logo1.png)
 
-- 🌅 **Morning Azkar (أذكار الصباح):** A curated list of authentic morning invocations with counters, benefits, and sources.
-- 🌙 **Evening Azkar (أذكار المساء):** Authentic evening invocations with progress tracking.
-- 🕌 **Prayer Times (مواقيت الصلاة):** Fetches accurate daily prayer times based on the user's location using the Aladhan API.
-- ✅ **Prayer Checklist:** Track the five daily prayers alongside prayer times.
-- 🔥 **Streaks:** Builds a daily streak when morning azkar, evening azkar, and the five prayers are completed.
-- 🤲 **Custom Duas (أدعية مخصصة):** Add, manage, and delete personal supplications.
-- 🔐 **Login:** Simple local login to save user info on the device.
-- 🌍 **Language Toggle:** Switch between Arabic and English in settings.
-- ⚙️ **Settings & Preferences:** Update default location, appearance, and profile info.
+## الميزات الرئيسية ✨
 
-## Technologies Used
+- 🌅 **أذكار الصباح والمساء:** مجموعة موثوقة من الأذكار مع عدادات وتتبع للتقدم.
+- 📖 **تنسيق مريح:** عرض الاستعاذة والبسملة بشكل منفصل ومنسق قبل الآيات لتجربة قراءة أفضل.
+- 🕌 **مواقيت الصلاة الدقيقة:** جلب أوقات الصلاة بناءً على الموقع باستخدام واجهة Aladhan API مع عد تنازلي للصلاة القادمة.
+- ✅ **قائمة تتبع الصلوات:** تتبع الصلوات الخمس اليومية للحفاظ على استمراريتك.
+- 🔥 **سلسلة الإنجاز (Streaks):** نظام تحفيزي لتتبع التزامك اليومي عند إتمام الأذكار والصلوات.
+- 🤲 **أدعيتي (Custom Duas):** مساحة خاصة لإضافة أدعيتك الشخصية والاحتفاظ بها.
+- 🎨 **تخصيص متقدم:** 
+  - دعم كامل للوضع الليلي والنهاري (Dark/Light mode).
+  - 7 ثيمات لونية رائعة تناسب ذوقك الشخصي (Emerald, Indigo, Rose, Amber...).
+  - التحكم في حجم الخط العربي (تكبير/تصغير).
+- 🔔 **الإشعارات الذكية:** إشعارات للتذكير بمواقيت الصلاة ومواعيد الأذكار مع خيارات أصوات متعددة.
+- 📴 **دعم العمل بدون إنترنت (Offline PWA):** يمكنك تثبيت التطبيق على هاتفك واستخدامه في أي وقت وبدون الحاجة لاتصال بالإنترنت.
+- 🌍 **ثنائي اللغة:** دعم كامل للغتين العربية والإنجليزية.
 
-- **React:** For building the interactive user interface and state management.
-- **Tailwind CSS:** For styling, responsive design, and providing an elegant and modern aesthetic with smooth gradients.
-- **Lucide React:** For beautiful, scalable vector icons.
-- **Aladhan API:** For fetching precise prayer times.
+## التقنيات المستخدمة 🛠️
 
-## Getting Started
+- **Frontend:** React 19, Vite
+- **Styling:** Tailwind CSS v4 (مع تخصيص متقدم للمتغيرات اللونية CSS Variables)
+- **Icons:** Lucide React
+- **PWA:** Service Workers (sw.js)
+- **APIs:** Aladhan API لمواقيت الصلاة
+- **Backend/Deployment:** Vercel (مُعدّ وجاهز للنشر)
 
-1. Clone or download the repository.
-2. Run a local web server from the project folder:
-   ```bash
-   python3 -m http.server 8080
-   ```
-3. Open `http://localhost:8080` in your browser.
-
-## Future Enhancements
-- Push notifications for prayer times and azkar reminders.
-- Cloud sync for user profiles and streaks.
-- Audio recitations for azkar.
+> **ملاحظة:** التطبيق صُمم ليكون "تطبيق ويب تقدمي"، ما يعني أنه يمكنك زيارة الموقع من متصفح الهاتف ثم اختيار "إضافة إلى الشاشة الرئيسية" ليتحول لتطبيق مستقل تماماً.

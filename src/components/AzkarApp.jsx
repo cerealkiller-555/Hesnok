@@ -714,6 +714,10 @@ const AzkarApp = () => {
         // Also set inline styles for accent colors (not covered by data-theme)
         const style = getAccentStyle();
         const currentVars = isDarkMode && style.darkVars ? style.darkVars : style.vars;
+        root.style.setProperty('--primary', currentVars['--primary']);
+        root.style.setProperty('--primary-light', currentVars['--primary-light']);
+        root.style.setProperty('--primary-dark', currentVars['--primary-dark']);
+        root.style.setProperty('--primary-rgb', currentVars['--primary-rgb']);
         root.style.setProperty('--accent', currentVars['--accent']);
         root.style.setProperty('--accent-light', currentVars['--accent-light']);
         root.style.setProperty('--accent-dark', currentVars['--accent-dark']);
