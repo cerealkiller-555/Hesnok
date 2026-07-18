@@ -852,13 +852,14 @@ body {
     background: var(--primary-light);
 }
 
-/* Mobile adjustment - position above bottom navigation */
+/* Mobile adjustment - position above bottom progress bar */
 @media (max-width: 768px) {
     .scroll-top-btn {
-        bottom: 90px;
+        bottom: 120px;
         right: 20px;
         width: 44px;
         height: 44px;
+        z-index: 600;
     }
 }
 
