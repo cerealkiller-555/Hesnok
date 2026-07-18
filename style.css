@@ -683,6 +683,7 @@ body {
 
 .next-prayer-card {
     position: relative;
+    z-index: 20;
 }
 
 /* ═══════════════════════════════════════════
@@ -784,7 +785,6 @@ body {
     color: var(--text-primary);
     margin-bottom: 16px;
     position: relative;
-    overflow: hidden;
     box-shadow: var(--glass-shadow);
 }
 
@@ -930,11 +930,10 @@ body:has(.offline-banner) header.glass-panel,
     margin-top: 40px;
 }
 
-/* Toast container - position at top to avoid overlap with bottom nav */
-.toast-container {
+/* Toast container - position at top when offline banner is present */
+body:has(.offline-banner) .toast-container {
     top: 50px;
     bottom: auto;
-    z-index: 1002;
 }
 
 .dark .offline-banner {
