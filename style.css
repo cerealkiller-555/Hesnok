@@ -818,11 +818,11 @@ body {
 }
 
 /* ═══════════════════════════════════════════
-   SCROLL-TO-TOP BUTTON
-   ═══════════════════════════════════════════ */
+    SCROLL-TO-TOP BUTTON
+    ═══════════════════════════════════════════ */
 .scroll-top-btn {
     position: fixed;
-    bottom: 90px;
+    bottom: 140px;
     right: 20px;
     width: 48px;
     height: 48px;
@@ -850,6 +850,16 @@ body {
 
 .scroll-top-btn:hover {
     background: var(--primary-light);
+}
+
+/* Mobile adjustment - position above bottom navigation */
+@media (max-width: 768px) {
+    .scroll-top-btn {
+        bottom: 90px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+    }
 }
 
 /* ═══════════════════════════════════════════
