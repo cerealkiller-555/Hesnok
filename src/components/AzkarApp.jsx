@@ -67,11 +67,6 @@ const ACCENT_OPTIONS = [
     { id: "amber", labelAr: "عنابي", labelEn: "Amber", vars: { '--primary': '#f59e0b', '--primary-light': '#fbbf24', '--primary-dark': '#d97706', '--accent': '#ef4444', '--accent-light': '#f87171', '--accent-dark': '#dc2626', '--accent-glow': 'rgba(245, 158, 11, 0.25)', '--primary-rgb': '245,158,11', '--accent-rgb': '239,68,68' }, darkVars: { '--primary': '#fbbf24', '--primary-light': '#fde68a', '--primary-dark': '#f59e0b', '--accent': '#f87171', '--accent-light': '#fca5a5', '--accent-dark': '#ef4444', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '251,191,36', '--accent-rgb': '248,113,113' } }
 ];
 
-const SOUND_OPTIONS = [
-    { id: "bell", labelAr: "جرس ناعم", labelEn: "Soft bell" },
-    { id: "chime", labelAr: "تلويحة", labelEn: "Gentle chime" },
-    { id: "beep", labelAr: "تنبيه سريع", labelEn: "Quick beep" }
-];
 
 // ═══════════════════════════════════════════════════════
 // AzkarApp — Root Component
@@ -100,9 +95,6 @@ const AzkarApp = () => {
     const [storageReady, setStorageReady] = useState(false);
     const [showEnTranslations, setShowEnTranslations] = useState(() => localStorage.getItem("azkar_showEnTranslations") === "true");
     const [accentColor, setAccentColor]   = useState(() => localStorage.getItem("azkar_accentColor") || "indigo");
-    const [notificationSound, setNotificationSound] = useState(() => localStorage.getItem("azkar_notificationSound") || "bell");
-    const [enablePrayerNotifications, setEnablePrayerNotifications] = useState(() => localStorage.getItem("azkar_prayerNotifications") === "true");
-    const [enableAzkarNotifications, setEnableAzkarNotifications] = useState(() => localStorage.getItem("azkar_azkarNotifications") === "true");
 
     const [prayerTimes, setPrayerTimes]   = useState(null);
     const [hijriDate, setHijriDate]      = useState(null);
@@ -126,7 +118,6 @@ const AzkarApp = () => {
     const completedAzkarRef = useRef(completedAzkar);
     const azkarProgressRef  = useRef(azkarProgress);
     const toastShownRef     = useRef(new Set());
-    const notificationTimersRef = useRef([]);
 
     // ───────────────────────────────────────
     // 2. DERIVED VALUES (useMemo / useCallback)
@@ -177,6 +168,14 @@ const AzkarApp = () => {
         () => currentTime.toLocaleTimeString(language === "en" ? "en-US" : "ar-EG", { hour: "numeric", minute: "2-digit", hour12: true }),
         [currentTime, language]
     );
+
+    const formatHijriDate = useCallback(() => {
+        if (!hijriDate) return "";
+        const day = hijriDate.day || "";
+        const month = hijriDate.month?.ar || hijriDate.month?.en || "";
+        const year = hijriDate.year || "";
+        return language === 'en' ? `${month} ${day}, ${year}` : `${day} ${month} ${year}`;
+    }, [hijriDate, language]);
 
     // Daily goal checks
     const morningCompleted  = useMemo(() => azkar.morning.every((z) => completedAzkar[`morning_${z.id}`]), [completedAzkar]);
@@ -334,34 +333,6 @@ const AzkarApp = () => {
         const g = parseInt(full.slice(2, 4), 16);
         const b = parseInt(full.slice(4, 6), 16);
         return `${r},${g},${b}`;
-    }, []);
-
-    const requestNotificationPermission = useCallback(async () => {
-        if (!('Notification' in window)) return false;
-        if (Notification.permission === 'granted') return true;
-        if (Notification.permission === 'denied') return false;
-        const permission = await Notification.requestPermission();
-        return permission === 'granted';
-    }, []);
-
-    const sendReminder = useCallback(async (title, body) => {
-        if (!title) return;
-        if (await requestNotificationPermission()) {
-            new Notification(title, { body });
-        }
-        showToast(body, 'info', 5500);
-    }, [requestNotificationPermission]);
-
-    const scheduleReminder = useCallback((when, title, body) => {
-        if (!when || when <= new Date()) return;
-        const delay = when.getTime() - Date.now();
-        const timer = window.setTimeout(() => sendReminder(title, body), delay);
-        notificationTimersRef.current.push(timer);
-    }, [sendReminder]);
-
-    const clearScheduledReminders = useCallback(() => {
-        notificationTimersRef.current.forEach((timer) => window.clearTimeout(timer));
-        notificationTimersRef.current = [];
     }, []);
 
     const makeReminderText = useCallback((template, name) => {
@@ -701,46 +672,6 @@ const AzkarApp = () => {
         localStorage.setItem("azkar_accentColor", accentColor);
     }, [accentColor, getAccentStyle, hexToRgb, isDarkMode]);
 
-    useEffect(() => {
-        localStorage.setItem("azkar_notificationSound", notificationSound);
-    }, [notificationSound]);
-
-    useEffect(() => {
-        localStorage.setItem("azkar_prayerNotifications", String(enablePrayerNotifications));
-    }, [enablePrayerNotifications]);
-
-    useEffect(() => {
-        localStorage.setItem("azkar_azkarNotifications", String(enableAzkarNotifications));
-    }, [enableAzkarNotifications]);
-
-    useEffect(() => {
-        if (!prayerTimes || !isLoggedIn) return;
-        clearScheduledReminders();
-
-        if (enablePrayerNotifications) {
-            PRAYER_BANNERS.forEach((prayer) => {
-                if (!prayerTimes[prayer.key]) return;
-                const when = parsePrayerTime(prayerTimes[prayer.key]);
-                const prayerName = language === "en" ? prayer.en : prayer.ar;
-                const title = makeReminderText(t.notificationTitlePrayer, userProfile.name);
-                const body = `${makeReminderText(t.notificationBodyPrayer, userProfile.name)} ${prayerName}`.trim();
-                scheduleReminder(when, title, body);
-            });
-        }
-
-        if (enableAzkarNotifications) {
-            const morningTime = parsePrayerTime(prayerTimes.Fajr);
-            const eveningTime = parsePrayerTime(prayerTimes.Asr);
-            if (morningTime) {
-                scheduleReminder(morningTime, makeReminderText(t.notificationTitleAzkar, userProfile.name), makeReminderText(t.notificationBodyAzkar, userProfile.name));
-            }
-            if (eveningTime) {
-                scheduleReminder(eveningTime, makeReminderText(t.notificationTitleAzkar, userProfile.name), makeReminderText(t.notificationBodyAzkar, userProfile.name));
-            }
-        }
-
-        return clearScheduledReminders;
-    }, [prayerTimes, enablePrayerNotifications, enableAzkarNotifications, language, makeReminderText, scheduleReminder, t, isLoggedIn, userProfile.name, clearScheduledReminders]);
 
     // Streak updater — runs when dailyGoalsComplete changes
     useEffect(() => {
@@ -846,6 +777,11 @@ const AzkarApp = () => {
                         <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bg-surface text-text-primary font-bold border border-glass-border">
                             <Clock className="w-4 h-4 text-[var(--primary)]" />
                             <span className="text-sm font-mono">{formatTime()}</span>
+                            {hijriDate && (
+                                <span className="text-[10px] text-[var(--text-secondary)] font-medium border-l border-glass-border pl-2 ml-1">
+                                    {formatHijriDate()}
+                                </span>
+                            )}
                         </div>
                         <button onClick={() => setIsDarkMode((d) => !d)} className="p-2.5 rounded-lg bg-bg-surface text-text-secondary border border-glass-border hover:text-[var(--primary)]">
                             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -973,12 +909,6 @@ const AzkarApp = () => {
                             setShowEnTranslations={setShowEnTranslations}
                             accentColor={accentColor}
                             setAccentColor={setAccentColor}
-                            enablePrayerNotifications={enablePrayerNotifications}
-                            setEnablePrayerNotifications={setEnablePrayerNotifications}
-                            enableAzkarNotifications={enableAzkarNotifications}
-                            setEnableAzkarNotifications={setEnableAzkarNotifications}
-                            notificationSound={notificationSound}
-                            setNotificationSound={setNotificationSound}
                         />
                     )}
                 </div>

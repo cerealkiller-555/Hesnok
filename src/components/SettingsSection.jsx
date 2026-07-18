@@ -10,10 +10,7 @@ const SettingsSection = ({
     language, setLanguage, t,
     arabicFontSize, setArabicFontSize,
     showEnTranslations, setShowEnTranslations,
-    accentColor, setAccentColor,
-    enablePrayerNotifications, setEnablePrayerNotifications,
-    enableAzkarNotifications, setEnableAzkarNotifications,
-    notificationSound, setNotificationSound
+    accentColor, setAccentColor
 }) => (
     <div className="animate-slide-up space-y-6">
         {/* PWA Install */}
@@ -114,34 +111,6 @@ const SettingsSection = ({
                     ))}
                 </div>
 
-                <div className="space-y-4 pt-4">
-                    <h4 className="text-sm font-black text-text-primary uppercase tracking-wide">{t.notificationsTitle}</h4>
-                    {(!enablePrayerNotifications || !enableAzkarNotifications) && (
-                        <div className="p-3 mb-2 rounded-lg bg-[var(--accent-glow)] border border-[var(--accent)]/20 text-sm text-[var(--text-primary)] font-medium leading-relaxed">
-                            {language === 'en' 
-                                ? "Enable notifications to receive timely reminders for prayers, morning azkar after Fajr, and evening azkar after Asr." 
-                                : "يرجى تفعيل الإشعارات لتصلك تنبيهات بأوقات الصلاة، وأذكار الصباح بعد صلاة الفجر، وأذكار المساء بعد صلاة العصر."}
-                        </div>
-                    )}
-                    <div className="space-y-3">
-                        <button onClick={() => setEnablePrayerNotifications((prev) => !prev)} className={`w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all ${enablePrayerNotifications ? 'border-[var(--primary)]' : ''}`}>
-                            <span className="text-text-secondary font-black">{t.prayerNotificationLabel}</span>
-                            <span className="text-sm font-black">{enablePrayerNotifications ? (language === 'en' ? 'On' : 'تشغيل') : (language === 'en' ? 'Off' : 'إيقاف')}</span>
-                        </button>
-                        <button onClick={() => setEnableAzkarNotifications((prev) => !prev)} className={`w-full flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border hover:border-[var(--primary)] transition-all ${enableAzkarNotifications ? 'border-[var(--primary)]' : ''}`}>
-                            <span className="text-text-secondary font-black">{t.azkarNotificationLabel}</span>
-                            <span className="text-sm font-black">{enableAzkarNotifications ? (language === 'en' ? 'On' : 'تشغيل') : (language === 'en' ? 'Off' : 'إيقاف')}</span>
-                        </button>
-                        <div className="space-y-2">
-                            <label className="block text-[10px] font-black uppercase tracking-wide text-text-secondary">{t.notificationSoundLabel}</label>
-                            <select value={notificationSound} onChange={(e) => setNotificationSound(e.target.value)} className="w-full px-4 py-3 rounded-lg bg-bg-subtle border border-glass-border text-text-primary font-bold outline-none transition-all">
-                                <option value="bell">{language === 'en' ? 'Soft bell' : 'جرس ناعم'}</option>
-                                <option value="chime">{language === 'en' ? 'Gentle chime' : 'تلويحة'}</option>
-                                <option value="beep">{language === 'en' ? 'Quick beep' : 'تنبيه سريع'}</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div className="glass-panel p-5 space-y-5">

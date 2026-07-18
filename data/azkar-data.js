@@ -273,7 +273,15 @@ window.AZKAR_DATA = {
                 sourceEn: "Sahih Muslim",
                 grade: "صحيح",
                 gradeEn: "Sahih"
-
+            },
+            {
+                id: 21,
+                text: "سُبحانَ اللهِ، والحَمدُ للَّهِ، ولا إلَهَ إلَّا اللهُ، واللهُ أكبَرُ",
+                count: 100,
+                source: "مسلم",
+                sourceEn: "Muslim",
+                meaning: "ومعنى «سُبحانَ اللهِ»: تَنزيهٌ للهِ عزَّ وجلَّ عَن كلِّ النَّقائصِ، ووَصْفُه بالكمالِ التَّامِّ الَّذي يَليقُ بجَلالِه. «والحمدُ للهِ»: وَصفٌ للمَحمودِ بالكَمالِ معَ المحبَّةِ، والتَّعظيمِ، والاعتِرافُ بأنَّ اللهَ هو المستحِقُّ وَحْدَه لِمعاني الشُّكرِ والثَّناءِ. «وَلا إلهَ إلَّا اللهُ»، فهي كَلمةُ التَّوحيدِ، ومعناها: لا مَعبودَ حقٌّ أو بحقٍّ إلَّا اللهُ، وأنَّه وَحْدَه المستحِقُّ للعِبادةِ. «واللهُ أكبرُ»: أنَّ اللهَ سُبحانَه وتَعالَى أعلَى وأَكبرُ مِن كلِّ شيءٍ في هذا الوُجودِ. وهذا الذِّكرُ مُشتمِلٌ على التَّنزيهِ والثَّناءِ والتَّوحيدِ والتَّعظيمِ للهِ سبحانه، فجَمَعَ بذلك أعظَمَ الصِّفاتِ للهِ وأعظَمَ الأسماءِ، وكَلماتُه هنَّ المُنْجياتُ والمقدَّماتُ والباقِياتُ الصَّالحاتُ.",
+                meaningEn: "The meaning of 'Subhanallah': It is a declaration of Allah's transcendence above all deficiencies, and describing Him with perfect completeness befitting His majesty. 'Alhamdulillah': A description of the Praiseworthy with perfection, love, and reverence, acknowledging that Allah alone is worthy of gratitude and praise. 'La ilaha illa Allah': It is the word of monotheism, meaning: There is no true deity worshipped besides Allah, and He alone is worthy of worship. 'Allahu Akbar': Allah, glorified and exalted, is higher and greater than everything in existence. This remembrance encompasses the attributes of transcendence, praise, monotheism, and reverence for Allah, thus combining the greatest attributes and names, and its words are the means of salvation, the foremost, and the lasting good deeds."
             }
         ],
         evening: [
@@ -511,20 +519,12 @@ window.AZKAR_DATA = {
             },
             {
                 id: 21,
-                text: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
-
-                count: 3,
-
-                benefit: "من قالها حين يمسي ثلاث مرات لم تضره حُمَة (لدغة أو سم) تلك الليلة",
-
-                benefitEn: "Whoever says it three times in the evening will not be harmed by any poison or sting that night",
-
-                source: "الترمذي",
-                sourceEn: "Al-Tirmidhi",
-
-                grade: "صحيح",
-                gradeEn: "Sahih",
-
+                text: "سُبحانَ اللهِ، والحَمدُ للَّهِ، ولا إلَهَ إلَّا اللهُ، واللهُ أكبَرُ",
+                count: 100,
+                source: "مسلم",
+                sourceEn: "Muslim",
+                meaning: "ومعنى «سُبحانَ اللهِ»: تَنزيهٌ للهِ عزَّ وجلَّ عَن كلِّ النَّقائصِ، ووَصْفُه بالكمالِ التَّامِّ الَّذي يَليقُ بجَلالِه. «والحمدُ للهِ»: وَصفٌ للمَحمودِ بالكَمالِ معَ المحبَّةِ، والتَّعظيمِ، والاعتِرافُ بأنَّ اللهَ هو المستحِقُّ وَحْدَه لِمعاني الشُّكرِ والثَّناءِ. «وَلا إلهَ إلَّا اللهُ»، فهي كَلمةُ التَّوحيدِ، ومعناها: لا مَعبودَ حقٌّ أو بحقٍّ إلَّا اللهُ، وأنَّه وَحْدَه المستحِقُّ للعِبادةِ. «واللهُ أكبرُ»: أنَّ اللهَ سُبحانَه وتَعالَى أعلَى وأَكبرُ مِن كلِّ شيءٍ في هذا الوُجودِ. وهذا الذِّكرُ مُشتمِلٌ على التَّنزيهِ والثَّناءِ والتَّوحيدِ والتَّعظيمِ للهِ سبحانه، فجَمَعَ بذلك أعظَمَ الصِّفاتِ للهِ وأعظَمَ الأسماءِ، وكَلماتُه هنَّ المُنْجياتُ والمقدَّماتُ والباقِياتُ الصَّالحاتُ.",
+                meaningEn: "The meaning of 'Subhanallah': It is a declaration of Allah's transcendence above all deficiencies, and describing Him with perfect completeness befitting His majesty. 'Alhamdulillah': A description of the Praiseworthy with perfection, love, and reverence, acknowledging that Allah alone is worthy of gratitude and praise. 'La ilaha illa Allah': It is the word of monotheism, meaning: There is no true deity worshipped besides Allah, and He alone is worthy of worship. 'Allahu Akbar': Allah, glorified and exalted, is higher and greater than everything in existence. This remembrance encompasses the attributes of transcendence, praise, monotheism, and reverence for Allah, thus combining the greatest attributes and names, and its words are the means of salvation, the foremost, and the lasting good deeds."
             }
 
         ],

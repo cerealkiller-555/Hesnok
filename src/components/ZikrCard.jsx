@@ -220,17 +220,17 @@ const ZikrCard = ({
                                             <p className="text-sm text-[var(--text-primary)] leading-7 font-medium">{meaning}</p>
                                         </div>
                                     )}
-                                    {benefit && (
-                                        <div className="p-4 rounded-lg bg-[var(--primary)] border border-[var(--primary-dark)] relative overflow-hidden group">
-                                            <p className="text-sm text-white leading-7 font-medium">{benefit}</p>
-                                        </div>
-                                    )}
-                                    {source && (
-                                        <div className="flex items-center gap-2 px-1 text-[11px] text-white font-bold">
-                                            <BookOpen className="w-4 h-4" />
-                                            <span>{source}</span>
-                                        </div>
-                                    )}
+                                     {benefit && (
+                                         <div className="p-4 rounded-lg bg-[var(--primary)]/15 border border-[var(--primary)]/30 relative overflow-hidden group">
+                                             <p className="text-sm text-[var(--text-primary)] leading-7 font-medium">{benefit}</p>
+                                         </div>
+                                     )}
+                                     {source && (
+                                         <div className="flex items-center gap-2 px-1 text-[11px] text-[var(--primary)] font-bold">
+                                             <BookOpen className="w-4 h-4" />
+                                             <span>{source}</span>
+                                         </div>
+                                     )}
                                 </div>
                             )}
                         </div>
