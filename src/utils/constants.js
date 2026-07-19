@@ -9,6 +9,17 @@ export const { azkar, defaultCustomDuas, tabs: tabConfig } = AZKAR_DATA;
 // Icon map — used by AzkarApp to resolve tab icons from string keys
 export const ICONS = { Clock, Moon, Sun, BookOpen, Heart, Settings };
 
+// ═══════════════════════════════════════════
+// Prayer Banners for next prayer display
+// ═══════════════════════════════════════════
+export const PRAYER_BANNERS = [
+    { key: "Fajr",    ar: "الفجر",   en: "Fajr",    icon: "🌅" },
+    { key: "Dhuhr",   ar: "الظهر",   en: "Dhuhr",   icon: "🌞" },
+    { key: "Asr",     ar: "العصر",   en: "Asr",     icon: "🌤️" },
+    { key: "Maghrib", ar: "المغرب",  en: "Maghrib", icon: "🌆" },
+    { key: "Isha",    ar: "العشاء",  en: "Isha",    icon: "🌙" }
+];
+
 // Tabs that show daily progress (azkar lists)
 export const DAILY_TAB_IDS = ["morning", "evening", "sleeping", "prayer_azkar", "jawami"];
 
@@ -25,6 +36,19 @@ export const PRAYER_CHECKLIST = [
     { id: "asr",     ar: "العصر",   en: "Asr" },
     { id: "maghrib", ar: "المغرب",  en: "Maghrib" },
     { id: "isha",    ar: "العشاء",  en: "Isha" }
+];
+
+// ═══════════════════════════════════════════
+// Accent Color Options - Single source of truth
+// ═══════════════════════════════════════════
+export const ACCENT_OPTIONS = [
+    { id: "indigo", labelAr: "أزرق ملكي", labelEn: "Indigo", vars: { '--primary': '#6366f1', '--primary-light': '#818cf8', '--primary-dark': '#4f46e5', '--accent': '#f59e0b', '--accent-light': '#fbbf24', '--accent-dark': '#d97706', '--accent-glow': 'rgba(245, 158, 11, 0.25)', '--primary-rgb': '99,102,241', '--accent-rgb': '245,158,11' }, darkVars: { '--primary': '#818cf8', '--primary-light': '#a5b4fc', '--primary-dark': '#6366f1', '--accent': '#fbbf24', '--accent-light': '#fcd34d', '--accent-dark': '#f59e0b', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '129,140,248', '--accent-rgb': '251,191,36' } },
+    { id: "emerald", labelAr: "أخضر زمردي", labelEn: "Emerald", vars: { '--primary': '#10b981', '--primary-light': '#34d399', '--primary-dark': '#059669', '--accent': '#14b8a6', '--accent-light': '#2dd4bf', '--accent-dark': '#0f766e', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '16,185,129', '--accent-rgb': '20,184,166' }, darkVars: { '--primary': '#34d399', '--primary-light': '#6ee7b7', '--primary-dark': '#10b981', '--accent': '#2dd4bf', '--accent-light': '#5eead4', '--accent-dark': '#14b8a6', '--accent-glow': 'rgba(45, 212, 191, 0.25)', '--primary-rgb': '52,211,153', '--accent-rgb': '45,212,191' } },
+    { id: "rose", labelAr: "وردي ناعم", labelEn: "Rose", vars: { '--primary': '#ec4899', '--primary-light': '#f472b6', '--primary-dark': '#be185d', '--accent': '#f97316', '--accent-light': '#fb923c', '--accent-dark': '#ea580c', '--accent-glow': 'rgba(236, 72, 153, 0.2)', '--primary-rgb': '236,72,153', '--accent-rgb': '249,115,22' }, darkVars: { '--primary': '#f472b6', '--primary-light': '#fbcfe8', '--primary-dark': '#ec4899', '--accent': '#fb923c', '--accent-light': '#fdba74', '--accent-dark': '#f97316', '--accent-glow': 'rgba(251, 146, 60, 0.25)', '--primary-rgb': '244,114,182', '--accent-rgb': '251,146,60' } },
+    { id: "teal", labelAr: "أخضر بحري", labelEn: "Teal", vars: { '--primary': '#14b8a6', '--primary-light': '#2dd4bf', '--primary-dark': '#0f766e', '--accent': '#22d3ee', '--accent-light': '#67e8f9', '--accent-dark': '#0e7490', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '20,184,166', '--accent-rgb': '34,211,238' }, darkVars: { '--primary': '#2dd4bf', '--primary-light': '#5eead4', '--primary-dark': '#14b8a6', '--accent': '#67e8f9', '--accent-light': '#a5f3fc', '--accent-dark': '#22d3ee', '--accent-glow': 'rgba(103, 232, 249, 0.25)', '--primary-rgb': '45,212,191', '--accent-rgb': '103,232,249' } },
+    { id: "blue", labelAr: "أزرق كحلي", labelEn: "Blue", vars: { '--primary': '#3b82f6', '--primary-light': '#60a5fa', '--primary-dark': '#2563eb', '--accent': '#8b5cf6', '--accent-light': '#a78bfa', '--accent-dark': '#7c3aed', '--accent-glow': 'rgba(59, 130, 246, 0.25)', '--primary-rgb': '59,130,246', '--accent-rgb': '139,92,246' }, darkVars: { '--primary': '#60a5fa', '--primary-light': '#93c5fd', '--primary-dark': '#3b82f6', '--accent': '#a78bfa', '--accent-light': '#c4b5fd', '--accent-dark': '#8b5cf6', '--accent-glow': 'rgba(96, 165, 250, 0.25)', '--primary-rgb': '96,165,250', '--accent-rgb': '167,139,250' } },
+    { id: "purple", labelAr: "بنفسجي", labelEn: "Purple", vars: { '--primary': '#a855f7', '--primary-light': '#c084fc', '--primary-dark': '#9333ea', '--accent': '#ec4899', '--accent-light': '#f472b6', '--accent-dark': '#db2777', '--accent-glow': 'rgba(168, 85, 247, 0.25)', '--primary-rgb': '168,85,247', '--accent-rgb': '236,72,153' }, darkVars: { '--primary': '#c084fc', '--primary-light': '#e9d5ff', '--primary-dark': '#a855f7', '--accent': '#f472b6', '--accent-light': '#fda5d5', '--accent-dark': '#ec4899', '--accent-glow': 'rgba(192, 132, 252, 0.25)', '--primary-rgb': '192,132,252', '--accent-rgb': '244,114,182' } },
+    { id: "amber", labelAr: "عنابي", labelEn: "Amber", vars: { '--primary': '#f59e0b', '--primary-light': '#fbbf24', '--primary-dark': '#d97706', '--accent': '#ef4444', '--accent-light': '#f87171', '--accent-dark': '#dc2626', '--accent-glow': 'rgba(245, 158, 11, 0.25)', '--primary-rgb': '245,158,11', '--accent-rgb': '239,68,68' }, darkVars: { '--primary': '#fbbf24', '--primary-light': '#fde68a', '--primary-dark': '#f59e0b', '--accent': '#f87171', '--accent-light': '#fca5a5', '--accent-dark': '#ef4444', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '251,191,36', '--accent-rgb': '248,113,113' } }
 ];
 
 // ═══════════════════════════════════════════
@@ -68,7 +92,7 @@ export const I18N = {
         updateProfile: "تحديث البيانات",
         loginSaved: "تم حفظ بياناتك",
         accountCreated: "تم إنشاء الحساب بنجاح",
-        signedIn: "تم تسجيل الدخول بنجاح",
+        signedIn: "تم تسجيل الدخول بناح",
         wrongPassword: "كلمة المرور غير صحيحة، حاول مرة أخرى",
         userNotFound: "لم يتم العثور على حساب بهذا البريد",
         userExists: "يوجد حساب بهذا البريد بالفعل",
@@ -237,7 +261,7 @@ export const I18N = {
         meaningTitle: "Meaning and Explanation",
         welcomeMessage: "Welcome back, {name}! Your fortress is ready.",
         notificationTitlePrayer: "Prayer reminder",
-        notificationBodyPrayer: "{name}, it’s prayer time now.",
+        notificationBodyPrayer: "{name}, it's prayer time now.",
         notificationTitleAzkar: "Azkar reminder",
         notificationBodyAzkar: "{name}, your daily azkar time has started.",
         notificationsTitle: "Reminders",
@@ -247,7 +271,7 @@ export const I18N = {
         prayerNotificationLabel: "Prayer time reminders",
         azkarNotificationLabel: "Azkar reminders",
         colorThemeLabel: "App color",
-        goalCompleteMessage: "You’re the best little champion!",
+        goalCompleteMessage: "You're the best little champion!",
         passwordLabel: "Password",
         passwordRequired: "Password is required",
         passwordMinError: "Password must be at least 6 characters",

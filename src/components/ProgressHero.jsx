@@ -2,6 +2,11 @@ import React from 'react';
 import { Sun, Moon, BookOpen, Heart, RotateCcw } from 'lucide-react';
 import { DAILY_TAB_IDS } from '../utils/constants';
 
+// Map tab IDs (from DAILY_TAB_IDS) to theme keys for icon/label lookup
+const TAB_THEME_MAP = {
+    prayer_azkar: 'prayerAzkar'
+};
+
 const THEMES = {
     morning: {
         icon: Sun
@@ -23,7 +28,9 @@ const THEMES = {
 const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCount, resetAllProgress, t, userProfile, language }) => {
     if (!DAILY_TAB_IDS.includes(activeTab)) return null;
 
-    const theme = THEMES[activeTab];
+    // Map the tab ID to the correct theme key
+    const themeKey = TAB_THEME_MAP[activeTab] || activeTab;
+    const theme = THEMES[themeKey];
     if (!theme) return null;
 
     const Icon = theme.icon;
@@ -33,7 +40,7 @@ const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCoun
         sleeping: t.progressTitleSleeping,
         prayerAzkar: t.progressTitlePrayer,
         jawami: t.jawamiTitle
-    }[activeTab];
+    }[themeKey];
 
     return (
         <div className="progress-hero relative">

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Download, MapPin, Moon, Sun, Globe, Heart, RotateCcw, ShieldCheck, Info, Bell } from 'lucide-react';
+import { ACCENT_OPTIONS } from '../utils/constants';
 
 const SettingsSection = ({
     deferredPrompt, installPWA,
@@ -151,26 +152,18 @@ const SettingsSection = ({
                     {t.colorThemeLabel}
                 </h3>
                 <div className="grid grid-cols-3 gap-3">
-                    {[
-                        { value: 'indigo', label: language === 'en' ? 'Indigo' : 'أزرق', color: '#6366f1' },
-                        { value: 'emerald', label: language === 'en' ? 'Emerald' : 'أخضر', color: '#10b981' },
-                        { value: 'rose', label: language === 'en' ? 'Rose' : 'وردي', color: '#ec4899' },
-                        { value: 'teal', label: language === 'en' ? 'Teal' : 'تركواز', color: '#14b8a6' },
-                        { value: 'blue', label: language === 'en' ? 'Blue' : 'أزرق كحلي', color: '#3b82f6' },
-                        { value: 'purple', label: language === 'en' ? 'Purple' : 'بنفسجي', color: '#a855f7' },
-                        { value: 'amber', label: language === 'en' ? 'Amber' : 'عنابي', color: '#f59e0b' }
-                    ].map((option) => (
+                    {ACCENT_OPTIONS.map((option) => (
                         <button
-                            key={option.value}
+                            key={option.id}
                             type="button"
-                            onClick={() => setAccentColor(option.value)}
-                            className={`py-3 px-4 rounded-lg text-sm font-black border transition-all ${accentColor === option.value ? 'bg-[var(--primary)] text-white border-[var(--primary)] shadow-sm' : 'bg-bg-subtle text-text-secondary border-glass-border hover:border-[var(--primary)]'}`}
+                            onClick={() => setAccentColor(option.id)}
+                            className={`py-3 px-4 rounded-lg text-sm font-black border transition-all ${accentColor === option.id ? 'bg-[var(--primary)] text-white border-[var(--primary)] shadow-sm' : 'bg-bg-subtle text-text-secondary border-glass-border hover:border-[var(--primary)]'}`}
                         >
                             <span 
                                 className="w-3.5 h-3.5 rounded-full border border-black/10 dark:border-white/20 shrink-0 shadow-inner" 
-                                style={{ backgroundColor: option.color }}
+                                style={{ backgroundColor: option.vars['--primary'] }}
                             />
-                            <span>{option.label}</span>
+                            <span>{language === 'en' ? option.labelEn : option.labelAr}</span>
                         </button>
                     ))}
                 </div>

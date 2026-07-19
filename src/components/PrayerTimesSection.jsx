@@ -1,5 +1,7 @@
 import React from 'react';
+import { parsePrayerTime, formatPrayerTime } from '../utils/helpers';
 
+// Prayer cards for display
 const PRAYER_CARDS = [
     { name_ar: "الفجر",  name_en: "Fajr",    key: "Fajr",    icon: "🌅" },
     { name_ar: "الشروق", name_en: "Sunrise",  key: "Sunrise",  icon: "☀️" },
@@ -8,25 +10,6 @@ const PRAYER_CARDS = [
     { name_ar: "المغرب", name_en: "Maghrib",  key: "Maghrib",  icon: "🌆" },
     { name_ar: "العشاء", name_en: "Isha",     key: "Isha",     icon: "🌙" }
 ];
-
-const parsePrayerTime = (timeStr) => {
-    if (!timeStr || typeof timeStr !== 'string') return null;
-    const [hour, minute] = timeStr.split(':').map((n) => parseInt(n, 10));
-    if (Number.isNaN(hour) || Number.isNaN(minute)) return null;
-    const date = new Date();
-    date.setHours(hour, minute, 0, 0);
-    return date;
-};
-
-const formatPrayerTime = (timeStr, language) => {
-    const date = parsePrayerTime(timeStr);
-    if (!date) return "--:--";
-    return date.toLocaleTimeString(language === 'en' ? 'en-US' : 'ar-EG', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-    });
-};
 
 const getActivePrayerKey = (prayerTimes) => {
     if (!prayerTimes) return null;

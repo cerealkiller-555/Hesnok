@@ -2,10 +2,12 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Clock, Moon, Sun, BookOpen, Settings } from 'lucide-react';
 import {
     ICONS, DAILY_TAB_IDS, OFFLINE_PRAYER_TIMES,
-    PRAYER_CHECKLIST, I18N, azkar, defaultCustomDuas, tabConfig
+    PRAYER_CHECKLIST, I18N, azkar, defaultCustomDuas, tabConfig,
+    PRAYER_BANNERS, ACCENT_OPTIONS
 } from '../utils/constants';
 import {
-    showToast, readJson, readDailyState, writeJson, readUsers, writeUsers, findUserByEmail, getUserStorageSuffix, isSameDay, isYesterday, hashString
+    showToast, readJson, readDailyState, writeJson, readUsers, writeUsers, findUserByEmail, getUserStorageSuffix, isSameDay, isYesterday, hashString,
+    parsePrayerTime, formatPrayerTime
 } from '../utils/helpers';
 
 import ToastContainer   from './ToastContainer';
@@ -42,14 +44,6 @@ const normalizeCustomDuas = (duas) => {
         .filter((dua) => dua && dua.text.trim());
 };
 
-const PRAYER_BANNERS = [
-    { key: "Fajr",    ar: "الفجر",   en: "Fajr",    icon: "🌅" },
-    { key: "Dhuhr",   ar: "الظهر",   en: "Dhuhr",   icon: "🌞" },
-    { key: "Asr",     ar: "العصر",   en: "Asr",     icon: "🌤️" },
-    { key: "Maghrib", ar: "المغرب",  en: "Maghrib", icon: "🌆" },
-    { key: "Isha",    ar: "العشاء",  en: "Isha",    icon: "🌙" }
-];
-
 // Map tab IDs to azkar data keys
 const TAB_TO_AZKAR_KEY = {
     morning: "morning",
@@ -59,25 +53,14 @@ const TAB_TO_AZKAR_KEY = {
     jawami: "jawami"
 };
 
-const ACCENT_OPTIONS = [
-    { id: "indigo", labelAr: "أزرق ملكي", labelEn: "Indigo", vars: { '--primary': '#6366f1', '--primary-light': '#818cf8', '--primary-dark': '#4f46e5', '--accent': '#f59e0b', '--accent-light': '#fbbf24', '--accent-dark': '#d97706', '--accent-glow': 'rgba(245, 158, 11, 0.25)', '--primary-rgb': '99,102,241', '--accent-rgb': '245,158,11' }, darkVars: { '--primary': '#818cf8', '--primary-light': '#a5b4fc', '--primary-dark': '#6366f1', '--accent': '#fbbf24', '--accent-light': '#fcd34d', '--accent-dark': '#f59e0b', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '129,140,248', '--accent-rgb': '251,191,36' } },
-    { id: "emerald", labelAr: "أخضر زمردي", labelEn: "Emerald", vars: { '--primary': '#10b981', '--primary-light': '#34d399', '--primary-dark': '#059669', '--accent': '#14b8a6', '--accent-light': '#2dd4bf', '--accent-dark': '#0f766e', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '16,185,129', '--accent-rgb': '20,184,166' }, darkVars: { '--primary': '#34d399', '--primary-light': '#6ee7b7', '--primary-dark': '#10b981', '--accent': '#2dd4bf', '--accent-light': '#5eead4', '--accent-dark': '#14b8a6', '--accent-glow': 'rgba(45, 212, 191, 0.25)', '--primary-rgb': '52,211,153', '--accent-rgb': '45,212,191' } },
-    { id: "rose", labelAr: "وردي ناعم", labelEn: "Rose", vars: { '--primary': '#ec4899', '--primary-light': '#f472b6', '--primary-dark': '#be185d', '--accent': '#f97316', '--accent-light': '#fb923c', '--accent-dark': '#ea580c', '--accent-glow': 'rgba(236, 72, 153, 0.2)', '--primary-rgb': '236,72,153', '--accent-rgb': '249,115,22' }, darkVars: { '--primary': '#f472b6', '--primary-light': '#fbcfe8', '--primary-dark': '#ec4899', '--accent': '#fb923c', '--accent-light': '#fdba74', '--accent-dark': '#f97316', '--accent-glow': 'rgba(251, 146, 60, 0.25)', '--primary-rgb': '244,114,182', '--accent-rgb': '251,146,60' } },
-    { id: "teal", labelAr: "أخضر بحري", labelEn: "Teal", vars: { '--primary': '#14b8a6', '--primary-light': '#2dd4bf', '--primary-dark': '#0f766e', '--accent': '#22d3ee', '--accent-light': '#67e8f9', '--accent-dark': '#0e7490', '--accent-glow': 'rgba(20, 184, 166, 0.25)', '--primary-rgb': '20,184,166', '--accent-rgb': '34,211,238' }, darkVars: { '--primary': '#2dd4bf', '--primary-light': '#5eead4', '--primary-dark': '#14b8a6', '--accent': '#67e8f9', '--accent-light': '#a5f3fc', '--accent-dark': '#22d3ee', '--accent-glow': 'rgba(103, 232, 249, 0.25)', '--primary-rgb': '45,212,191', '--accent-rgb': '103,232,249' } },
-    { id: "blue", labelAr: "أزرق كحلي", labelEn: "Blue", vars: { '--primary': '#3b82f6', '--primary-light': '#60a5fa', '--primary-dark': '#2563eb', '--accent': '#8b5cf6', '--accent-light': '#a78bfa', '--accent-dark': '#7c3aed', '--accent-glow': 'rgba(59, 130, 246, 0.25)', '--primary-rgb': '59,130,246', '--accent-rgb': '139,92,246' }, darkVars: { '--primary': '#60a5fa', '--primary-light': '#93c5fd', '--primary-dark': '#3b82f6', '--accent': '#a78bfa', '--accent-light': '#c4b5fd', '--accent-dark': '#8b5cf6', '--accent-glow': 'rgba(96, 165, 250, 0.25)', '--primary-rgb': '96,165,250', '--accent-rgb': '167,139,250' } },
-    { id: "purple", labelAr: "بنفسجي", labelEn: "Purple", vars: { '--primary': '#a855f7', '--primary-light': '#c084fc', '--primary-dark': '#9333ea', '--accent': '#ec4899', '--accent-light': '#f472b6', '--accent-dark': '#db2777', '--accent-glow': 'rgba(168, 85, 247, 0.25)', '--primary-rgb': '168,85,247', '--accent-rgb': '236,72,153' }, darkVars: { '--primary': '#c084fc', '--primary-light': '#e9d5ff', '--primary-dark': '#a855f7', '--accent': '#f472b6', '--accent-light': '#fda5d5', '--accent-dark': '#ec4899', '--accent-glow': 'rgba(192, 132, 252, 0.25)', '--primary-rgb': '192,132,252', '--accent-rgb': '244,114,182' } },
-    { id: "amber", labelAr: "عنابي", labelEn: "Amber", vars: { '--primary': '#f59e0b', '--primary-light': '#fbbf24', '--primary-dark': '#d97706', '--accent': '#ef4444', '--accent-light': '#f87171', '--accent-dark': '#dc2626', '--accent-glow': 'rgba(245, 158, 11, 0.25)', '--primary-rgb': '245,158,11', '--accent-rgb': '239,68,68' }, darkVars: { '--primary': '#fbbf24', '--primary-light': '#fde68a', '--primary-dark': '#f59e0b', '--accent': '#f87171', '--accent-light': '#fca5a5', '--accent-dark': '#ef4444', '--accent-glow': 'rgba(251, 191, 36, 0.25)', '--primary-rgb': '251,191,36', '--accent-rgb': '248,113,113' } }
-];
-
-
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // AzkarApp — Root Component
 //
 // HOOK ORDERING RULES (prevents TDZ crash):
 //   1. All useState declarations first
 //   2. All useMemo / useCallback that derive from state
 //   3. All useEffect hooks last
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 
 const AzkarApp = () => {
     // ───────────────────────────────────────
@@ -115,7 +98,10 @@ const AzkarApp = () => {
     const [deferredPrompt, setDeferredPrompt]     = useState(null);
     const [highlightedZikr, setHighlightedZikr]   = useState(null);
     const [nextFocusZikr, setNextFocusZikr]       = useState(null);
-    const [showWelcome, setShowWelcome]           = useState(() => !localStorage.getItem("azkar_welcomeSeen"));
+    const [showWelcome, setShowWelcome]           = useState(() => {
+        const seen = localStorage.getItem("azkar_welcomeSeen");
+        return seen !== "true";
+    });
 
     // Refs
     const completedAzkarRef = useRef(completedAzkar);
@@ -251,15 +237,6 @@ const AzkarApp = () => {
         setTimeout(() => toastShownRef.current.delete(key), 1000);
     }, []);
 
-    const parsePrayerTime = useCallback((timeStr) => {
-        if (!timeStr || typeof timeStr !== 'string') return null;
-        const [hour, minute] = timeStr.split(':').map((n) => parseInt(n, 10));
-        if (Number.isNaN(hour) || Number.isNaN(minute)) return null;
-        const date = new Date();
-        date.setHours(hour, minute, 0, 0);
-        return date;
-    }, []);
-
     const prayerHeaders = useMemo(() => {
         if (!prayerTimes) return [];
         const headers = PRAYER_BANNERS.map((prayer) => {
@@ -293,7 +270,7 @@ const AzkarApp = () => {
         }
 
         return headers;
-    }, [prayerTimes, currentTime, parsePrayerTime]);
+    }, [prayerTimes, currentTime]);
 
     const nextPrayer = useMemo(() => {
         return prayerHeaders.find((item) => item.isNext) || prayerHeaders[0] || null;
@@ -318,11 +295,7 @@ const AzkarApp = () => {
 
     const formatNextPrayerTime = useCallback((date) => {
         if (!date) return "--:--";
-        return date.toLocaleTimeString(language === 'en' ? 'en-US' : 'ar-EG', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
-        });
+        return formatPrayerTime(date, language);
     }, [language]);
 
     const getAccentStyle = useCallback(() => {
@@ -708,51 +681,6 @@ const AzkarApp = () => {
         });
     }, [dailyGoalsComplete, isLoggedIn, streak.lastDate]);
 
-    // Highlight first zikr based on prayer times - after Fajr for morning, after Asr for evening
-    useEffect(() => {
-        if (!prayerTimes || !isLoggedIn || !storageReady) return;
-        if (activeTab !== 'morning' && activeTab !== 'evening') return;
-        
-        const now = new Date();
-        
-        // Parse prayer times and add 5 minutes after
-        const parseTime = (timeStr) => {
-            if (!timeStr) return null;
-            const [h, m] = timeStr.split(':').map(n => parseInt(n, 10));
-            if (Number.isNaN(h) || Number.isNaN(m)) return null;
-            const d = new Date();
-            d.setHours(h, m + 5, 0, 0);
-            return d;
-        };
-        
-        const fajrTime = parseTime(prayerTimes.Fajr);
-        const asrTime = parseTime(prayerTimes.Asr);
-        
-        // Check if it's around Fajr time (+/- 5 min) for morning azkar
-        if (activeTab === 'morning' && fajrTime) {
-            const diff = Math.abs(fajrTime.getTime() - now.getTime());
-            if (diff < 5 * 60 * 1000) { // Within 5 minutes after Fajr
-                const firstZikrId = `morning_${azkar.morning[0]?.id}`;
-                if (!completedAzkarRef.current[firstZikrId]) {
-                    setHighlightedZikr(firstZikrId);
-                    setTimeout(() => setHighlightedZikr(null), 10000);
-                }
-            }
-        }
-        
-        // Check if it's around Asr time (+/- 5 min) for evening azkar
-        if (activeTab === 'evening' && asrTime) {
-            const diff = Math.abs(asrTime.getTime() - now.getTime());
-            if (diff < 5 * 60 * 1000) { // Within 5 minutes after Asr
-                const firstZikrId = `evening_${azkar.evening[0]?.id}`;
-                if (!completedAzkarRef.current[firstZikrId]) {
-                    setHighlightedZikr(firstZikrId);
-                    setTimeout(() => setHighlightedZikr(null), 10000);
-                }
-            }
-        }
-    }, [prayerTimes, activeTab, isLoggedIn, storageReady]);
-
     // ───────────────────────────────────────
     // 5. RENDER HELPERS
     // ───────────────────────────────────────
@@ -876,7 +804,6 @@ const AzkarApp = () => {
                                 >
                                     <tab.icon className={`w-4 h-4 ${prog?.isAllDone ? 'text-[var(--success)]' : ''}`} />
                                     <span>{tab.labelText}</span>
-                                    {/* removed numeric badge per UX request */}
                                 </button>
                             );
                         })}
@@ -1046,7 +973,6 @@ const AzkarApp = () => {
                         >
                             <div className="relative">
                                 <tab.icon className={`w-5 h-5 mb-1 ${prog?.isAllDone ? 'text-[var(--success)]' : ''}`} />
-                                {/* numeric badge removed for cleaner menu */}
                             </div>
                             <span className="text-[10px] font-bold">{tab.labelText}</span>
                         </button>

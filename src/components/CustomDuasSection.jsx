@@ -1,6 +1,14 @@
 import React from 'react';
 import { Plus, Heart, Trash2 } from 'lucide-react';
 
+// Sanitize user input to prevent XSS attacks
+const sanitizeText = (text) => {
+    if (typeof text !== 'string') return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+};
+
 const CustomDuasSection = ({ customDuas, newDua, setNewDua, addCustomDua, deleteCustomDua, t }) => (
     <div className="animate-slide-up space-y-6">
         <div className="p-5 rounded-lg bg-[var(--bg-surface)] border border-[var(--glass-border)] text-[var(--text-primary)] shadow-sm">
@@ -41,7 +49,10 @@ const CustomDuasSection = ({ customDuas, newDua, setNewDua, addCustomDua, delete
             {customDuas.map((dua, index) => (
                 <div key={dua.id || index} className="group p-5 bg-[var(--bg-surface)] rounded-lg shadow-sm border border-[var(--glass-border)] hover:shadow-md transition-all">
                     <div className="flex items-start justify-between gap-4">
-                        <p className="text-lg font-amiri text-[var(--text-primary)] leading-relaxed flex-1">{dua.text}</p>
+                        <p 
+                            className="text-lg font-amiri text-[var(--text-primary)] leading-relaxed flex-1"
+                            dangerouslySetInnerHTML={{ __html: sanitizeText(dua.text) }}
+                        />
                         <button
                             onClick={() => deleteCustomDua(dua.id)}
                             className="p-2 rounded-lg bg-[var(--error)]/10 text-[var(--error)] md:opacity-0 md:group-hover:opacity-100 transition-all hover:scale-105 active:scale-95 flex-shrink-0"
