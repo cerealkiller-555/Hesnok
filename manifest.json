@@ -7,6 +7,9 @@
   "background_color": "#020617",
   "theme_color": "#6366f1",
   "orientation": "portrait",
+  "scope": ".",
+  "lang": "ar",
+  "dir": "rtl",
   "icons": [
     {
       "src": "hesnok_logo1.png",
