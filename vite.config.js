@@ -18,11 +18,43 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
-    // Performance optimizations - use esbuild (default, faster than terser)
-    minify: 'esbuild',
+    // Performance optimizations
+    minify: 'terser',
     cssMinify: true,
-    // Optimize chunk size for faster loading
-    chunkSizeWarningLimit: 500,
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+      mangle: {
+        properties: {
+          regex: /^__/,
+        },
+      },
+    },
+    rollupOptions: {
+      output: {
+        // Manual chunk splitting for better caching
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('lucide-react')) {
+              return 'lucide-icons';
+            }
+            if (id.includes('@vercel')) {
+              return 'vercel';
+            }
+          }
+        },
+      },
+    },
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
     // Reduce bundle size
     commonjsOptions: {
       include: [/node_modules/],
@@ -30,6 +62,6 @@ export default defineConfig({
   },
   // Preload optimizations
   optimizeDeps: {
-    include: ['react', 'react-dom'],
+    include: ['react', 'react-dom', 'lucide-react'],
   },
 });
