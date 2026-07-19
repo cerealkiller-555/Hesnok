@@ -97,7 +97,6 @@ const AzkarApp = () => {
     const [countAnimation, setCountAnimation]     = useState(null);
     const [deferredPrompt, setDeferredPrompt]     = useState(null);
     const [highlightedZikr, setHighlightedZikr]   = useState(null);
-    const [nextFocusZikr, setNextFocusZikr]       = useState(null);
     const [showWelcome, setShowWelcome]           = useState(() => {
         const seen = localStorage.getItem("azkar_welcomeSeen");
         return seen !== "true";
@@ -221,14 +220,40 @@ const AzkarApp = () => {
     // Auto-advance: scroll to next incomplete zikr
     const scrollToNextZikr = useCallback((currentId, list, type) => {
         const currentIndex = list.findIndex((z) => `${type}_${z.id}` === currentId);
-        const remaining    = list.slice(currentIndex + 1);
-        const nextIncomplete = remaining.find((z) => !completedAzkarRef.current[`${type}_${z.id}`]);
+        if (currentIndex === -1) return;
+
+        const nextIncomplete = list.slice(currentIndex + 1).find(
+            (z) => !completedAzkarRef.current[`${type}_${z.id}`]
+        );
 
         if (nextIncomplete) {
             const nextId = `${type}_${nextIncomplete.id}`;
-            setNextFocusZikr(nextId);
+            // Highlight and scroll with a delay for the completion animation to play
+            setTimeout(() => {
+                setHighlightedZikr(nextId);
+                const nextElement = document.getElementById(`zikr-${nextId}`);
+                if (nextElement) {
+                    nextElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                // Remove highlight after 2.5 seconds
+                setTimeout(() => setHighlightedZikr(null), 2500);
+            }, 600);
+        } else {
+            // All done! Show a congratulations toast
+            setTimeout(() => {
+                const allDone = list.every(
+                    (z) => completedAzkarRef.current[`${type}_${z.id}`] || `${type}_${z.id}` === currentId
+                );
+                if (allDone) {
+                    showToast(
+                        language === "en" ? "🎉 All azkar completed!" : "🎉 تم إتمام جميع الأذكار!",
+                        "success",
+                        3000
+                    );
+                }
+            }, 600);
         }
-    }, []);
+    }, [language]);
 
     const showOncePerAction = useCallback((key, message, type = "success") => {
         if (toastShownRef.current.has(key)) return;
@@ -456,7 +481,6 @@ const AzkarApp = () => {
         // Clear any in-progress highlight / counter animation from the
         // previous tab so they don't bleed into the newly-mounted content.
         setHighlightedZikr(null);
-        setNextFocusZikr(null);
         setCountAnimation(null);
         setActiveTab(tabId);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -502,47 +526,6 @@ const AzkarApp = () => {
     useEffect(() => {
         azkarProgressRef.current = azkarProgress;
     }, [azkarProgress]);
-
-    // Helper to check if element is in viewport
-    const isElementInViewport = (el) => {
-        const rect = el.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        );
-    };
-
-    useEffect(() => {
-        if (!nextFocusZikr) return;
-
-        let timers = [];
-
-        // Highlight the next card without scrolling - just visual emphasis
-        timers.push(
-            setTimeout(() => {
-                setHighlightedZikr(nextFocusZikr);
-                // Gentle scroll only if card is out of view
-                const el = document.getElementById(`zikr-${nextFocusZikr}`);
-                if (el && !isElementInViewport(el)) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-            }, 250)
-        );
-
-        // Keep highlight visible longer
-        timers.push(
-            setTimeout(() => {
-                setHighlightedZikr(null);
-                setNextFocusZikr(null);
-            }, 2800)
-        );
-
-        return () => {
-            timers.forEach(timer => clearTimeout(timer));
-        };
-    }, [nextFocusZikr]);
 
     // Load user-scoped data when logged in or user changes
     useEffect(() => {
