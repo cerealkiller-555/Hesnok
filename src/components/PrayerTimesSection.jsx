@@ -57,8 +57,35 @@ const getActivePrayerKey = (prayerTimes) => {
     return activeKey;
 };
 
+// Get the next upcoming prayer (not the currently active one)
+const getNextPrayerKey = (prayerTimes) => {
+    if (!prayerTimes) return null;
+    const now = new Date();
+    
+    const parsed = PRAYER_CARDS.map(p => {
+        const time = prayerTimes[p.key];
+        const date = parsePrayerTime(time);
+        return { key: p.key, date };
+    }).filter(p => p.date);
+    
+    if (parsed.length === 0) return null;
+    
+    parsed.sort((a, b) => a.date - b.date);
+    
+    // Find the next prayer that hasn't occurred yet today
+    for (let i = 0; i < parsed.length; i++) {
+        if (parsed[i].date > now) {
+            return parsed[i].key;
+        }
+    }
+    
+    // If all prayers passed, next is Fajr (first prayer tomorrow)
+    return parsed.find(p => p.key === 'Fajr')?.key || null;
+};
+
 const PrayerTimesSection = ({ prayerTimes, hijriDate, location, t, language, prayerChecklist, onTogglePrayer }) => {
     const activePrayerKey = getActivePrayerKey(prayerTimes);
+    const nextPrayerKey = getNextPrayerKey(prayerTimes);
 
     // Format Hijri date
     const formatHijriDate = (hijri) => {
@@ -89,14 +116,17 @@ const PrayerTimesSection = ({ prayerTimes, hijriDate, location, t, language, pra
                     const isMarkable = prayerId !== 'sunrise';
                     const checked = Boolean(prayerChecklist?.[prayerId]);
                     const isActive = activePrayerKey === p.key;
+                    const isNext = nextPrayerKey === p.key;
 
                     return (
                         <div 
                             key={p.key} 
                             className={`prayer-time-card group cursor-default rounded-xl border p-4 shadow-sm transition-all relative overflow-hidden ${
                                 isActive 
-                                    ? 'border-primary bg-bg-surface shadow-[0_8px_24px_rgba(var(--primary-rgb),0.12)] ring-1 ring-primary/30' 
-                                    : 'border-glass-border bg-bg-surface'
+                                    ? 'border-primary bg-bg-surface shadow-[0_8px_24px_rgba(var(--primary-rgb),0.12)] ring-1 ring-primary/30'
+                                    : isNext
+                                        ? 'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-900/20 shadow-[0_8px_24px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/30'
+                                        : 'border-glass-border bg-bg-surface'
                             }`}
                         >
                             <div className="flex items-center justify-between mb-3">
@@ -105,6 +135,10 @@ const PrayerTimesSection = ({ prayerTimes, hijriDate, location, t, language, pra
                                     <span className="inline-flex items-center justify-center rounded-full bg-primary/10 text-primary text-[9px] font-black uppercase px-2 py-0.5 tracking-wider">
                                         {language === "en" ? "Active" : "الآن"}
                                     </span>
+                                ) : isNext ? (
+                                    <span className="inline-flex items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[9px] font-black uppercase px-2 py-0.5 tracking-wider">
+                                        {language === "en" ? "Next" : "القادمة"}
+                                    </span>
                                 ) : (
                                     <div className="w-1.5 h-1.5 rounded-full bg-primary opacity-60" />
                                 )}
@@ -112,7 +146,7 @@ const PrayerTimesSection = ({ prayerTimes, hijriDate, location, t, language, pra
                             <h3 className="text-xs md:text-sm font-bold mb-1 text-[var(--text-secondary)]">
                                 {language === "en" ? p.name_en : p.name_ar}
                             </h3>
-                            <p className="text-lg md:text-xl font-black text-[var(--text-primary)]" dir="ltr">
+                            <p className={`text-lg md:text-xl font-black ${isNext ? 'text-emerald-600 dark:text-emerald-400' : 'text-[var(--text-primary)]'}`} dir="ltr">
                                 {formatPrayerTime(prayerTimes[p.key], language)}
                             </p>
                             {isMarkable && (

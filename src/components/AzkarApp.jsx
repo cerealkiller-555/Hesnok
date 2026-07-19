@@ -708,6 +708,51 @@ const AzkarApp = () => {
         });
     }, [dailyGoalsComplete, isLoggedIn, streak.lastDate]);
 
+    // Highlight first zikr based on prayer times - after Fajr for morning, after Asr for evening
+    useEffect(() => {
+        if (!prayerTimes || !isLoggedIn || !storageReady) return;
+        if (activeTab !== 'morning' && activeTab !== 'evening') return;
+        
+        const now = new Date();
+        
+        // Parse prayer times and add 5 minutes after
+        const parseTime = (timeStr) => {
+            if (!timeStr) return null;
+            const [h, m] = timeStr.split(':').map(n => parseInt(n, 10));
+            if (Number.isNaN(h) || Number.isNaN(m)) return null;
+            const d = new Date();
+            d.setHours(h, m + 5, 0, 0);
+            return d;
+        };
+        
+        const fajrTime = parseTime(prayerTimes.Fajr);
+        const asrTime = parseTime(prayerTimes.Asr);
+        
+        // Check if it's around Fajr time (+/- 5 min) for morning azkar
+        if (activeTab === 'morning' && fajrTime) {
+            const diff = Math.abs(fajrTime.getTime() - now.getTime());
+            if (diff < 5 * 60 * 1000) { // Within 5 minutes after Fajr
+                const firstZikrId = `morning_${azkar.morning[0]?.id}`;
+                if (!completedAzkarRef.current[firstZikrId]) {
+                    setHighlightedZikr(firstZikrId);
+                    setTimeout(() => setHighlightedZikr(null), 10000);
+                }
+            }
+        }
+        
+        // Check if it's around Asr time (+/- 5 min) for evening azkar
+        if (activeTab === 'evening' && asrTime) {
+            const diff = Math.abs(asrTime.getTime() - now.getTime());
+            if (diff < 5 * 60 * 1000) { // Within 5 minutes after Asr
+                const firstZikrId = `evening_${azkar.evening[0]?.id}`;
+                if (!completedAzkarRef.current[firstZikrId]) {
+                    setHighlightedZikr(firstZikrId);
+                    setTimeout(() => setHighlightedZikr(null), 10000);
+                }
+            }
+        }
+    }, [prayerTimes, activeTab, isLoggedIn, storageReady]);
+
     // ───────────────────────────────────────
     // 5. RENDER HELPERS
     // ───────────────────────────────────────

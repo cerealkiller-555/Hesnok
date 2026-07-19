@@ -100,49 +100,60 @@ export const NotificationProvider = ({ children, t, language, userProfile, praye
         scheduleNotifications();
     }, [prayerTimes, settings.prayerReminders, permission, language, t, userProfile]);
 
-    // Schedule azkar reminders (morning at 6 AM, evening at 6 PM)
+    // Schedule azkar reminders based on prayer times
+    // Morning: after Fajr prayer (+5 minutes)
+    // Evening: after Asr prayer (+5 minutes)
     useEffect(() => {
-        if (!settings.azkarReminders || permission !== 'granted') return;
+        if (!settings.azkarReminders || permission !== 'granted' || !prayerTimes) return;
 
         const scheduleAzkarReminders = () => {
             const now = new Date();
             
-            // Morning reminder (6 AM)
-            const morningTime = new Date();
-            morningTime.setHours(6, 0, 0, 0);
-            if (morningTime <= now) morningTime.setDate(morningTime.getDate() + 1);
-            
-            // Evening reminder (6 PM)
-            const eveningTime = new Date();
-            eveningTime.setHours(18, 0, 0, 0);
-            if (eveningTime <= now) eveningTime.setDate(eveningTime.getDate() + 1);
-
-            const morningTimeout = morningTime.getTime() - now.getTime();
-            const eveningTimeout = eveningTime.getTime() - now.getTime();
-
-            if (morningTimeout > 0 && morningTimeout < 24 * 60 * 60 * 1000) {
-                setTimeout(() => {
-                    if (permission === 'granted') {
-                        const title = t.notificationTitleAzkar;
-                        const body = t.notificationBodyAzkar.replace('{name}', userProfile?.name || '');
-                        new Notification(title, { body, icon: '/hesnok_logo1.png' });
-                    }
-                }, morningTimeout);
+            // Morning azkar reminder - after Fajr prayer (+5 minutes)
+            if (prayerTimes.Fajr) {
+                const fajrTime = new Date();
+                const [hour, minute] = prayerTimes.Fajr.split(':').map(n => parseInt(n, 10));
+                fajrTime.setHours(hour, minute + 5, 0, 0); // Add 5 minutes
+                if (fajrTime <= now) fajrTime.setDate(fajrTime.getDate() + 1);
+                
+                const morningTimeout = fajrTime.getTime() - now.getTime();
+                if (morningTimeout > 0 && morningTimeout < 24 * 60 * 60 * 1000) {
+                    setTimeout(() => {
+                        if (permission === 'granted') {
+                            const title = t.notificationTitleAzkar;
+                            const body = language === 'en' 
+                                ? `${t.notificationBodyAzkar.replace('{name}', userProfile?.name || '')} - Morning Azkar time` 
+                                : `حان وقت أذكار الصباح بعد صلاة الفجر`;
+                            new Notification(title, { body, icon: '/hesnok_logo1.png' });
+                        }
+                    }, morningTimeout);
+                }
             }
-
-            if (eveningTimeout > 0 && eveningTimeout < 24 * 60 * 60 * 1000) {
-                setTimeout(() => {
-                    if (permission === 'granted') {
-                        const title = t.notificationTitleAzkar;
-                        const body = t.notificationBodyAzkar.replace('{name}', userProfile?.name || '');
-                        new Notification(title, { body, icon: '/hesnok_logo1.png' });
-                    }
-                }, eveningTimeout);
+            
+            // Evening azkar reminder - after Asr prayer (+5 minutes)
+            if (prayerTimes.Asr) {
+                const asrTime = new Date();
+                const [hour, minute] = prayerTimes.Asr.split(':').map(n => parseInt(n, 10));
+                asrTime.setHours(hour, minute + 5, 0, 0); // Add 5 minutes
+                if (asrTime <= now) asrTime.setDate(asrTime.getDate() + 1);
+                
+                const eveningTimeout = asrTime.getTime() - now.getTime();
+                if (eveningTimeout > 0 && eveningTimeout < 24 * 60 * 60 * 1000) {
+                    setTimeout(() => {
+                        if (permission === 'granted') {
+                            const title = t.notificationTitleAzkar;
+                            const body = language === 'en' 
+                                ? `${t.notificationBodyAzkar.replace('{name}', userProfile?.name || '')} - Evening Azkar time` 
+                                : `حان وقت أذكار المساء بعد صلاة العصر`;
+                            new Notification(title, { body, icon: '/hesnok_logo1.png' });
+                        }
+                    }, eveningTimeout);
+                }
             }
         };
 
         scheduleAzkarReminders();
-    }, [settings.azkarReminders, permission, language, t, userProfile]);
+    }, [settings.azkarReminders, permission, language, t, userProfile, prayerTimes]);
 
     const updateSettings = useCallback((newSettings) => {
         setSettings(prev => ({ ...prev, ...newSettings }));
