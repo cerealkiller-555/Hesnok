@@ -17,6 +17,7 @@ import SettingsSection    from './SettingsSection';
 import StreakBanner        from './StreakBanner';
 import ProgressHero        from './ProgressHero';
 import LoginScreen         from './LoginScreen';
+import WelcomeScreen       from './WelcomeScreen';
 import ZikrCard            from './ZikrCard';
 import Logo                from './Logo';
 
@@ -113,6 +114,7 @@ const AzkarApp = () => {
     const [deferredPrompt, setDeferredPrompt]     = useState(null);
     const [highlightedZikr, setHighlightedZikr]   = useState(null);
     const [nextFocusZikr, setNextFocusZikr]       = useState(null);
+    const [showWelcome, setShowWelcome]           = useState(() => !localStorage.getItem("azkar_welcomeSeen"));
 
     // Refs
     const completedAzkarRef = useRef(completedAzkar);
@@ -504,6 +506,12 @@ const AzkarApp = () => {
         showToast(t.resetAllToast, "info");
     }, [t]);
 
+    const resetWelcome = useCallback(() => {
+        localStorage.removeItem("azkar_welcomeSeen");
+        setShowWelcome(true);
+        showToast(language === "en" ? "Welcome screen will show on next visit" : "سيتم إظهار شاشة الترحيب في المرة القادمة", "info");
+    }, [language]);
+
     // ───────────────────────────────────────
     // 4. EFFECTS (all at the bottom)
     // ───────────────────────────────────────
@@ -741,6 +749,23 @@ const AzkarApp = () => {
     // ───────────────────────────────────────
     // 6. RENDER
     // ───────────────────────────────────────
+    // Show welcome screen for first-time visitors
+    if (showWelcome) {
+        return (
+            <WelcomeScreen
+                onGetStarted={() => {
+                    localStorage.setItem("azkar_welcomeSeen", "true");
+                    setShowWelcome(false);
+                }}
+                onSignIn={() => {
+                    localStorage.setItem("azkar_welcomeSeen", "true");
+                    setShowWelcome(false);
+                }}
+                language={language}
+            />
+        );
+    }
+
     if (!isLoggedIn) {
         return <LoginScreen
             onLogin={handleLogin}
@@ -909,6 +934,7 @@ const AzkarApp = () => {
                             setShowEnTranslations={setShowEnTranslations}
                             accentColor={accentColor}
                             setAccentColor={setAccentColor}
+                            resetWelcome={resetWelcome}
                         />
                     )}
                 </div>

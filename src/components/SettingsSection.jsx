@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, MapPin, Moon, Sun, Globe, Heart, RotateCcw, ShieldCheck } from 'lucide-react';
+import { Download, MapPin, Moon, Sun, Globe, Heart, RotateCcw, ShieldCheck, Info } from 'lucide-react';
 
 const SettingsSection = ({
     deferredPrompt, installPWA,
@@ -171,11 +171,19 @@ const SettingsSection = ({
             </div>
         </div>
 
-        {/* Reset */}
+        {/* Reset Progress */}
         <button onClick={resetAllProgress} className="w-full py-4 rounded-lg bg-[var(--error)] hover:opacity-90 text-white font-black transform active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-rose-500/20">
             <RotateCcw className="w-5 h-5" />
             {t.resetAllLabel}
         </button>
+
+        {/* Reset Welcome */}
+        {resetWelcome && (
+            <button onClick={resetWelcome} className="w-full py-3 rounded-lg bg-bg-subtle text-text-secondary font-bold border border-glass-border hover:border-primary transition-all flex items-center justify-center gap-2">
+                <Info className="w-4 h-4" />
+                {language === "en" ? "Show Welcome Screen Again" : "إظهار شاشة الترحيب مرة أخرى"}
+            </button>
+        )}
 
         {/* Trust */}
         <div className="text-center space-y-2 pt-4">
