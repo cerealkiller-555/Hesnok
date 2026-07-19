@@ -21,16 +21,22 @@ export default defineConfig({
     // Performance optimizations
     minify: 'terser',
     cssMinify: true,
+    // Optimize chunk size for faster loading
+    chunkSizeWarningLimit: 500,
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
         pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        passes: 2,
       },
       mangle: {
         properties: {
           regex: /^__/,
         },
+      },
+      format: {
+        comments: false,
       },
     },
     rollupOptions: {
@@ -44,24 +50,21 @@ export default defineConfig({
             if (id.includes('lucide-react')) {
               return 'lucide-icons';
             }
-            if (id.includes('@vercel')) {
-              return 'vercel';
-            }
+          }
+          // Inline Vercel analytics in main chunk to load after app
+          if (id.includes('@vercel')) {
+            return 'vendor';
           }
         },
       },
     },
-    // Enable CSS code splitting
-    cssCodeSplit: true,
-    // Optimize chunk size
-    chunkSizeWarningLimit: 1000,
     // Reduce bundle size
     commonjsOptions: {
       include: [/node_modules/],
     },
   },
-  // Preload optimizations
+  // Preload optimizations - disable for faster first paint
   optimizeDeps: {
-    include: ['react', 'react-dom', 'lucide-react'],
+    include: ['react', 'react-dom'],
   },
 });

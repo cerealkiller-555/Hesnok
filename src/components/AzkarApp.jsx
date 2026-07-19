@@ -18,6 +18,7 @@ import StreakBanner        from './StreakBanner';
 import ProgressHero        from './ProgressHero';
 import LoginScreen         from './LoginScreen';
 import WelcomeScreen       from './WelcomeScreen';
+import NotificationProvider from './NotificationProvider';
 import ZikrCard            from './ZikrCard';
 import Logo                from './Logo';
 
@@ -935,6 +936,18 @@ const AzkarApp = () => {
                             accentColor={accentColor}
                             setAccentColor={setAccentColor}
                             resetWelcome={resetWelcome}
+                            notificationSettings={readJson("azkar_notificationSettings", { prayerReminders: true, azkarReminders: true })}
+                            notificationPermission={typeof Notification !== 'undefined' ? Notification.permission : 'default'}
+                            requestNotificationPermission={async () => {
+                                if (!('Notification' in window)) return;
+                                const result = await Notification.requestPermission();
+                                if (result === 'granted') {
+                                    showToast(language === 'en' ? 'Notifications enabled!' : 'تم تفعيل الإشعارات!', 'success');
+                                }
+                            }}
+                            updateNotificationSettings={(newSettings) => {
+                                writeJson("azkar_notificationSettings", { ...readJson("azkar_notificationSettings", {}), ...newSettings });
+                            }}
                         />
                     )}
                 </div>

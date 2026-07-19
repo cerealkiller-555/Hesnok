@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, MapPin, Moon, Sun, Globe, Heart, RotateCcw, ShieldCheck, Info } from 'lucide-react';
+import { Download, MapPin, Moon, Sun, Globe, Heart, RotateCcw, ShieldCheck, Info, Bell } from 'lucide-react';
 
 const SettingsSection = ({
     deferredPrompt, installPWA,
@@ -10,7 +10,12 @@ const SettingsSection = ({
     language, setLanguage, t,
     arabicFontSize, setArabicFontSize,
     showEnTranslations, setShowEnTranslations,
-    accentColor, setAccentColor
+    accentColor, setAccentColor,
+    resetWelcome,
+    notificationSettings,
+    notificationPermission,
+    requestNotificationPermission,
+    updateNotificationSettings
 }) => (
     <div className="animate-slide-up space-y-6">
         {/* PWA Install */}
@@ -30,6 +35,65 @@ const SettingsSection = ({
                 </button>
             </div>
         )}
+
+        {/* Notifications */}
+        <div className="glass-panel p-5 space-y-5">
+            <h3 className="text-xl font-black text-text-primary flex items-center gap-3">
+                <Bell className="w-5 h-5 text-[var(--primary)]" />
+                {t.notificationsTitle}
+            </h3>
+            
+            {notificationPermission !== 'granted' && (
+                <button
+                    onClick={requestNotificationPermission}
+                    className="w-full py-3 rounded-lg bg-[var(--primary)] text-white font-black hover:bg-[var(--primary-dark)] transition-all active:scale-95"
+                >
+                    {t.enableNotifications}
+                </button>
+            )}
+
+            {notificationPermission === 'granted' && (
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border">
+                        <span className="text-sm font-black text-text-primary">
+                            {t.prayerNotificationLabel}
+                        </span>
+                        <button
+                            onClick={() => updateNotificationSettings({ prayerReminders: !notificationSettings?.prayerReminders })}
+                            className={`w-12 h-7 rounded-full transition-all duration-300 flex items-center p-1 ${notificationSettings?.prayerReminders ? "bg-[var(--primary)]" : "bg-bg-subtle border border-glass-border"}`}
+                        >
+                            <div className={`w-6 h-6 rounded-full bg-white shadow transform transition-transform duration-300 ${notificationSettings?.prayerReminders ? (language === 'ar' ? '-translate-x-5' : 'translate-x-5') : 'translate-x-0'}`} />
+                        </button>
+                    </div>
+
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-bg-subtle border border-glass-border">
+                        <span className="text-sm font-black text-text-primary">
+                            {t.azkarNotificationLabel}
+                        </span>
+                        <button
+                            onClick={() => updateNotificationSettings({ azkarReminders: !notificationSettings?.azkarReminders })}
+                            className={`w-12 h-7 rounded-full transition-all duration-300 flex items-center p-1 ${notificationSettings?.azkarReminders ? "bg-[var(--primary)]" : "bg-bg-subtle border border-glass-border"}`}
+                        >
+                            <div className={`w-6 h-6 rounded-full bg-white shadow transform transition-transform duration-300 ${notificationSettings?.azkarReminders ? (language === 'ar' ? '-translate-x-5' : 'translate-x-5') : 'translate-x-0'}`} />
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {notificationPermission === 'denied' && (
+                <p className="text-xs text-error font-bold">
+                    {language === "en" 
+                        ? "Notifications are blocked. Please enable them in your browser settings."
+                        : "تم حظر الإشعارات. يرجى تفعيلها من إعدادات المتصفح."}
+                </p>
+            )}
+
+            {notificationPermission === 'granted' && (
+                <p className="text-xs text-text-secondary font-medium">
+                    {t.notificationsNote}
+                </p>
+            )}
+        </div>
 
         {/* Location */}
         <div className="glass-panel p-5 space-y-5">
@@ -178,12 +242,10 @@ const SettingsSection = ({
         </button>
 
         {/* Reset Welcome */}
-        {resetWelcome && (
-            <button onClick={resetWelcome} className="w-full py-3 rounded-lg bg-bg-subtle text-text-secondary font-bold border border-glass-border hover:border-primary transition-all flex items-center justify-center gap-2">
-                <Info className="w-4 h-4" />
-                {language === "en" ? "Show Welcome Screen Again" : "إظهار شاشة الترحيب مرة أخرى"}
-            </button>
-        )}
+        <button onClick={resetWelcome} className="w-full py-3 rounded-lg bg-bg-subtle text-text-secondary font-bold border border-glass-border hover:border-primary transition-all flex items-center justify-center gap-2">
+            <Info className="w-4 h-4" />
+            {language === "en" ? "Show Welcome Screen Again" : "إظهار شاشة الترحيب مرة أخرى"}
+        </button>
 
         {/* Trust */}
         <div className="text-center space-y-2 pt-4">

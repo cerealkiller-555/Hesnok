@@ -1,5 +1,14 @@
 import React from 'react';
 
+const PRAYER_CARDS = [
+    { name_ar: "الفجر",  name_en: "Fajr",    key: "Fajr",    icon: "🌅" },
+    { name_ar: "الشروق", name_en: "Sunrise",  key: "Sunrise",  icon: "☀️" },
+    { name_ar: "الظهر",  name_en: "Dhuhr",    key: "Dhuhr",    icon: "🌞" },
+    { name_ar: "العصر",  name_en: "Asr",      key: "Asr",      icon: "🌤️" },
+    { name_ar: "المغرب", name_en: "Maghrib",  key: "Maghrib",  icon: "🌆" },
+    { name_ar: "العشاء", name_en: "Isha",     key: "Isha",     icon: "🌙" }
+];
+
 const parsePrayerTime = (timeStr) => {
     if (!timeStr || typeof timeStr !== 'string') return null;
     const [hour, minute] = timeStr.split(':').map((n) => parseInt(n, 10));
@@ -47,15 +56,6 @@ const getActivePrayerKey = (prayerTimes) => {
     
     return activeKey;
 };
-
-const PRAYER_CARDS = [
-    { name_ar: "الفجر",  name_en: "Fajr",    key: "Fajr",    icon: "🌅" },
-    { name_ar: "الشروق", name_en: "Sunrise",  key: "Sunrise",  icon: "☀️" },
-    { name_ar: "الظهر",  name_en: "Dhuhr",    key: "Dhuhr",    icon: "🌞" },
-    { name_ar: "العصر",  name_en: "Asr",      key: "Asr",      icon: "🌤️" },
-    { name_ar: "المغرب", name_en: "Maghrib",  key: "Maghrib",  icon: "🌆" },
-    { name_ar: "العشاء", name_en: "Isha",     key: "Isha",     icon: "🌙" }
-];
 
 const PrayerTimesSection = ({ prayerTimes, hijriDate, location, t, language, prayerChecklist, onTogglePrayer }) => {
     const activePrayerKey = getActivePrayerKey(prayerTimes);

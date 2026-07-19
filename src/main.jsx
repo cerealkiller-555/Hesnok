@@ -90,6 +90,18 @@ class AppErrorBoundary extends React.Component {
 })();
 
 // ═══════════════════════════════════════════
+// Hide Loading Skeleton - Called immediately when React mounts
+// ═══════════════════════════════════════════
+const hideLoadingSkeleton = () => {
+    const skeleton = document.querySelector('.loading-skeleton');
+    if (skeleton) {
+        skeleton.style.opacity = '0';
+        skeleton.style.transition = 'opacity 0.3s';
+        setTimeout(() => skeleton.remove(), 300);
+    }
+};
+
+// ═══════════════════════════════════════════
 // Mount
 // ═══════════════════════════════════════════
 const rootElement = document.getElementById('root');
@@ -97,13 +109,18 @@ const rootElement = document.getElementById('root');
 if (rootElement) {
     const root = window.__AZKAR_ROOT__ || ReactDOM.createRoot(rootElement);
     window.__AZKAR_ROOT__ = root;
+    
+    // Hide loading skeleton after first render
     root.render(
-        <React.StrictMode>
+        <React.Fragment>
             <AppErrorBoundary>
                 <AzkarApp />
             </AppErrorBoundary>
-        </React.StrictMode>
+        </React.Fragment>
     );
+    
+    // Hide skeleton after React render
+    hideLoadingSkeleton();
 } else {
     console.error('Root element not found!');
 }
@@ -113,30 +130,25 @@ if (rootElement) {
 // Defer non-critical scripts until after first paint
 // ═══════════════════════════════════════════
 if (typeof window !== 'undefined') {
-    // Use requestIdleCallback for better performance
-    const loadAnalytics = () => {
-        // Dynamically import Vercel analytics for better performance
-        import('@vercel/analytics/react').then(({ Analytics }) => {
-            const container = document.createElement('div');
-            const analyticsRoot = ReactDOM.createRoot(container);
-            analyticsRoot.render(<Analytics />);
-            document.body.appendChild(container);
-        }).catch(() => {});
-        
-        import('@vercel/speed-insights/react').then(({ SpeedInsights }) => {
-            const container = document.createElement('div');
-            const insightsRoot = ReactDOM.createRoot(container);
-            insightsRoot.render(<SpeedInsights />);
-            document.body.appendChild(container);
-        }).catch(() => {});
-    };
-    
-    // Load analytics when the browser is idle or after load event
-    if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => loadAnalytics(), { timeout: 3000 });
-    } else {
-        window.addEventListener('load', loadAnalytics);
-    }
+    // Use requestIdleCallback for better performance - only after load
+    window.addEventListener('load', () => {
+        // Delay analytics even more to prioritize FCP
+        setTimeout(() => {
+            import('@vercel/analytics/react').then(({ Analytics }) => {
+                const container = document.createElement('div');
+                const analyticsRoot = ReactDOM.createRoot(container);
+                analyticsRoot.render(<Analytics />);
+                document.body.appendChild(container);
+            }).catch(() => {});
+            
+            import('@vercel/speed-insights/react').then(({ SpeedInsights }) => {
+                const container = document.createElement('div');
+                const insightsRoot = ReactDOM.createRoot(container);
+                insightsRoot.render(<SpeedInsights />);
+                document.body.appendChild(container);
+            }).catch(() => {});
+        }, 2000); // Wait 2s after load before loading analytics
+    });
 }
 
 // ═══════════════════════════════════════════

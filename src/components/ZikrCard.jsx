@@ -132,7 +132,7 @@ const ZikrCard = memo(({
                                             ? "text-[var(--text-tertiary)] opacity-80"
                                             : "text-[var(--text-primary)]"
                                     }`}
-                                    style={{ fontSize: `clamp(${1.1 * (arabicFontSize / 100)}rem, ${2.5 * (arabicFontSize / 100)}vw, ${1.4 * (arabicFontSize / 100)}rem)` }}
+                                    style={{ fontSize: `clamp(${1.1 * (arabicFontSize / 100)}rem, ${2.5 * (arabicFontSize / 100)}vw, ${1 * (arabicFontSize / 100)}rem)` }}
                                 >
                                     {mainText}
                                 </p>
@@ -202,17 +202,17 @@ const ZikrCard = memo(({
                                             <p className="text-xs text-[var(--text-primary)] leading-6 font-medium">{meaning}</p>
                                         </div>
                                     )}
-                                     {benefit && (
-                                         <div className="p-3 rounded-lg bg-[var(--primary)]/12 border border-[var(--primary)]/25">
-                                             <p className="text-xs text-[var(--text-primary)] leading-6 font-medium">{benefit}</p>
-                                         </div>
-                                     )}
-                                     {source && (
-                                         <div className="flex items-center gap-1.5 px-1 text-[10px] text-[var(--primary)] font-bold">
-                                             <BookOpen className="w-3.5 h-3.5" />
-                                             <span>{source}</span>
-                                         </div>
-                                     )}
+                                    {benefit && (
+                                        <div className="p-3 rounded-lg bg-[var(--primary)]/12 border border-[var(--primary)]/25">
+                                            <p className="text-xs text-[var(--text-primary)] leading-6 font-medium">{benefit}</p>
+                                        </div>
+                                    )}
+                                    {source && (
+                                        <div className="flex items-center gap-1.5 px-1 text-[10px] text-[var(--primary)] font-bold">
+                                            <BookOpen className="w-3.5 h-3.5" />
+                                            <span>{source}</span>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
