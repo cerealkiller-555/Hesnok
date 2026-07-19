@@ -12,30 +12,116 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="حصنك">
 
+    <!-- Preconnect to font domains for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Critical Fonts - only essential for initial render (Cairo for UI) -->
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- Non-critical font (Amiri) - defer loading -->
+    <link rel="prefetch" as="style"
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- Fallback for non-JS browsers -->
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Amiri:wght@400;700&display=swap">
+    </noscript>
+
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/assets/manifest-CyzK5gXF.json">
+    <link rel="manifest" href="/assets/manifest-E4q2ZyJw.json">
 
     <!-- Favicon / Icons -->
     <link rel="icon" type="image/png" href="hesnok_logo1.png">
     <link rel="apple-touch-icon" href="hesnok_logo1.png">
 
+    <!-- Preload critical logo image -->
+    <link rel="preload" as="image" href="hesnok_logo1.png">
+
+    <!-- Prefetch azkar data for faster tab switching -->
+    <link rel="prefetch" as="fetch" href="/assets/azkar-data-D7gElGTB.js" crossorigin>
+
     <!-- Custom Styles -->
 
-
-  <script type="module" crossorigin src="/assets/index-CDQSVk3Y.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-Cvd0CVqS.css">
+    <!-- Critical Inline CSS for Loading State -->
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --text-primary: #0F172A;
+            --bg-main: #F8FAFC;
+        }
+        .dark {
+            --text-primary: #F8FAFC;
+            --bg-main: #020617;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+        .loading-skeleton {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading-logo {
+            width: 80px;
+            height: 80px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/index-UV-ng-Vl.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-Bv4B1H8c.js">
+  <link rel="modulepreload" crossorigin href="/assets/react-vendor-CoRIgo8c.js">
+  <link rel="stylesheet" crossorigin href="/assets/index-CGLm8a6j.css">
 </head>
 
-<body class="bg-gray-50">
-    <!-- React Root -->
-    <div id="root"></div>
+<body>
+    <!-- Loading Skeleton (visible immediately while JS loads) -->
+    <div id="root">
+        <div class="loading-skeleton">
+            <img src="hesnok_logo1.png" alt="حصنك" class="loading-logo" width="80" height="80">
+        </div>
+    </div>
 
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js');
-            });
-        }
+        // Hide loading skeleton once React takes over
+        (function() {
+            const hideLoading = () => {
+                const root = document.getElementById('root');
+                if (root && root.querySelector('.loading-skeleton')) {
+                    const skeleton = root.querySelector('.loading-skeleton');
+                    skeleton.style.opacity = '0';
+                    skeleton.style.transition = 'opacity 0.3s';
+                    setTimeout(() => skeleton.remove(), 300);
+                }
+            };
+            
+            // Hide immediately when DOM is ready (faster than requestIdleCallback for FCP)
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', hideLoading);
+            } else {
+                hideLoading();
+            }
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js');
+                });
+            }
+        })();
     </script>
 </body>
 

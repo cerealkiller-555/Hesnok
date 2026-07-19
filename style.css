@@ -782,7 +782,6 @@ body {
 /* Styled next-prayer-card - original glass design */
 .next-prayer-card {
     width: 100%;
-    max-width: 48rem;
     position: relative;
     z-index: 20;
     background: var(--glass-bg);
