@@ -29,10 +29,18 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Manual chunk splitting for better caching
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'lucide-icons': ['lucide-react'],
-          'vercel': ['@vercel/analytics', '@vercel/speed-insights'],
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('lucide-react')) {
+              return 'lucide-icons';
+            }
+            if (id.includes('@vercel')) {
+              return 'vercel';
+            }
+          }
         },
       },
     },
