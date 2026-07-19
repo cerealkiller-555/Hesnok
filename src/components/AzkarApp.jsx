@@ -842,7 +842,7 @@ const AzkarApp = () => {
             )}
 
             {/* Main content */}
-            <main className="container mx-auto px-4 py-6 max-w-3xl space-y-6 animate-fade-in">
+            <main className="container mx-auto px-4 py-5 max-w-3xl space-y-5">
                 <StreakBanner streakCount={streak.count} goals={goals} t={t} />
 
                 <ProgressHero
@@ -856,7 +856,7 @@ const AzkarApp = () => {
                     language={language}
                 />
 
-                <div key={activeTab} className="space-y-6">
+                <div key={activeTab} className="space-y-5">
                     {activeTab === "morning"       && renderAzkarList(azkar.morning, "morning")}
                     {activeTab === "evening"       && renderAzkarList(azkar.evening, "evening")}
                     {activeTab === "sleeping"      && renderAzkarList(azkar.sleeping, "sleeping")}
@@ -864,7 +864,7 @@ const AzkarApp = () => {
                     {activeTab === "jawami"        && renderAzkarList(azkar.jawami, "jawami")}
 
                     {activeTab === "prayer" && (
-                        <div className="animate-slide-up space-y-8">
+                        <div className="space-y-6">
                             <PrayerTimesSection
                                 prayerTimes={prayerTimes}
                                 hijriDate={hijriDate}
@@ -942,7 +942,7 @@ const AzkarApp = () => {
                         </div>
                         <div className="h-1.5 w-full bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-black/5">
                             <div 
-                                className="h-full bg-gradient-to-r from-[var(--primary)] via-[var(--primary-light)] to-[var(--primary)] bg-[length:200%_100%] animate-shimmer rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(var(--primary-rgb),0.4)]" 
+                                className="h-full bg-[var(--primary)] rounded-full transition-all duration-500 ease-out" 
                                 style={{ width: `${progressPercentage}%` }} 
                             />
                         </div>

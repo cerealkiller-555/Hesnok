@@ -36,17 +36,17 @@ const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCoun
     }[activeTab];
 
     return (
-        <div className="progress-hero relative animate-scale-in">
-            <div className="relative z-10 flex flex-col gap-3">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-                    <div className="space-y-1">
-                        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg text-[10px] font-black tracking-wide bg-[var(--bg-subtle)] border border-[var(--glass-border)] text-[var(--text-secondary)]">
+        <div className="progress-hero relative">
+            <div className="relative z-10 flex flex-col gap-2">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                    <div className="space-y-0.5">
+                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[9px] font-black tracking-wide bg-[var(--bg-subtle)] border border-[var(--glass-border)] text-[var(--text-secondary)]">
                             <Icon className="w-3 h-3 text-[var(--primary)]" />
                             {userProfile?.name
                                 ? (language === "en" ? `Goals for ${userProfile.name}` : `أهداف ${userProfile.name}`)
                                 : t.goalsTitle}
                         </div>
-                        <h2 className="text-lg md:text-xl font-black text-[var(--text-primary)] leading-tight">{label}</h2>
+                        <h2 className="text-base md:text-lg font-black text-[var(--text-primary)] leading-tight">{label}</h2>
                         <p className="text-xs font-bold text-[var(--text-secondary)]">
                             {t.progressText}{" "}
                             <span className="font-black text-[var(--primary)]">{completedCount}</span>{" "}
@@ -56,28 +56,28 @@ const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCoun
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <div className="bg-[var(--bg-subtle)] px-3 py-2 rounded-lg border border-[var(--glass-border)] flex flex-col items-center">
-                            <span className="text-lg font-black text-[var(--primary)]">{progressPercentage}%</span>
-                            <span className="text-[9px] font-black uppercase tracking-wide text-[var(--text-secondary)]">{t.progressLabel}</span>
+                    <div className="flex items-center gap-1.5">
+                        <div className="bg-[var(--bg-subtle)] px-2.5 py-1.5 rounded-lg border border-[var(--glass-border)] flex flex-col items-center">
+                            <span className="text-base font-black text-[var(--primary)]">{progressPercentage}%</span>
+                            <span className="text-[8px] font-black uppercase tracking-wide text-[var(--text-secondary)]">{t.progressLabel}</span>
                         </div>
                         {progressPercentage > 0 && (
                             <button
                                 onClick={resetAllProgress}
-                                className="p-2 rounded-lg bg-[var(--bg-subtle)] hover:bg-white dark:hover:bg-[var(--bg-surface)] border border-[var(--glass-border)] text-[var(--text-secondary)] transition-all active:scale-95"
+                                className="p-1.5 rounded-lg bg-[var(--bg-subtle)] hover:bg-white dark:hover:bg-[var(--bg-surface)] border border-[var(--glass-border)] text-[var(--text-secondary)] transition-all active:scale-95"
                                 aria-label={t.resetProgress}
                             >
-                                <RotateCcw className="w-4 h-4" />
+                                <RotateCcw className="w-3.5 h-3.5" />
                             </button>
                         )}
                     </div>
                 </div>
 
-                {/* Progress bar */}
-                <div className="h-2 w-full bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--glass-border)] relative">
-                    <div
-                        className="h-full bg-gradient-to-r from-[var(--primary)] via-[var(--primary-light)] to-[var(--primary)] bg-[length:200%_100%] animate-shimmer transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(var(--primary-rgb),0.3)]"
-                        style={{ width: `${progressPercentage}%` }}
+                {/* Progress bar - no shimmer on mobile */}
+                <div className="h-1.5 w-full bg-[var(--bg-subtle)] rounded-full overflow-hidden border border-[var(--glass-border)] relative">
+                    <div 
+                        className="h-full bg-[var(--primary)] transition-all duration-500 ease-out" 
+                        style={{ width: `${progressPercentage}%` }} 
                     />
                 </div>
             </div>

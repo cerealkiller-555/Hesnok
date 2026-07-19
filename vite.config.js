@@ -20,10 +20,17 @@ export default defineConfig({
     sourcemap: false,
     // Performance optimizations
     minify: 'terser',
+    cssMinify: true,
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+      mangle: {
+        properties: {
+          regex: /^__/,
+        },
       },
     },
     rollupOptions: {
@@ -48,6 +55,10 @@ export default defineConfig({
     cssCodeSplit: true,
     // Optimize chunk size
     chunkSizeWarningLimit: 1000,
+    // Reduce bundle size
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
   },
   // Preload optimizations
   optimizeDeps: {

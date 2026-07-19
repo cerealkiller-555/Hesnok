@@ -110,10 +110,11 @@ if (rootElement) {
 
 // ═══════════════════════════════════════════
 // Analytics & Speed Insights - Load after app is interactive
+// Defer non-critical scripts until after first paint
 // ═══════════════════════════════════════════
 if (typeof window !== 'undefined') {
-    // Defer non-critical scripts until after first paint
-    window.addEventListener('load', () => {
+    // Use requestIdleCallback for better performance
+    const loadAnalytics = () => {
         // Dynamically import Vercel analytics for better performance
         import('@vercel/analytics/react').then(({ Analytics }) => {
             const container = document.createElement('div');
@@ -128,7 +129,14 @@ if (typeof window !== 'undefined') {
             insightsRoot.render(<SpeedInsights />);
             document.body.appendChild(container);
         }).catch(() => {});
-    });
+    };
+    
+    // Load analytics when the browser is idle or after load event
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => loadAnalytics(), { timeout: 3000 });
+    } else {
+        window.addEventListener('load', loadAnalytics);
+    }
 }
 
 // ═══════════════════════════════════════════

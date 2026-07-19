@@ -16,10 +16,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
-    <!-- Preload critical fonts with font-display swap -->
+    <!-- Preload critical fonts with font-display swap - only for critical fonts -->
     <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap">
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'">
     
+    <!-- Fallback for non-JS browsers -->
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700&display=swap">
+    </noscript>
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
 
