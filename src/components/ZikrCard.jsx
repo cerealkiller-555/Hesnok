@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback, memo } from 'react';
 import { Share2, CheckCircle, Info, ChevronDown, BookOpen } from 'lucide-react';
 import { showToast } from '../utils/helpers';
 
-const ZikrCard = ({
+const ZikrCard = memo(({
     zikr,
     index,
     uniqueId,
@@ -54,17 +54,16 @@ const ZikrCard = ({
             const timer = setTimeout(() => setShowCelebration(false), 2000);
             return () => clearTimeout(timer);
         }
-    }, [isCompleted]); // only trigger on completion state change
+    }, [isCompleted, progress, zikr.count]);
 
-    const handleShare = () => {
+    const handleShare = useCallback(() => {
         const shareText = `${title ? `${title}\n` : ""}${zikr.text}\n\nSent from ${t.appName}`;
         if (navigator.share) {
             navigator.share({ title: t.appName, text: shareText }).catch(() => {});
         } else {
             navigator.clipboard.writeText(shareText).then(() => showToast(t.shareCopy));
         }
-    };
-
+    }, [title, zikr.text, t.appName, t.shareCopy]);
 
     return (
         <div
@@ -239,6 +238,6 @@ const ZikrCard = ({
             </div>
         </div>
     );
-};
+});
 
-export default React.memo(ZikrCard);
+export default ZikrCard;

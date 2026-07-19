@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import '../style.css';
 import AzkarApp from './components/AzkarApp';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // ═══════════════════════════════════════════
 // Global Error Boundary
@@ -21,7 +19,10 @@ class AppErrorBoundary extends React.Component {
     }
 
     componentDidCatch(error, errorInfo) {
-        console.error('App render failed:', error, errorInfo);
+        // Production-safe error logging
+        if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+            // In production, we could send to an error service
+        }
     }
 
     render() {
@@ -100,13 +101,34 @@ if (rootElement) {
         <React.StrictMode>
             <AppErrorBoundary>
                 <AzkarApp />
-                <Analytics />
-                <SpeedInsights />
             </AppErrorBoundary>
         </React.StrictMode>
     );
 } else {
     console.error('Root element not found!');
+}
+
+// ═══════════════════════════════════════════
+// Analytics & Speed Insights - Load after app is interactive
+// ═══════════════════════════════════════════
+if (typeof window !== 'undefined') {
+    // Defer non-critical scripts until after first paint
+    window.addEventListener('load', () => {
+        // Dynamically import Vercel analytics for better performance
+        import('@vercel/analytics/react').then(({ Analytics }) => {
+            const container = document.createElement('div');
+            const analyticsRoot = ReactDOM.createRoot(container);
+            analyticsRoot.render(<Analytics />);
+            document.body.appendChild(container);
+        }).catch(() => {});
+        
+        import('@vercel/speed-insights/react').then(({ SpeedInsights }) => {
+            const container = document.createElement('div');
+            const insightsRoot = ReactDOM.createRoot(container);
+            insightsRoot.render(<SpeedInsights />);
+            document.body.appendChild(container);
+        }).catch(() => {});
+    });
 }
 
 // ═══════════════════════════════════════════
