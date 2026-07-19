@@ -18,11 +18,13 @@ import CustomDuasSection  from './CustomDuasSection';
 import SettingsSection    from './SettingsSection';
 import StreakBanner        from './StreakBanner';
 import ProgressHero        from './ProgressHero';
-import LoginScreen         from './LoginScreen';
-import WelcomeScreen       from './WelcomeScreen';
 import NotificationProvider from './NotificationProvider';
 import ZikrCard            from './ZikrCard';
 import Logo                from './Logo';
+
+// Lazy-loaded screens - only loaded when needed
+const LoginScreen   = React.lazy(() => import('./LoginScreen'));
+const WelcomeScreen = React.lazy(() => import('./WelcomeScreen'));
 
 const createId = () => {
     if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
@@ -713,28 +715,34 @@ const AzkarApp = () => {
     // Show welcome screen for first-time visitors
     if (showWelcome) {
         return (
-            <WelcomeScreen
-                onGetStarted={() => {
-                    localStorage.setItem("azkar_welcomeSeen", "true");
-                    setShowWelcome(false);
-                }}
-                onSignIn={() => {
-                    localStorage.setItem("azkar_welcomeSeen", "true");
-                    setShowWelcome(false);
-                }}
-                language={language}
-            />
+            <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)]"><div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" /></div>}>
+                <WelcomeScreen
+                    onGetStarted={() => {
+                        localStorage.setItem("azkar_welcomeSeen", "true");
+                        setShowWelcome(false);
+                    }}
+                    onSignIn={() => {
+                        localStorage.setItem("azkar_welcomeSeen", "true");
+                        setShowWelcome(false);
+                    }}
+                    language={language}
+                />
+            </React.Suspense>
         );
     }
 
     if (!isLoggedIn) {
-        return <LoginScreen
-            onLogin={handleLogin}
-            onSelectExistingUser={handleSelectExistingUser}
-            existingUsers={savedUsers}
-            t={t}
-            language={language}
-        />;
+        return (
+            <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)]"><div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" /></div>}>
+                <LoginScreen
+                    onLogin={handleLogin}
+                    onSelectExistingUser={handleSelectExistingUser}
+                    existingUsers={savedUsers}
+                    t={t}
+                    language={language}
+                />
+            </React.Suspense>
+        );
     }
 
     return (
