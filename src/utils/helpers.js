@@ -148,3 +148,4 @@ export function isSameDay(a, b) {
 export function isYesterday(previous, today) {
     const oneDay = 24 * 60 * 60 * 1000;
     return dateKey(today) - dateKey(previous) === oneDay;
+}

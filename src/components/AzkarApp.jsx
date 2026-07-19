@@ -812,24 +812,24 @@ const AzkarApp = () => {
             </header>
 
             {nextPrayer && (
-                <section className="container mx-auto px-4 py-3">
-                        <div className="next-prayer-card mx-auto w-full max-w-3xl rounded-3xl border border-[var(--glass-border)] bg-[var(--bg-surface)] shadow-[0_12px_24px_rgba(15,23,42,0.08)] p-3 z-10">
-                        <div className="relative z-10 flex flex-col sm:flex-row items-center gap-3">
-                            <div className="flex items-center justify-center flex-shrink-0 w-14 h-14 rounded-2xl bg-primary/15 text-primary shadow-sm shadow-primary/10 text-2xl">
+                <section className="container mx-auto px-4 py-3 max-w-3xl">
+                    <div className="glass-panel rounded-2xl p-4">
+                        <div className="flex flex-col sm:flex-row items-center gap-3">
+                            <div className="flex items-center justify-center flex-shrink-0 w-14 h-14 rounded-xl bg-primary/15 text-primary shadow-sm text-xl">
                                 {nextPrayer.icon}
                             </div>
                             <div className="flex-1 min-w-0 text-center sm:text-left">
-                                <span className="inline-flex items-center justify-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.35em] text-primary">
+                                <span className="inline-flex items-center justify-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-primary">
                                     {language === 'en' ? 'Next prayer' : 'الصلاة القادمة'}
                                 </span>
                                 <h2 className="mt-2 text-lg font-black text-[var(--text-primary)] leading-snug truncate">
                                     {language === 'en' ? nextPrayer.en : nextPrayer.ar}
                                 </h2>
-                                <p className="mt-1 text-2xl font-black text-primary leading-none" dir="ltr">
+                                <p className="mt-1 text-xl font-black text-primary leading-none" dir="ltr">
                                     {formatNextPrayerTime(nextPrayer.date)}
                                 </p>
                                 {nextPrayerCountdown && (
-                                    <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                                    <p className="mt-1.5 text-sm text-[var(--text-secondary)]">
                                         {language === 'en' ? 'In ' : 'بعد '}<span className="font-black text-[var(--text-primary)]">{nextPrayerCountdown}</span>
                                     </p>
                                 )}
