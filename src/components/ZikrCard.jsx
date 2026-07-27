@@ -13,6 +13,7 @@ const ZikrCard = memo(({
     progressPct,
     isAnimating,
     isHighlighted,
+    isFocused,
     language,
     arabicFontSize = 100,
     showEnTranslations = false,
@@ -20,7 +21,8 @@ const ZikrCard = memo(({
     listType,
     onToggleBenefit,
     onToggleComplete,
-    onProgress
+    onProgress,
+    onFocus
 }) => {
     const [showCelebration, setShowCelebration] = useState(false);
     const cardRef = useRef(null);
@@ -53,9 +55,17 @@ const ZikrCard = memo(({
         <div
             id={`zikr-${uniqueId}`}
             ref={cardRef}
-            className={`zikr-card ${isCompleted ? 'completed border-[rgba(var(--accent-rgb),0.25)]' : 'glass-card'} ${isHighlighted ? 'is-highlighted' : ''}`}
+            onClick={() => onFocus?.(uniqueId)}
+            className={`zikr-card ${isCompleted ? 'completed border-[rgba(var(--accent-rgb),0.25)]' : 'glass-card'} ${isHighlighted ? 'is-highlighted' : ''} ${isFocused && !isCompleted ? 'ring-2 ring-[var(--primary)] ring-offset-2' : ''}`}
             style={{ animationDelay: `${Math.min(index * 30, 300)}ms` }}
         >
+            {/* Desktop-only keyboard hint */}
+            {!isCompleted && (
+                <div className="hidden md:block absolute top-3 left-3 text-[10px] text-[var(--text-tertiary)] opacity-60 font-medium">
+                    {t.spaceHint}
+                </div>
+            )}
+
             {/* Celebration overlay */}
             {showCelebration && (
                 <div className="absolute inset-0 z-20 pointer-events-none">

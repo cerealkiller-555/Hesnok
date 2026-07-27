@@ -99,6 +99,7 @@ const AzkarApp = () => {
     const [countAnimation, setCountAnimation]     = useState(null);
     const [deferredPrompt, setDeferredPrompt]     = useState(null);
     const [highlightedZikr, setHighlightedZikr]   = useState(null);
+    const [focusedZikr, setFocusedZikr]         = useState(null);
     const [showWelcome, setShowWelcome]           = useState(() => {
         const seen = localStorage.getItem("azkar_welcomeSeen");
         return seen !== "true";
@@ -624,6 +625,52 @@ const AzkarApp = () => {
         return () => window.removeEventListener("beforeinstallprompt", handler);
     }, []);
 
+    // Space key handler for counting
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // تجاهل الحقول النصية
+            const activeElement = document.activeElement;
+            if (activeElement?.tagName === 'INPUT' ||
+                activeElement?.tagName === 'TEXTAREA' ||
+                activeElement?.isContentEditable) return;
+
+            // التحقق من Space + تبويب الأذكار اليومية
+            if (e.code === 'Space' && DAILY_TAB_IDS.includes(activeTab) && isLoggedIn) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // البحث عن الذكر المستهدف
+                let targetId = focusedZikr;
+                let targetItem = null;
+
+                // إذا كان هناك ذكر محدد
+                if (targetId) {
+                    targetItem = currentAzkarList.find((z) => `${activeTab}_${z.id}` === targetId);
+                }
+
+                // إذا كان الذكر المحدد مكتمل أو غير موجود، ابحث عن أول ذكر غير مكتمل
+                if (!targetItem || completedAzkarRef.current[targetId]) {
+                    const firstIncomplete = currentAzkarList.find((z) => {
+                        const uid = `${activeTab}_${z.id}`;
+                        return !completedAzkarRef.current[uid];
+                    });
+                    if (firstIncomplete) {
+                        targetId = `${activeTab}_${firstIncomplete.id}`;
+                        targetItem = firstIncomplete;
+                    }
+                }
+
+                // تنفيذ العد إذا وجدنا ذكر
+                if (targetItem) {
+                    handleZikrProgress(targetId, targetItem.count, currentAzkarList, activeTab);
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [activeTab, isLoggedIn, currentAzkarList, handleZikrProgress, focusedZikr]);
+
     useEffect(() => {
         const root = document.documentElement;
         // Set data-theme attribute to apply the theme CSS variables
@@ -683,27 +730,29 @@ const AzkarApp = () => {
             list.map((z, i) => {
                 const uid = `${type}_${z.id}`;
                 return (
-                    <ZikrCard
-                        key={uid}
-                        zikr={z}
-                        index={i}
-                        uniqueId={uid}
-                        t={t}
-                        language={language}
-                        isCompleted={!!completedAzkar[uid]}
-                        progress={azkarProgress[uid] || 0}
-                        progressPct={((azkarProgress[uid] || 0) / z.count) * 100}
-                        isAnimating={countAnimation === uid}
-                        isHighlighted={highlightedZikr === uid}
-                        isExpanded={!!expandedBenefits[uid]}
-                        arabicFontSize={arabicFontSize}
-                        showEnTranslations={showEnTranslations}
-                        list={list}
-                        listType={type}
-                        onToggleBenefit={toggleZikrBenefit}
-                        onToggleComplete={toggleZikrComplete}
-                        onProgress={handleZikrProgress}
-                    />
+                        <ZikrCard
+                            key={uid}
+                            zikr={z}
+                            index={i}
+                            uniqueId={uid}
+                            t={t}
+                            language={language}
+                            isCompleted={!!completedAzkar[uid]}
+                            progress={azkarProgress[uid] || 0}
+                            progressPct={((azkarProgress[uid] || 0) / z.count) * 100}
+                            isAnimating={countAnimation === uid}
+                            isHighlighted={highlightedZikr === uid}
+                            isFocused={focusedZikr === uid}
+                            isExpanded={!!expandedBenefits[uid]}
+                            arabicFontSize={arabicFontSize}
+                            showEnTranslations={showEnTranslations}
+                            list={list}
+                            listType={type}
+                            onToggleBenefit={toggleZikrBenefit}
+                            onToggleComplete={toggleZikrComplete}
+                            onProgress={handleZikrProgress}
+                            onFocus={setFocusedZikr}
+                        />
                 );
             }))}
         </div>

@@ -25,9 +25,37 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
+    event.respondWith(
+        caches.match(event.request).then((response) => {
+            return response || fetch(event.request);
+        })
+    );
+});
+
+// Push notification handler
+self.addEventListener('push', (event) => {
+    const data = event.data ? event.data.json() : {};
+    const title = data.title || 'Hesnok';
+    const body = data.body || '🔔 اختبار إشعارات حصنك';
+    const icon = data.icon || '/hesnok_logo1.png';
+    const tag = data.tag || 'default';
+
+    event.waitUntil(
+        self.registration.showNotification(title, {
+            body,
+            icon,
+            tag,
+            badge: '/hesnok_logo1.png',
+            vibrate: [200, 100, 200],
+            requireInteraction: false
+        })
+    );
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow('/')
+    );
 });

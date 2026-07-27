@@ -166,7 +166,8 @@ export const I18N = {
         passwordHint: "الحساب محفوظ محلياً على هذا الجهاز.",
         toggleEnTrans: "ترجمة الفوائد والمصادر",
         showArOriginal: "عرض الأصل العربي",
-        jawamiTitle: "جوامع الدعاء"
+        jawamiTitle: "جوامع الدعاء",
+        spaceHint: "اضغط Space للعد السريع"
     },
     en: {
         appName: "Hesnok",
@@ -278,6 +279,7 @@ export const I18N = {
         passwordHint: "Your account is stored locally on this device.",
         toggleEnTrans: "English Translation (Benefits)",
         showArOriginal: "Show Original Arabic",
-        jawamiTitle: "Prophet's Duas"
+        jawamiTitle: "Prophet's Duas",
+        spaceHint: "Press Space to count quickly"
     }
 };
