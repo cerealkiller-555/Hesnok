@@ -10,33 +10,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
         
         // Initialize tables
         db.serialize(() => {
-            // Users table
-            db.run(`CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                email TEXT UNIQUE NOT NULL,
-                name TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )`);
-
-            // Progress table
-            db.run(`CREATE TABLE IF NOT EXISTS progress (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_email TEXT NOT NULL,
-                date TEXT NOT NULL,
-                type TEXT NOT NULL,
-                data TEXT NOT NULL,
-                FOREIGN KEY (user_email) REFERENCES users (email)
-            )`);
-            
-            // Custom duas table
-            db.run(`CREATE TABLE IF NOT EXISTS custom_duas (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_email TEXT NOT NULL,
-                dua_text TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_email) REFERENCES users (email)
-            )`);
-
             // Push subscriptions table
             db.run(`CREATE TABLE IF NOT EXISTS push_subscriptions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,8 +17,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
                 endpoint TEXT NOT NULL UNIQUE,
                 p256dh TEXT NOT NULL,
                 auth TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_email) REFERENCES users (email)
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )`);
         });
     }

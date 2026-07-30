@@ -6,7 +6,8 @@ import {
     PRAYER_BANNERS, ACCENT_OPTIONS
 } from '../utils/constants';
 import {
-    showToast, readJson, readDailyState, writeJson, readUsers, writeUsers, findUserByEmail, getUserStorageSuffix, isSameDay, isYesterday, hashString,
+    showToast, readJson, readDailyState, writeJson,
+    isSameDay, isYesterday,
     parsePrayerTime, formatPrayerTime
 } from '../utils/helpers';
 
@@ -23,7 +24,6 @@ import ZikrCard            from './ZikrCard';
 import Logo                from './Logo';
 
 // Lazy-loaded screens - only loaded when needed
-const LoginScreen   = React.lazy(() => import('./LoginScreen'));
 const WelcomeScreen = React.lazy(() => import('./WelcomeScreen'));
 
 const createId = () => {
@@ -73,13 +73,6 @@ const AzkarApp = () => {
     const [arabicFontSize, setArabicFontSize] = useState(() => parseInt(localStorage.getItem("azkar_fontSize")) || 100);
     const [language, setLanguage]         = useState(() => localStorage.getItem("azkar_language") || "ar");
     const [activeTab, setActiveTab]       = useState(() => localStorage.getItem("azkar_activeTab") || "morning");
-    const [userProfile, setUserProfile]   = useState(() => readJson("azkar_user", { name: "", email: "" }));
-    const [savedUsers, setSavedUsers]     = useState(() => readUsers());
-    const [isLoggedIn, setIsLoggedIn]     = useState(() => {
-        const saved = readJson("azkar_user", null);
-        return Boolean(saved && (saved.name || saved.email));
-    });
-    const [storageReady, setStorageReady] = useState(false);
     const [showEnTranslations, setShowEnTranslations] = useState(() => localStorage.getItem("azkar_showEnTranslations") === "true");
     const [accentColor, setAccentColor]   = useState(() => localStorage.getItem("azkar_accentColor") || "indigo");
 
@@ -88,10 +81,10 @@ const AzkarApp = () => {
     const [location, setLocation]         = useState(() => readJson("azkar_location", { city: "Cairo", country: "EG" }));
     const [currentTime, setCurrentTime]   = useState(new Date());
 
-    const [completedAzkar, setCompletedAzkar]     = useState({});
-    const [azkarProgress, setAzkarProgress]       = useState({});
-    const [prayerChecklist, setPrayerChecklist]    = useState({});
-    const [streak, setStreak]                     = useState({ count: 0, lastDate: null });
+    const [completedAzkar, setCompletedAzkar]     = useState(() => readDailyState("azkar_completed"));
+    const [azkarProgress, setAzkarProgress]       = useState(() => readDailyState("azkar_progress"));
+    const [prayerChecklist, setPrayerChecklist]    = useState(() => readDailyState("azkar_prayerChecklist"));
+    const [streak, setStreak]                     = useState(() => readJson("azkar_streak", { count: 0, lastDate: null }));
     const [customDuas, setCustomDuas]             = useState(() => normalizeCustomDuas(readJson("azkar_customDuas", defaultCustomDuas)));
     const [newDua, setNewDua]                     = useState("");
 
@@ -113,11 +106,6 @@ const AzkarApp = () => {
     // ───────────────────────────────────────
     // 2. DERIVED VALUES (useMemo / useCallback)
     // ───────────────────────────────────────
-    const userSuffix = useMemo(
-        () => (isLoggedIn && userProfile.email ? getUserStorageSuffix(userProfile.email) : ""),
-        [isLoggedIn, userProfile.email]
-    );
-
     const t = useMemo(() => I18N[language] || I18N.ar, [language]);
 
     const timeOfDayTheme = useMemo(() => {
@@ -350,88 +338,6 @@ const AzkarApp = () => {
     // ───────────────────────────────────────
     // 3. EVENT HANDLERS
     // ───────────────────────────────────────
-    const handleLogin = useCallback(async (profile, mode) => {
-        const email = profile.email.trim().toLowerCase();
-        const savedUser = findUserByEmail(email);
-        const passwordHash = await hashString(profile.password);
-
-        if (mode === "signin") {
-            if (!savedUser) {
-                showToast(t.userNotFound, "warning");
-                return { success: false, error: t.userNotFound };
-            }
-            if (savedUser.passwordHash !== passwordHash) {
-                showToast(t.wrongPassword, "warning");
-                return { success: false, error: t.wrongPassword };
-            }
-            const userProfileData = { name: savedUser.name, email };
-            setUserProfile(userProfileData);
-            setIsLoggedIn(true);
-            setStorageReady(false);
-            writeJson("azkar_user", userProfileData);
-            showToast(t.signedIn, "success");
-            return { success: true };
-        }
-
-        if (savedUser) {
-            showToast(t.userExists, "warning");
-            return { success: false, error: t.userExists };
-        }
-
-        const newUser = { name: profile.name.trim(), email, passwordHash };
-        const users = readUsers();
-        const nextUsers = [...users, newUser];
-        writeUsers(nextUsers);
-        setSavedUsers(nextUsers);
-        const userProfileData = { name: profile.name.trim(), email };
-        setUserProfile(userProfileData);
-        setIsLoggedIn(true);
-        setStorageReady(false);
-        writeJson("azkar_user", userProfileData);
-        showToast(t.accountCreated, "success");
-        return { success: true };
-    }, [t]);
-
-    const logout = useCallback(() => {
-        setIsLoggedIn(false);
-        setUserProfile({ name: "", email: "" });
-        localStorage.removeItem("azkar_user");
-        // Reset in-memory state
-        setCompletedAzkar({});
-        setAzkarProgress({});
-        setPrayerChecklist({});
-        setStreak({ count: 0, lastDate: null });
-        completedAzkarRef.current = {};
-        azkarProgressRef.current = {};
-        toastShownRef.current.clear();
-        setStorageReady(false);
-        showToast(t.loggedOut, "info");
-    }, [t]);
-
-    const updateUserProfile = useCallback((profile) => {
-        const updated = {
-            ...userProfile,
-            ...profile,
-            name: profile.name ?? userProfile.name
-        };
-        setUserProfile(updated);
-        writeJson("azkar_user", updated);
-        const users = readUsers().map((user) => {
-            if (user.email === updated.email) return updated;
-            return user;
-        });
-        writeUsers(users);
-        setSavedUsers(users);
-    }, [userProfile]);
-
-    const handleSelectExistingUser = useCallback((user) => {
-        setUserProfile(user);
-        setIsLoggedIn(true);
-        setStorageReady(false);
-        writeJson("azkar_user", user);
-        showToast(t.loginSaved, "success");
-    }, [t]);
-
     const handleZikrProgress = useCallback((id, max, list, type) => {
         if (completedAzkarRef.current[id]) return;
         if (navigator.vibrate) navigator.vibrate(40);
@@ -530,52 +436,14 @@ const AzkarApp = () => {
         azkarProgressRef.current = azkarProgress;
     }, [azkarProgress]);
 
-    // Load user-scoped data when logged in or user changes
+    // Persist daily data
     useEffect(() => {
-        if (!isLoggedIn || !userProfile.email) {
-            setStorageReady(false);
-            return;
-        }
-        const suffix = `_${userProfile.email}`;
-        const savedCompleted = readDailyState(`azkar_completed${suffix}`);
-        const savedProgress = readDailyState(`azkar_progress${suffix}`);
-        completedAzkarRef.current = savedCompleted;
-        azkarProgressRef.current = savedProgress;
-        setCompletedAzkar(savedCompleted);
-        setAzkarProgress(savedProgress);
-        setPrayerChecklist(readDailyState(`azkar_prayerChecklist${suffix}`));
-        setStreak(readJson(`azkar_streak${suffix}`, { count: 0, lastDate: null }));
-        setStorageReady(true);
-    }, [isLoggedIn, userProfile.email]);
-
-    useEffect(() => {
-        if (!isLoggedIn || !storageReady) return;
-        const welcomeKey = `azkar_welcome_shown${userSuffix}`;
-        const shown = readJson(welcomeKey, false);
-        if (!shown) {
-            showToast(makeReminderText(t.welcomeMessage, userProfile.name), 'success', 6000);
-            writeJson(welcomeKey, true);
-        }
-    }, [isLoggedIn, storageReady, userProfile.name, userSuffix, t, makeReminderText]);
-
-    useEffect(() => {
-        if (!isLoggedIn || !dailyGoalsComplete) return;
-        const praise = language === 'ar'
-            ? ["أشطر كتكوت", "أشطر كتكوتة"][Math.floor(Math.random() * 2)]
-            : t.goalCompleteMessage;
-        const message = userProfile.name ? `${userProfile.name}، ${praise}` : praise;
-        showOncePerAction('daily_goals_complete', message, 'success');
-    }, [dailyGoalsComplete, isLoggedIn, language, showOncePerAction, userProfile.name, t]);
-
-    // Persist user-scoped data
-    useEffect(() => {
-        if (!isLoggedIn || !userProfile.email || !storageReady) return;
         const today = new Date().toDateString();
-        writeJson(`azkar_progress${userSuffix}`,       { date: today, items: azkarProgress });
-        writeJson(`azkar_completed${userSuffix}`,      { date: today, items: completedAzkar });
-        writeJson(`azkar_prayerChecklist${userSuffix}`, { date: today, items: prayerChecklist });
-        writeJson(`azkar_streak${userSuffix}`,         streak);
-    }, [azkarProgress, completedAzkar, prayerChecklist, streak, userSuffix, isLoggedIn, userProfile.email, storageReady]);
+        writeJson("azkar_progress",       { date: today, items: azkarProgress });
+        writeJson("azkar_completed",      { date: today, items: completedAzkar });
+        writeJson("azkar_prayerChecklist", { date: today, items: prayerChecklist });
+        writeJson("azkar_streak",         streak);
+    }, [azkarProgress, completedAzkar, prayerChecklist, streak]);
 
     // Persist custom duas
     useEffect(() => {
@@ -635,7 +503,7 @@ const AzkarApp = () => {
                 activeElement?.isContentEditable) return;
 
             // التحقق من Space + تبويب الأذكار اليومية
-            if (e.code === 'Space' && DAILY_TAB_IDS.includes(activeTab) && isLoggedIn) {
+            if (e.code === 'Space' && DAILY_TAB_IDS.includes(activeTab)) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -669,7 +537,7 @@ const AzkarApp = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [activeTab, isLoggedIn, currentAzkarList, handleZikrProgress, focusedZikr]);
+    }, [activeTab, currentAzkarList, handleZikrProgress, focusedZikr]);
 
     useEffect(() => {
         const root = document.documentElement;
@@ -693,7 +561,7 @@ const AzkarApp = () => {
 
     // Streak updater — runs when dailyGoalsComplete changes
     useEffect(() => {
-        if (!isLoggedIn || !dailyGoalsComplete) return;
+        if (!dailyGoalsComplete) return;
 
         const today = new Date();
         const todayStr = today.toDateString();
@@ -715,19 +583,23 @@ const AzkarApp = () => {
             // First time or same day (shouldn't happen due to guard above)
             return { count: Math.max(prev.count, 1), lastDate: todayStr };
         });
-    }, [dailyGoalsComplete, isLoggedIn, streak.lastDate]);
+    }, [dailyGoalsComplete, streak.lastDate]);
+
+    // Daily goals complete toast
+    useEffect(() => {
+        if (!dailyGoalsComplete) return;
+        const praise = language === 'ar'
+            ? ["أشطر كتكوت", "أشطر كتكوتة"][Math.floor(Math.random() * 2)]
+            : t.goalCompleteMessage;
+        showOncePerAction('daily_goals_complete', praise, 'success');
+    }, [dailyGoalsComplete, language, showOncePerAction, t]);
 
     // ───────────────────────────────────────
     // 5. RENDER HELPERS
     // ───────────────────────────────────────
     const renderAzkarList = (list, type) => (
         <div className="space-y-6">
-            {!storageReady ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                    <div key={`skel-${i}`} className="glass-card h-48 rounded-2xl animate-pulse bg-white/20 dark:bg-slate-800/20" />
-                ))
-            ) : (
-            list.map((z, i) => {
+            {list.map((z, i) => {
                 const uid = `${type}_${z.id}`;
                 return (
                         <ZikrCard
@@ -754,7 +626,7 @@ const AzkarApp = () => {
                             onFocus={setFocusedZikr}
                         />
                 );
-            }))}
+            })}
         </div>
     );
 
@@ -770,24 +642,6 @@ const AzkarApp = () => {
                         localStorage.setItem("azkar_welcomeSeen", "true");
                         setShowWelcome(false);
                     }}
-                    onSignIn={() => {
-                        localStorage.setItem("azkar_welcomeSeen", "true");
-                        setShowWelcome(false);
-                    }}
-                    language={language}
-                />
-            </React.Suspense>
-        );
-    }
-
-    if (!isLoggedIn) {
-        return (
-            <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)]"><div className="w-8 h-8 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" /></div>}>
-                <LoginScreen
-                    onLogin={handleLogin}
-                    onSelectExistingUser={handleSelectExistingUser}
-                    existingUsers={savedUsers}
-                    t={t}
                     language={language}
                 />
             </React.Suspense>
@@ -892,7 +746,6 @@ const AzkarApp = () => {
                     totalCount={currentAzkarList.length}
                     resetAllProgress={resetAllProgress}
                     t={t}
-                    userProfile={userProfile}
                     language={language}
                 />
 
@@ -931,8 +784,6 @@ const AzkarApp = () => {
                     {activeTab === "settings" && (
                         <SettingsSection
                             t={t}
-                            userProfile={userProfile}
-                            logout={logout}
                             language={language}
                             setLanguage={setLanguage}
                             isDarkMode={isDarkMode}
@@ -942,7 +793,6 @@ const AzkarApp = () => {
                             resetAllProgress={resetAllProgress}
                             deferredPrompt={deferredPrompt}
                             installPWA={() => deferredPrompt?.prompt()}
-                            updateProfile={updateUserProfile}
                             arabicFontSize={arabicFontSize}
                             setArabicFontSize={setArabicFontSize}
                             showEnTranslations={showEnTranslations}

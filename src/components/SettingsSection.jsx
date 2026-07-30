@@ -7,7 +7,6 @@ const SettingsSection = ({
     location, setLocation,
     isDarkMode, toggleDarkMode,
     resetAllProgress,
-    userProfile, updateProfile, logout,
     language, setLanguage, t,
     arabicFontSize, setArabicFontSize,
     showEnTranslations, setShowEnTranslations,
@@ -197,33 +196,6 @@ const SettingsSection = ({
                     <button onClick={() => setLanguage("en")} className={`py-3 rounded-lg text-sm font-black border transition-all ${language === "en" ? "bg-[var(--primary)] text-white border-[var(--primary)]" : "bg-bg-subtle text-text-secondary border-glass-border hover:border-[var(--primary)]"}`}>
                         English
                     </button>
-                </div>
-            </div>
-        </div>
-
-        {/* Profile */}
-        <div className="glass-panel p-5 space-y-5">
-            <div className="flex items-center justify-between">
-                <h3 className="text-xl font-black text-text-primary flex items-center gap-3">
-                    <Heart className="w-5 h-5 text-[var(--primary)]" />
-                    {t.profileTitle}
-                </h3>
-                <button onClick={logout} className="text-[10px] font-black uppercase tracking-wide text-text-secondary hover:text-error transition-colors px-3 py-1.5 rounded-lg bg-bg-subtle">
-                    {t.logoutButton}
-                </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wide ml-1">{t.nameLabel}</label>
-                    <input
-                        type="text" value={userProfile.name}
-                        onChange={(e) => updateProfile({ ...userProfile, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-lg bg-bg-subtle border border-glass-border focus:border-[var(--primary)] outline-none text-text-primary font-bold"
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-wide ml-1">{t.emailLabel}</label>
-                    <input type="email" value={userProfile.email} readOnly className="w-full px-4 py-3 rounded-lg bg-bg-subtle/70 border border-glass-border text-text-secondary font-bold cursor-not-allowed" />
                 </div>
             </div>
         </div>

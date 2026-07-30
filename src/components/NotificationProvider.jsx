@@ -15,7 +15,7 @@ export const useNotifications = () => {
 const scheduledTimeouts = new Map();
 const TIMEOUT_STORAGE_KEY = 'azkar_scheduled_timeouts_sent';
 
-export const NotificationProvider = ({ children, t, language, userProfile, prayerTimes }) => {
+export const NotificationProvider = ({ children, t, language, prayerTimes }) => {
     const [permission, setPermission] = useState('default');
     const [settings, setSettings] = useState(() => {
         const saved = localStorage.getItem('azkar_notificationSettings');
@@ -153,7 +153,7 @@ export const NotificationProvider = ({ children, t, language, userProfile, praye
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    email: userProfile?.email,
+                    email: 'local@hesnok.app',
                     subscription: subscription
                 })
             });
@@ -171,7 +171,7 @@ export const NotificationProvider = ({ children, t, language, userProfile, praye
             showToast(language === 'en' ? 'Failed to enable Web Push' : 'فشل تفعيل الإشعارات الخفية', 'error');
             return false;
         }
-    }, [userProfile?.email, language, updateSettings]);
+    }, [language, updateSettings]);
 
     // Unsubscribe from Web Push
     const unsubscribeFromPush = useCallback(async () => {
@@ -289,7 +289,7 @@ export const NotificationProvider = ({ children, t, language, userProfile, praye
                         () => {
                             if (permission === 'granted') {
                                 const title = t.notificationTitlePrayer;
-                                const body = t.notificationBodyPrayer.replace('{name}', userProfile?.name || '');
+                                const body = t.notificationBodyPrayer.replace('{name}', '');
                                 new Notification(title, { body, icon: '/hesnok_logo1.png' });
                                 markAsSent(notificationId);
                             }
@@ -298,7 +298,7 @@ export const NotificationProvider = ({ children, t, language, userProfile, praye
                 }
             });
         });
-    }, [prayerTimes, settings.prayerReminders, permission, language, t, userProfile, clearAllTimeouts]);
+    }, [prayerTimes, settings.prayerReminders, permission, language, t, clearAllTimeouts]);
 
     // Schedule azkar reminders
     useEffect(() => {
@@ -333,7 +333,7 @@ export const NotificationProvider = ({ children, t, language, userProfile, praye
                                 if (permission === 'granted') {
                                     const title = t.notificationTitleAzkar;
                                     const body = language === 'en' 
-                                        ? `${t.notificationBodyAzkar.replace('{name}', userProfile?.name || '')} - Morning Azkar time` 
+                                        ? `${t.notificationBodyAzkar.replace('{name}', '')} - Morning Azkar time` 
                                         : 'حان وقت أذكار الصباح بعد صلاة الفجر';
                                     new Notification(title, { body, icon: '/hesnok_logo1.png' });
                                     markAsSent(notificationId);
@@ -368,7 +368,7 @@ export const NotificationProvider = ({ children, t, language, userProfile, praye
                                 if (permission === 'granted') {
                                     const title = t.notificationTitleAzkar;
                                     const body = language === 'en' 
-                                        ? `${t.notificationBodyAzkar.replace('{name}', userProfile?.name || '')} - Evening Azkar time` 
+                                        ? `${t.notificationBodyAzkar.replace('{name}', '')} - Evening Azkar time` 
                                         : 'حان وقت أذكار المساء بعد صلاة العصر';
                                     new Notification(title, { body, icon: '/hesnok_logo1.png' });
                                     markAsSent(notificationId);
@@ -379,7 +379,7 @@ export const NotificationProvider = ({ children, t, language, userProfile, praye
                 });
             }
         }
-    }, [settings.azkarReminders, permission, language, t, userProfile, prayerTimes, scheduleNotification]);
+    }, [settings.azkarReminders, permission, language, t, prayerTimes, scheduleNotification]);
 
     // Handle visibility change - re-check permission
     useEffect(() => {

@@ -12,7 +12,7 @@ const FEATURES = [
     { icon: ShieldCheck, title_ar: "يعمل بدون إنترنت", title_en: "Works Offline" }
 ];
 
-const WelcomeScreen = ({ onGetStarted, onSignIn, language }) => {
+const WelcomeScreen = ({ onGetStarted, language }) => {
     const isEn = language === "en";
     
     return (
@@ -62,13 +62,6 @@ const WelcomeScreen = ({ onGetStarted, onSignIn, language }) => {
                             >
                                 <span>{isEn ? "Get Started" : "ابدأ الآن"}</span>
                                 <ArrowRight className="w-4 h-4" />
-                            </button>
-                            
-                            <button
-                                onClick={onSignIn}
-                                className="w-full py-2.5 rounded-xl bg-[var(--bg-subtle)] text-[var(--text-primary)] font-bold text-xs border border-[var(--glass-border)]"
-                            >
-                                {isEn ? "Sign In" : "تسجيل الدخول"}
                             </button>
                         </div>
                     </div>

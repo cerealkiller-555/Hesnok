@@ -25,7 +25,7 @@ const THEMES = {
     }
 };
 
-const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCount, resetAllProgress, t, userProfile, language }) => {
+const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCount, resetAllProgress, t, language }) => {
     if (!DAILY_TAB_IDS.includes(activeTab)) return null;
 
     // Map the tab ID to the correct theme key
@@ -49,9 +49,7 @@ const ProgressHero = ({ activeTab, progressPercentage, completedCount, totalCoun
                     <div className="space-y-0.5">
                         <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[9px] font-black tracking-wide bg-[var(--bg-subtle)] border border-[var(--glass-border)] text-[var(--text-secondary)]">
                             <Icon className="w-3 h-3 text-[var(--primary)]" />
-                            {userProfile?.name
-                                ? (language === "en" ? `Goals for ${userProfile.name}` : `أهداف ${userProfile.name}`)
-                                : t.goalsTitle}
+                            {t.goalsTitle}
                         </div>
                         <h2 className="text-base md:text-lg font-black text-[var(--text-primary)] leading-tight">{label}</h2>
                         <p className="text-xs font-bold text-[var(--text-secondary)]">
